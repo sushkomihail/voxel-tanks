@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6e830c63-28cb-4991-8d15-84a12f222866" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/BaseInput.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9FF2EC51-6320-4AF4-81AC-0A675D8E1BF8/59/1847b16e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/BC4775C0-EF48-4419-A5C5-E4041814E6DD/ac/1e52c7b9/Int32.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankView.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankModel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Input/Input.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Input/KeyboardInput.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/androidmovement/MobileControl.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/androidmovement/TouchField.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/players/t502.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/players/t110e5.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/players/foch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankMovement.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/players/tower.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Input/TankInput.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankPresenter.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankCamera.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankChassis.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Tank/TankTower.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/DestructibleObject/VoxelObject.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/VoxelSide.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/TriangleData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/Chunk.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Extensions/StringExtensions.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/VoxelData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/VoxelParser.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/Voxel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/VoxelObject/VoxelObject.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="2oFWGxn8XagjDRqqplfir9DrvT2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Discover.Launch.Via.Unity" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e830c63-28cb-4991-8d15-84a12f222866" name="Default Changelist" comment="" />
+      <created>1730465718198</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1730465718198</updated>
+      <workItem from="1730465729053" duration="17000" />
+      <workItem from="1730465767473" duration="5630000" />
+      <workItem from="1730525096308" duration="8867000" />
+      <workItem from="1730539560238" duration="911000" />
+      <workItem from="1730541568115" duration="6367000" />
+      <workItem from="1730815030612" duration="2002000" />
+      <workItem from="1731068746997" duration="7540000" />
+      <workItem from="1731127071499" duration="2684000" />
+      <workItem from="1731145169889" duration="2837000" />
+      <workItem from="1731160893025" duration="670000" />
+      <workItem from="1731314357607" duration="2640000" />
+      <workItem from="1731497132981" duration="12228000" />
+      <workItem from="1731675445772" duration="2209000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="EditMode" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>
