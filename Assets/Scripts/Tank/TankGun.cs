@@ -17,11 +17,17 @@ namespace Tank
         private TankInput _input;
         private float _elapsedReloadingTime;
         
-        public void Initialize(TankInput input)
+        public void Init(TankInput input)
         {
             _input = input;
             _input.GetActions().Shoot.performed += _ => Shoot();
-            _shootingSystem.Initialize();
+            _shootingSystem.Init();
+        }
+
+        public void OnUpdate()
+        {
+            Rotate();
+            _shootingSystem.OnUpdate();
         }
 
         public void Rotate()

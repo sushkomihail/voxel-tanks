@@ -31,7 +31,7 @@ namespace Tank
         public void Move()
         {
             float dot = Vector3.Dot(_rigidbody.linearVelocity, transform.forward);
-            int velocitySign = MathExtensions.Sign(dot);
+            int velocitySign = MathExtension.Sign(dot);
             Vector3 linearForce;
             
             if (_movementAxes.y == 0 && velocitySign != 0)

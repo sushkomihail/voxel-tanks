@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Extensions
 {
-    public static class StringExtensions
+    public static class StringExtension
     {
         private static readonly Dictionary<char, int> AlphabeticDigits = new()
         {

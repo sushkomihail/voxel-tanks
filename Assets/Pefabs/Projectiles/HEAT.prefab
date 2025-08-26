@@ -118,7 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1783649086689134681}
   - component: {fileID: 7714261541474377931}
-  - component: {fileID: 4309001646855050355}
+  - component: {fileID: 8852913365502919370}
   m_Layer: 0
   m_Name: HEAT
   m_TagString: Untagged
@@ -168,8 +168,8 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &4309001646855050355
+  m_CollisionDetection: 1
+--- !u!114 &8852913365502919370
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,6 +178,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8600281853379629336}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3191ddd28f9040dfa495ea759df59f59, type: 3}
+  m_Script: {fileID: 11500000, guid: 1bd7ca946d674baa94a69c152d84394b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

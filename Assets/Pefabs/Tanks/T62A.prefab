@@ -451,12 +451,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePivot: {fileID: 7527405949487928999}
-  _projectile: {fileID: 8237230870406337322, guid: 76078b98c0830664f9cc12debecdb48a,
-    type: 3}
-  _projectileData:
-    _flightSpeed: 25
-    _damage: 100
-  _reloadingTime: 2
+  _projectileItems:
+  - _type: 0
+    _prefab: {fileID: 8237230870406337322, guid: 76078b98c0830664f9cc12debecdb48a,
+      type: 3}
+    _props:
+      _speed: 50
+      _baseDamage: 360
+  - _type: 3
+    _prefab: {fileID: 8852913365502919370, guid: a7977e930ea900448b1c9c0d1e1a9cc9,
+      type: 3}
+    _props:
+      _speed: 800
+      _baseDamage: 340
+  - _type: 2
+    _prefab: {fileID: 4102392199253153247, guid: 76da1986101f82946a803da614794366,
+      type: 3}
+    _props:
+      _speed: 850
+      _baseDamage: 480
+  _reloadingTime: 1
 --- !u!1 &5033857592702788752
 GameObject:
   m_ObjectHideFlags: 0

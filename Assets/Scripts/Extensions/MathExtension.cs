@@ -2,7 +2,7 @@
 
 namespace Extensions
 {
-    public static class MathExtensions
+    public static class MathExtension
     {
         public static int Sign(float value)
         {

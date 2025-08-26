@@ -15,7 +15,7 @@ namespace Tank
         {
             _input = input;
             _chassis.Initialize();
-            _gun.Initialize(_input);
+            _gun.Init(_input);
         }
 
         public void OnUpdate()

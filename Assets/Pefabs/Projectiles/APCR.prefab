@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3476258288231150673}
   - component: {fileID: 3966114021834251080}
-  - component: {fileID: 2835058164824679548}
+  - component: {fileID: 5743203210084417352}
   m_Layer: 0
   m_Name: APCR
   m_TagString: Untagged
@@ -60,8 +60,8 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &2835058164824679548
+  m_CollisionDetection: 1
+--- !u!114 &5743203210084417352
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4361359667776518835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8a9ae7024364ac5875c9309bcbbe7d8, type: 3}
+  m_Script: {fileID: 11500000, guid: 1bd7ca946d674baa94a69c152d84394b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5243631815376775571
