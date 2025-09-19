@@ -12,9 +12,9 @@ namespace Tank
 
         private readonly float _sensitivity = 50;
 
-        public void Rotate(TankInput input)
+        public void Rotate()
         {
-            Vector2 lookAxes = input.GetActions().Look.ReadValue<Vector2>();
+            Vector2 lookAxes = PlayerInput.Instance.GetLookInputVector();
             Vector3 localAngles = _pivot.localEulerAngles;
             localAngles.y += lookAxes.x * _sensitivity * Time.deltaTime;
             localAngles.x -= lookAxes.y * _sensitivity * Time.deltaTime;

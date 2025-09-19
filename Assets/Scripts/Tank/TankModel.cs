@@ -1,5 +1,4 @@
-﻿using Input;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Tank
 {
@@ -9,19 +8,16 @@ namespace Tank
         [SerializeField] private TankTurret _turret;
         [SerializeField] private TankGun _gun;
 
-        private TankInput _input;
-
-        public void Initialize(TankInput input)
+        public void Init()
         {
-            _input = input;
-            _chassis.Initialize();
-            _gun.Init(_input);
+            _chassis.Init();
+            _gun.Init();
         }
 
         public void OnUpdate()
         {
-            _chassis.ReadInput(_input);
-            _chassis.Rotate();
+            // _chassis.ReadInput(_input);
+            // _chassis.Rotate();
             _turret.Rotate();
             _gun.Rotate();
         }
@@ -29,6 +25,7 @@ namespace Tank
         public void OnFixedUpdate()
         {
             _chassis.Move();
+            _chassis.Rotate();
         }
     }
 }

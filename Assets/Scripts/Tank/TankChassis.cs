@@ -1,82 +1,85 @@
 ﻿using Extensions;
 using Input;
+using Tank.Modules;
+using Tank.Modules.Track;
+using Tank.Modules.Transmission;
 using UnityEngine;
 
 namespace Tank
 {
     public class TankChassis : MonoBehaviour
     {
-        [SerializeField] private Rigidbody _rigidbody;
-        [SerializeField] private float _acceleration;
-        [SerializeField] private float _deceleration;
-        [SerializeField] private float _maxForwardSpeed;
-        [SerializeField] private float _maxBackwardSpeed;
-        [SerializeField] private float _rotationSpeed;
+        [SerializeField] private Engine _engine;
+        [SerializeField] private Transmission _transmission;
+        [SerializeField] private Track _leftTrack;
+        [SerializeField] private Track _rightTrack;
+        [SerializeField] private float _rotationSpeed = 60f; // deg/s
         
-        private Vector2 _movementAxes;
-        private float _maxForwardSpeedInMetersPerSecond;
-        private float _maxBackwardSpeedInMetersPerSecond;
+        private Rigidbody _tankRigidbody;
 
-        public void Initialize()
+        public void Init()
         {
-            _maxForwardSpeedInMetersPerSecond = _maxForwardSpeed / 3.6f;
-            _maxBackwardSpeedInMetersPerSecond = _maxBackwardSpeed / 3.6f;
+            _tankRigidbody = transform.root.GetComponent<Rigidbody>();
+
+            if (!_tankRigidbody)
+            {
+                Debug.LogError("Rigidbody not found: TankChassis requires Rigidbody on the root GameObject");
+                return;
+            }
+            
+            _engine.Init();
+            _transmission.Init();
+            _leftTrack.Init();
+            _rightTrack.Init();
         }
 
-        public void ReadInput(TankInput input)
-        {
-            _movementAxes = input.GetActions().Movement.ReadValue<Vector2>();
-        }
-        
         public void Move()
         {
-            float dot = Vector3.Dot(_rigidbody.linearVelocity, transform.forward);
-            int velocitySign = MathExtension.Sign(dot);
-            Vector3 linearForce;
-            
-            if (_movementAxes.y == 0 && velocitySign != 0)
-            {
-                linearForce = transform.forward * (-velocitySign * _deceleration);
+            Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
+            float speed = Vector3.Dot(transform.forward, _tankRigidbody.linearVelocity);
+            float breakTorque = _engine.Torque * -speed.Sign();
 
-                if (_rigidbody.linearVelocity.magnitude < 0.5f)
-                {
-                    _rigidbody.linearVelocity = Vector3.zero;
-                }
-            }
-            else if (velocitySign != _movementAxes.y && velocitySign != 0)
+            if (moveInputVector.y == 0)
             {
-                linearForce = transform.forward * (_movementAxes.y * _deceleration);
+                if (Mathf.Abs(speed) > 0.05f)
+                {
+                    _leftTrack.ApplyBrakeTorque(breakTorque);
+                    _rightTrack.ApplyBrakeTorque(breakTorque);
+                    return;
+                }
+                
+                _leftTrack.ApplyMotorTorque(0);
+                _rightTrack.ApplyMotorTorque(0);
             }
             else
             {
-                linearForce = transform.forward * (_movementAxes.y * _acceleration);
+                if (speed.Sign() != moveInputVector.y.Sign() && speed.Sign() != 0)
+                {
+                    _leftTrack.ApplyBrakeTorque(breakTorque);
+                    _rightTrack.ApplyBrakeTorque(breakTorque);
+                    return;
+                }
+                
+                float motorTorque = moveInputVector.y * _engine.Torque;
+                _leftTrack.ApplyMotorTorque(motorTorque);
+                _rightTrack.ApplyMotorTorque(motorTorque);
             }
-            
-            Vector3 lateralForce = transform.right * 
-                Vector3.Dot(_rigidbody.linearVelocity, transform.right) / Time.fixedDeltaTime;
-            _rigidbody.AddForce(linearForce - lateralForce, ForceMode.Acceleration);
-            ClampSpeed(velocitySign);
         }
 
         public void Rotate()
         {
-            float xInputAxis = _movementAxes.y < 0 ? _movementAxes.x * -1 : _movementAxes.x;
-            Vector3 deltaRotationAngles = Vector3.up * (xInputAxis * _rotationSpeed * Time.deltaTime);
+            Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
+            float xInputAxis = moveInputVector.y < 0 ? -moveInputVector.x : moveInputVector.x;
+            Vector3 deltaRotationAngles = transform.up * (xInputAxis * _rotationSpeed * Time.deltaTime);
             transform.Rotate(deltaRotationAngles);
         }
-
-        private void ClampSpeed(int velocitySign)
+        
+        private void LimitSpeed()
         {
-            float currentSpeed = _rigidbody.linearVelocity.magnitude * 3.6f;
-
-            if (velocitySign < 0 && currentSpeed >= _maxBackwardSpeed)
-            {
-                _rigidbody.linearVelocity = transform.forward * -_maxBackwardSpeedInMetersPerSecond;
-            }
-            else if (velocitySign > 0 && currentSpeed >= _maxForwardSpeed)
-            {
-                _rigidbody.linearVelocity = transform.forward * _maxForwardSpeedInMetersPerSecond;
-            }
+            // if (_tankRigidbody.linearVelocity.magnitude > maxSpeed)
+            // {
+            //     _tankRigidbody.linearVelocity = _tankRigidbody.linearVelocity.normalized * maxSpeed;
+            // }
         }
     }
 }

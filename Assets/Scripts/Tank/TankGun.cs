@@ -14,13 +14,11 @@ namespace Tank
 
         private const float RotationSpeed = 50f;
         
-        private TankInput _input;
         private float _elapsedReloadingTime;
         
-        public void Init(TankInput input)
+        public void Init()
         {
-            _input = input;
-            _input.GetActions().Shoot.performed += _ => Shoot();
+            // PlayerInput.Instance.GetShootAction().performed += _ => Shoot();
             _shootingSystem.Init();
         }
 

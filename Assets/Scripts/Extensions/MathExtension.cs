@@ -4,7 +4,7 @@ namespace Extensions
 {
     public static class MathExtension
     {
-        public static int Sign(float value)
+        public static int Sign(this float value)
         {
             if (Mathf.Abs(value) < 0.05f)
             {
