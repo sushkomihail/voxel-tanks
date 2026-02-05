@@ -1,4 +1,4 @@
-﻿using Environment;
+﻿using Tank.Modules;
 using UnityEngine;
 
 namespace ShootingSystems
@@ -40,9 +40,12 @@ namespace ShootingSystems
 
         private void OnCollisionEnter(Collision other)
         {
-            if (other.transform.TryGetComponent(out IDamageable damageableObject))
+            if (other.transform.TryGetComponent(out IDamageable damageable))
             {
-                damageableObject.TakeDamage(Props.BaseDamage);
+                if (damageable is TankModule)
+                {
+                    damageable.TakeDamage(Props.DamageByModules);
+                }
             }
             
             _shootingSystem.OnProjectileHit(this);

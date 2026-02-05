@@ -1,8 +1,8 @@
 ﻿using Extensions;
 using Input;
 using Tank.Modules;
+using Tank.Modules.Engine;
 using Tank.Modules.Track;
-using Tank.Modules.Transmission;
 using UnityEngine;
 
 namespace Tank
@@ -10,7 +10,6 @@ namespace Tank
     public class TankChassis : MonoBehaviour
     {
         [SerializeField] private Engine _engine;
-        [SerializeField] private Transmission _transmission;
         [SerializeField] private Track _leftTrack;
         [SerializeField] private Track _rightTrack;
         [SerializeField] private float _rotationSpeed = 60f; // deg/s
@@ -20,21 +19,16 @@ namespace Tank
         public void Init()
         {
             _tankRigidbody = transform.root.GetComponent<Rigidbody>();
-
-            if (!_tankRigidbody)
-            {
-                Debug.LogError("Rigidbody not found: TankChassis requires Rigidbody on the root GameObject");
-                return;
-            }
             
             _engine.Init();
-            _transmission.Init();
             _leftTrack.Init();
             _rightTrack.Init();
         }
 
         public void Move()
         {
+            if (!_tankRigidbody) return;
+            
             Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
             float speed = Vector3.Dot(transform.forward, _tankRigidbody.linearVelocity);
             float breakTorque = _engine.Torque * -speed.Sign();
@@ -43,35 +37,41 @@ namespace Tank
             {
                 if (Mathf.Abs(speed) > 0.05f)
                 {
-                    _leftTrack.ApplyBrakeTorque(breakTorque);
-                    _rightTrack.ApplyBrakeTorque(breakTorque);
+                    _leftTrack.ApplyTorque(breakTorque);
+                    _rightTrack.ApplyTorque(breakTorque);
                     return;
                 }
                 
-                _leftTrack.ApplyMotorTorque(0);
-                _rightTrack.ApplyMotorTorque(0);
+                _leftTrack.ApplyTorque(0);
+                _rightTrack.ApplyTorque(0);
             }
             else
             {
                 if (speed.Sign() != moveInputVector.y.Sign() && speed.Sign() != 0)
                 {
-                    _leftTrack.ApplyBrakeTorque(breakTorque);
-                    _rightTrack.ApplyBrakeTorque(breakTorque);
+                    _leftTrack.ApplyTorque(breakTorque);
+                    _rightTrack.ApplyTorque(breakTorque);
                     return;
                 }
                 
                 float motorTorque = moveInputVector.y * _engine.Torque;
-                _leftTrack.ApplyMotorTorque(motorTorque);
-                _rightTrack.ApplyMotorTorque(motorTorque);
+                _leftTrack.ApplyTorque(motorTorque);
+                _rightTrack.ApplyTorque(motorTorque);
             }
         }
 
         public void Rotate()
         {
+            if (!_tankRigidbody) return;
+            
             Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
             float xInputAxis = moveInputVector.y < 0 ? -moveInputVector.x : moveInputVector.x;
             Vector3 deltaRotationAngles = transform.up * (xInputAxis * _rotationSpeed * Time.deltaTime);
             transform.Rotate(deltaRotationAngles);
+
+            // Vector3 angularVelocity = _tankRigidbody.angularVelocity;
+            // angularVelocity.y = _rotationSpeed * Mathf.Deg2Rad * xInputAxis;
+            // _tankRigidbody.angularVelocity = angularVelocity;
         }
         
         private void LimitSpeed()

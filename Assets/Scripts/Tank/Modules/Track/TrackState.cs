@@ -2,8 +2,8 @@
 {
     public abstract class TrackState
     {
-        protected Track _track;
-
+        protected readonly Track _track;
+        
         protected TrackState(Track track)
         {
             _track = track;

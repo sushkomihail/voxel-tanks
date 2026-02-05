@@ -12,9 +12,10 @@ namespace Tank.Modules
         public bool IsDamaged { get; private set; }
         public bool IsCritical { get; private set; }
 
-        public virtual void Init()
+        public void Init()
         {
             _currentHealth = _health;
+            EnterNormalState();
         }
 
         public void TakeDamage(int damage)
@@ -26,12 +27,15 @@ namespace Tank.Modules
                 EnterDamagedState();
                 IsDamaged = true;
             }
-            else if (!IsCritical)
+            
+            if (_currentHealth <= 0 && !IsCritical)
             {
                 EnterCriticalState();
                 IsCritical = true;
             }
         }
+        
+        public virtual void EnterNormalState() {}
         
         public virtual void EnterDamagedState() {}
         

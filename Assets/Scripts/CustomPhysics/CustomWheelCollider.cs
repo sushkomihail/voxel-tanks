@@ -9,22 +9,16 @@ namespace CustomPhysics
         [SerializeField] private float _springDamper = 10f;
         [SerializeField] private float _wheelRadius = 0.3f;
         [SerializeField] private float _wheelMass = 20f;
-        [SerializeField] private float _brakePadsFriction = 0.8f;
         [SerializeField] private float _gripFactor = 0.7f; // [0, 1]
     
         private Rigidbody _vehicleRigidbody;
-        private bool _isGrounded;
-    
         private RaycastHit _groundHit;
+        private Vector3 _longitudinalForce;
+        private bool _isGrounded;
 
         private void Awake()
         {
             _vehicleRigidbody = transform.root.GetComponent<Rigidbody>();
-
-            if (!_vehicleRigidbody)
-            {
-                Debug.LogError("Rigidbody not found: CustomWheelCollider requires Rigidbody on the root GameObject");
-            }
         }
     
         private void FixedUpdate()
@@ -43,7 +37,8 @@ namespace CustomPhysics
             {
                 Vector3 suspensionForce = CalculateSuspensionForce();
                 Vector3 frictionForce = CalculateFrictionForce();
-                _vehicleRigidbody.AddForceAtPosition(suspensionForce + frictionForce, transform.position);
+                Vector3 totalForce = _longitudinalForce + suspensionForce + frictionForce;
+                _vehicleRigidbody.AddForceAtPosition(totalForce, transform.position);
             }
         }
     
@@ -71,20 +66,11 @@ namespace CustomPhysics
             return sidewaysForce;
         }
     
-        public void ApplyMotorTorque(float torque)
+        public void ApplyTorque(float torque)
         {
             if (!_isGrounded) return;
         
-            Vector3 force = transform.forward * torque / _wheelRadius;
-            _vehicleRigidbody.AddForceAtPosition(force, _groundHit.point);
-        }
-    
-        public void ApplyBrakeTorque(float torque)
-        {
-            if (!_isGrounded) return;
-            
-            Vector3 force = transform.forward * torque / _wheelRadius;
-            _vehicleRigidbody.AddForceAtPosition(force * (_brakePadsFriction * 2), _groundHit.point);
+            _longitudinalForce = transform.forward * torque / _wheelRadius;
         }
     
         private void OnDrawGizmos()

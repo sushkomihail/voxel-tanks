@@ -49,7 +49,6 @@ MonoBehaviour:
   _springDamper: 3
   _wheelRadius: 0.3
   _wheelMass: 200
-  _brakePadsFriction: 0.8
   _gripFactor: 0.7
 --- !u!1 &748350500349296557
 GameObject:
@@ -117,6 +116,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -138,9 +139,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8312570700677204361
 BoxCollider:
@@ -176,9 +179,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _engine: {fileID: 8376792456898164973}
-  _transmission:
-    _maxForwardSpeed: 60
-    _maxBackwardSpeed: 20
   _leftTrack: {fileID: 298297061060356123}
   _rightTrack: {fileID: 9170694319753351375}
   _rotationSpeed: 60
@@ -244,6 +244,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -265,9 +267,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5637600792432020745
 BoxCollider:
@@ -333,7 +337,6 @@ GameObject:
   - component: {fileID: 8658915833079703757}
   - component: {fileID: 4875103179120229374}
   - component: {fileID: 7884587123724884781}
-  - component: {fileID: 482044644898494550}
   - component: {fileID: 7163723705141526253}
   m_Layer: 0
   m_Name: T62A
@@ -355,8 +358,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 83734941015106839}
   - {fileID: 4536479098622439117}
+  - {fileID: 83734941015106839}
   - {fileID: 2271121668211009827}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -367,10 +370,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245987131929983312}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 2000
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -401,21 +404,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pivot: {fileID: 4536479098622439117}
   _cameraTransform: {fileID: 1800195385067229958}
---- !u!114 &482044644898494550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1245987131929983312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f47bd186718e4f37ae79fd745bee8e62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _chassis: {fileID: 4368966786567720499}
-  _turret: {fileID: 3678274390866753116}
-  _gun: {fileID: 7163106945819749237}
 --- !u!114 &7163723705141526253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,6 +416,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1563a0054d4b4795a569bf757538bf6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _chassis: {fileID: 4368966786567720499}
+  _turret: {fileID: 3678274390866753116}
+  _gun: {fileID: 7163106945819749237}
+  _camera: {fileID: 7884587123724884781}
 --- !u!1 &1900582573928377137
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 7884587123724884781}
+  _turret: {fileID: 1553849065742502068}
   _minVerticalAngle: -7
   _maxVerticalAngle: 20
   _caliber: 100
@@ -682,7 +675,6 @@ MonoBehaviour:
   _springDamper: 3
   _wheelRadius: 0.3
   _wheelMass: 200
-  _brakePadsFriction: 0.8
   _gripFactor: 0.7
 --- !u!1 &4436188830064853383
 GameObject:
@@ -783,7 +775,6 @@ MonoBehaviour:
   _springDamper: 3
   _wheelRadius: 0.3
   _wheelMass: 200
-  _brakePadsFriction: 0.8
   _gripFactor: 0.7
 --- !u!1 &4620619890214985022
 GameObject:
@@ -914,7 +905,6 @@ MonoBehaviour:
   _springDamper: 3
   _wheelRadius: 0.3
   _wheelMass: 200
-  _brakePadsFriction: 0.8
   _gripFactor: 0.7
 --- !u!1 &5604796362609400110
 GameObject:
@@ -1045,7 +1035,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -1053,6 +1042,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &6465201683925444723
 GameObject:
   m_ObjectHideFlags: 0
@@ -1145,6 +1135,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1166,7 +1158,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

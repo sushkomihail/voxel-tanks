@@ -31,7 +31,7 @@ namespace Environment.Water
             }
         }
 
-        private void DisableWall(GameObject wall)
+        private static void DisableWall(GameObject wall)
         {
             if (wall != null)
             {

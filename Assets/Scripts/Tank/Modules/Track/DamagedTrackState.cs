@@ -8,7 +8,7 @@
 
         public override void Enter()
         {
-            
+            _track.SetTorqueRate(_track.DamagedTorqueRate);
         }
     }
 }

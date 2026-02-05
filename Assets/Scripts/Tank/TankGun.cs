@@ -1,5 +1,4 @@
-﻿using Input;
-using ShootingSystems;
+﻿using ShootingSystems;
 using UnityEngine;
 
 namespace Tank
@@ -7,9 +6,10 @@ namespace Tank
     public class TankGun : MonoBehaviour
     {
         [SerializeField] private TankCamera _camera;
-        [SerializeField] private float _minVerticalAngle;
-        [SerializeField] private float _maxVerticalAngle;
-        [SerializeField] private float _caliber;
+        [SerializeField] private Transform _turret;
+        [SerializeField] private float _minVerticalAngle = -5f;
+        [SerializeField] private float _maxVerticalAngle = 20f;
+        [SerializeField] private float _caliber = 100f;
         [SerializeField] private ShootingSystem _shootingSystem;
 
         private const float RotationSpeed = 50f;
@@ -18,7 +18,6 @@ namespace Tank
         
         public void Init()
         {
-            // PlayerInput.Instance.GetShootAction().performed += _ => Shoot();
             _shootingSystem.Init();
         }
 
@@ -41,10 +40,14 @@ namespace Tank
 
         private Vector3 GetShootingDirection(Vector3 targetPosition)
         {
-            Vector3 directionToTarget = Vector3.ProjectOnPlane(targetPosition - transform.position, transform.right);
-            Vector3 horizontalProjection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
-            float x = horizontalProjection.magnitude;
-            float y = directionToTarget.y;
+            Vector3 projectedDirectionToTarget = 
+                Vector3.ProjectOnPlane(targetPosition - transform.position, _turret.right);
+            
+            Vector3 xzDirectionProjection = 
+                new Vector3(projectedDirectionToTarget.x, 0, projectedDirectionToTarget.z);
+            
+            float x = xzDirectionProjection.magnitude;
+            float y = projectedDirectionToTarget.y;
 
             float v = _shootingSystem.GetProjectileSpeed();
             float v2 = v * v;
@@ -66,8 +69,10 @@ namespace Tank
             }
 
             float launchAngle = Mathf.Atan(launchAngleTan);
-            Vector3 shootingDirection = horizontalProjection.normalized * (v * Mathf.Cos(launchAngle)) + 
+            
+            Vector3 shootingDirection = xzDirectionProjection.normalized * (v * Mathf.Cos(launchAngle)) + 
                         Vector3.up * (v * Mathf.Sin(launchAngle));
+            
             return shootingDirection;
         }
 
@@ -79,7 +84,7 @@ namespace Tank
             transform.localEulerAngles = localAngles;
         }
         
-        private void Shoot()
+        public void Shoot()
         {
             _shootingSystem.Shoot();
         }

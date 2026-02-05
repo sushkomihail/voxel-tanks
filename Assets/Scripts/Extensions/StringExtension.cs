@@ -19,7 +19,7 @@ namespace Extensions
                 char symbol = number[i];
                 int decDigit = symbol - '0';
                 
-                if ((decDigit < 0 || decDigit > 9) && !AlphabeticDigits.ContainsKey(symbol))
+                if (decDigit is < 0 or > 9 && !AlphabeticDigits.ContainsKey(symbol))
                 {
                     return false;
                 }
@@ -30,7 +30,7 @@ namespace Extensions
                 }
                 else
                 {
-                    destination += decDigit * (int) Mathf.Pow(from, number.Length - 1 - i);
+                    destination += decDigit * (int)Mathf.Pow(from, number.Length - 1 - i);
                 }
             }
 
