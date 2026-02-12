@@ -17,6 +17,16 @@ namespace Tank.Modules.Track
         {
             _torqueRate = torqueRate;
         }
+
+        public bool IsGrounded()
+        {
+            foreach (var wheel in _wheels)
+            {
+                if (!wheel.IsGrounded) return false;
+            }
+            
+            return true;
+        }
         
         public void ApplyTorque(float torque)
         {

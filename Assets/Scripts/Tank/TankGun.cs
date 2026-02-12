@@ -9,10 +9,9 @@ namespace Tank
         [SerializeField] private Transform _turret;
         [SerializeField] private float _minVerticalAngle = -5f;
         [SerializeField] private float _maxVerticalAngle = 20f;
+        [SerializeField] private float _rotationSpeed = 50f;
         [SerializeField] private float _caliber = 100f;
         [SerializeField] private ShootingSystem _shootingSystem;
-
-        private const float RotationSpeed = 50f;
         
         private float _elapsedReloadingTime;
         
@@ -21,20 +20,13 @@ namespace Tank
             _shootingSystem.Init();
         }
 
-        public void OnUpdate()
+        public void Rotate(Vector3 lookPosition)
         {
-            Rotate();
-            _shootingSystem.OnUpdate();
-        }
-
-        public void Rotate()
-        {
-            Vector3 targetPosition = _camera.CastRay();
-            Vector3 targetDirection = GetShootingDirection(targetPosition);
+            Vector3 targetDirection = GetShootingDirection(lookPosition);
             Vector3 upwards = Vector3.Cross(targetDirection, transform.right);
             Quaternion targetRotation = Quaternion.LookRotation(targetDirection, upwards);
             transform.rotation =
-                Quaternion.RotateTowards(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
+                Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
             ClampAngles();
         }
 

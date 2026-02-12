@@ -1,6 +1,4 @@
 ﻿using Extensions;
-using Input;
-using Tank.Modules;
 using Tank.Modules.Engine;
 using Tank.Modules.Track;
 using UnityEngine;
@@ -12,7 +10,10 @@ namespace Tank
         [SerializeField] private Engine _engine;
         [SerializeField] private Track _leftTrack;
         [SerializeField] private Track _rightTrack;
+        [SerializeField] private float _brakeTorque = 3000f;
         [SerializeField] private float _rotationSpeed = 60f; // deg/s
+
+        private const float StopThreshold = 0.2f;
         
         private Rigidbody _tankRigidbody;
 
@@ -25,25 +26,27 @@ namespace Tank
             _rightTrack.Init();
         }
 
-        public void Move()
+        public void Move(Vector2 moveInputVector)
         {
             if (!_tankRigidbody) return;
             
-            Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
             float speed = Vector3.Dot(transform.forward, _tankRigidbody.linearVelocity);
-            float breakTorque = _engine.Torque * -speed.Sign();
+            float breakTorque = _brakeTorque * -speed.Sign();
 
             if (moveInputVector.y == 0)
             {
-                if (Mathf.Abs(speed) > 0.05f)
+                float absSpeed = Mathf.Abs(speed);
+                
+                if (absSpeed > StopThreshold)
                 {
                     _leftTrack.ApplyTorque(breakTorque);
                     _rightTrack.ApplyTorque(breakTorque);
-                    return;
                 }
                 
-                _leftTrack.ApplyTorque(0);
-                _rightTrack.ApplyTorque(0);
+                if (absSpeed <= StopThreshold && _leftTrack.IsGrounded() && _rightTrack.IsGrounded())
+                { 
+                    _tankRigidbody.linearVelocity = Vector3.zero;
+                }
             }
             else
             {
@@ -60,18 +63,14 @@ namespace Tank
             }
         }
 
-        public void Rotate()
+        public void Rotate(Vector2 moveInputVector)
         {
             if (!_tankRigidbody) return;
             
-            Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
             float xInputAxis = moveInputVector.y < 0 ? -moveInputVector.x : moveInputVector.x;
-            Vector3 deltaRotationAngles = transform.up * (xInputAxis * _rotationSpeed * Time.deltaTime);
-            transform.Rotate(deltaRotationAngles);
-
-            // Vector3 angularVelocity = _tankRigidbody.angularVelocity;
-            // angularVelocity.y = _rotationSpeed * Mathf.Deg2Rad * xInputAxis;
-            // _tankRigidbody.angularVelocity = angularVelocity;
+            Vector3 angularVelocity = _tankRigidbody.angularVelocity;
+            angularVelocity.y = _rotationSpeed * Mathf.Deg2Rad * xInputAxis;
+            _tankRigidbody.angularVelocity = angularVelocity;
         }
         
         private void LimitSpeed()

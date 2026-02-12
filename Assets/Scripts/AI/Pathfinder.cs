@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using AI;
 using UnityEngine;
 
-namespace Tank.AI
+namespace AI
 {
     [RequireComponent(typeof(NavGrid))]
     public class Pathfinder : MonoBehaviour
@@ -53,11 +52,11 @@ namespace Tank.AI
                 {
                     if (!neighbour.IsWalkable || closedSet.Contains(neighbour)) continue;
                     
-                    int newCost = currentCell.GCost + GetDistance(currentCell, neighbour);
+                    int movementCost = currentCell.GCost + GetDistance(currentCell, neighbour);
 
-                    if (newCost < neighbour.GCost || !openSet.Contains(neighbour))
+                    if (movementCost < neighbour.GCost || !openSet.Contains(neighbour))
                     {
-                        neighbour.SetGCost(newCost);
+                        neighbour.SetGCost(movementCost);
                         neighbour.SetHCost(GetDistance(neighbour, endCell));
                         neighbour.SetParentCell(currentCell);
 
@@ -70,11 +69,15 @@ namespace Tank.AI
             }
         }
 
-        public NavGridCell GetNextPathCell()
+        public bool TryGetNextPathCell(out NavGridCell cell)
         {
-            var nextCell = _path[0];
+            cell = null;
+            
+            if (_path.Count == 0) return false;
+            
+            cell = _path[0];
             _path.RemoveAt(0);
-            return nextCell;
+            return true;
         }
 
         private static int GetDistance(NavGridCell a, NavGridCell b)
@@ -102,6 +105,18 @@ namespace Tank.AI
             }
             
             _path.Reverse();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (_path.Count == 0) return;
+            
+            Gizmos.color = Color.green;
+
+            foreach (var cell in _path)
+            {
+                Gizmos.DrawWireCube(cell.WorldPosition, Vector3.one * 0.5f);
+            }
         }
     }
 }

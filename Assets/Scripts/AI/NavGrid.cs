@@ -20,11 +20,11 @@ namespace AI
 
         public NavGridCell GetClosestCell(Vector3 position)
         {
-            float xRate = Mathf.Clamp01(position.x / (_width * _cellSize));
-            float yRate = Mathf.Clamp01(position.z / (_height * _cellSize));
-            int x = Mathf.RoundToInt((_width - 1) * xRate);
-            int y = Mathf.RoundToInt((_height - 1) * yRate);
-            return _cells[x, y];
+            int x = Mathf.RoundToInt(position.x / _cellSize);
+            int y = Mathf.RoundToInt(position.z / _cellSize);
+            x = Mathf.Clamp(x, 0, _width - 1);
+            y = Mathf.Clamp(y, 0, _height - 1);
+            return _cells[y, x];
         }
 
         public List<NavGridCell> GetNeighbours(NavGridCell cell)
@@ -37,10 +37,12 @@ namespace AI
                 {
                     if (i == 0 && j == 0) continue;
 
-                    if (cell.GridX + j >= 0 && cell.GridX + j < _width &&
-                        cell.GridY + i >= 0 && cell.GridY + i < _height)
+                    int x = cell.GridX + j;
+                    int y = cell.GridY + i;
+                    
+                    if (x >= 0 && x < _width && y >= 0 && y < _height)
                     {
-                        neighbours.Add(_cells[i, j]);
+                        neighbours.Add(_cells[y, x]);
                     }
                 }
             }

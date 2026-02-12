@@ -9,8 +9,14 @@ namespace Tank
         [SerializeField] private TankChassis _chassis;
         [SerializeField] private TankTurret _turret;
         [SerializeField] private TankGun _gun;
+        
+        [Space(5), Header("Camera")]
+        [SerializeField] private Transform _cameraTarget;
+        [SerializeField] private Vector3 _cameraFollowingOffset = new(0f, 3f, -9.2f);
+        
+        // TODO: Set camera on spawn
         [SerializeField] private TankCamera _camera;
-
+        
         private void Awake()
         {
             _chassis?.Init();
@@ -27,15 +33,24 @@ namespace Tank
 
         private void Update()
         {
-            _turret.Rotate();
-            _gun.Rotate();
+            Vector3 lookPosition = _camera.CastRay();
+            _turret.Rotate(lookPosition);
+            _gun.Rotate(lookPosition);
+            
             _camera.Rotate();
+            
         }
 
         private void FixedUpdate()
         {
-            _chassis.Move();
-            _chassis.Rotate();
+            Vector2 moveInputVector = PlayerInput.Instance.GetMoveInputVector();
+            _chassis.Move(moveInputVector);
+            _chassis.Rotate(moveInputVector);
+        }
+
+        private void LateUpdate()
+        {
+            _camera.FollowTarget(_cameraTarget, _cameraFollowingOffset);
         }
     }
 }

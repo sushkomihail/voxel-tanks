@@ -13,8 +13,8 @@ namespace CustomPhysics
     
         private Rigidbody _vehicleRigidbody;
         private RaycastHit _groundHit;
-        private Vector3 _longitudinalForce;
-        private bool _isGrounded;
+        
+        public bool IsGrounded { get; private set; }
 
         private void Awake()
         {
@@ -30,14 +30,14 @@ namespace CustomPhysics
         {
             if (!_vehicleRigidbody) return;
             
-            _isGrounded = Physics.Raycast(transform.position, -transform.up, 
+            IsGrounded = Physics.Raycast(transform.position, -transform.up, 
                 out _groundHit, _suspensionRestDistance + _wheelRadius);
         
-            if (_isGrounded)
+            if (IsGrounded)
             {
                 Vector3 suspensionForce = CalculateSuspensionForce();
                 Vector3 frictionForce = CalculateFrictionForce();
-                Vector3 totalForce = _longitudinalForce + suspensionForce + frictionForce;
+                Vector3 totalForce = suspensionForce + frictionForce;
                 _vehicleRigidbody.AddForceAtPosition(totalForce, transform.position);
             }
         }
@@ -68,9 +68,10 @@ namespace CustomPhysics
     
         public void ApplyTorque(float torque)
         {
-            if (!_isGrounded) return;
+            if (!IsGrounded) return;
         
-            _longitudinalForce = transform.forward * torque / _wheelRadius;
+            Vector3 longitudinalForce = transform.forward * torque / _wheelRadius;
+            _vehicleRigidbody.AddForceAtPosition(longitudinalForce, transform.position);
         }
     
         private void OnDrawGizmos()
@@ -81,7 +82,7 @@ namespace CustomPhysics
         
             Gizmos.DrawLine(rayStart, rayEnd);
         
-            if (_isGrounded)
+            if (IsGrounded)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawSphere(_groundHit.point, 0.05f);

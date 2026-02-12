@@ -5,32 +5,38 @@ namespace Tank
 {
     public class TankCamera : MonoBehaviour
     {
-        [SerializeField] private Transform _pivot;
-        [SerializeField] private Transform _cameraTransform;
+        [SerializeField] private Camera _camera;
 
-        private const float MaxRayDistance = 500;
+        private const float MaxRayDistance = 500f;
 
-        private readonly float _sensitivity = 50;
+        // TODO: Make sensitivity settings
+        private const float Sensitivity = 50f;
+
+        public void FollowTarget(Transform target, Vector3 offset)
+        {
+            transform.position = target.position;
+            _camera.transform.localPosition = offset;
+        }
 
         public void Rotate()
         {
             Vector2 lookAxes = PlayerInput.Instance.GetLookInputVector();
-            Vector3 localAngles = _pivot.localEulerAngles;
-            localAngles.y += lookAxes.x * _sensitivity * Time.deltaTime;
-            localAngles.x -= lookAxes.y * _sensitivity * Time.deltaTime;
-            _pivot.localEulerAngles = localAngles;
+            Vector3 localAngles = transform.localEulerAngles;
+            localAngles.y += lookAxes.x * Sensitivity * Time.deltaTime;
+            localAngles.x -= lookAxes.y * Sensitivity * Time.deltaTime;
+            transform.localEulerAngles = localAngles;
         }
         
         public Vector3 CastRay()
         {
-            Ray ray = new Ray(_cameraTransform.position, _cameraTransform.forward);
-
+            Ray ray = _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            
             if (Physics.Raycast(ray, out RaycastHit hit, MaxRayDistance))
             {
                 return hit.point;
             }
 
-            return _cameraTransform.position + _cameraTransform.forward * MaxRayDistance;
+            return _camera.transform.position + _camera.transform.forward * MaxRayDistance;
         }
     }
 }
