@@ -5,16 +5,16 @@ namespace Tank.AI
 {
     public class AIInput : MonoBehaviour
     {
-        [SerializeField] private Pathfinder _pathfinder;
-        [SerializeField] private Transform _target;
+        [SerializeField] private Transform _gunPivot;
         [SerializeField] private LayerMask _targetMask;
         [SerializeField] private float _stopDistance = 50f;
         
         private const float RotationThreshold = 0.95f;
         
+        private Pathfinder _pathfinder;
         private Vector2 _moveInputVector;
         
-        public Transform Target => _target;
+        public Transform Target { get; private set; }
         public Vector2 MoveInputVector => _moveInputVector;
 
         public void SetPathfinder(Pathfinder pathfinder)
@@ -24,12 +24,12 @@ namespace Tank.AI
 
         public void SetTarget(Transform target)
         {
-            _target = target;
+            Target = target;
         }
 
         public void Process()
         {
-            float distance = Vector3.Distance(transform.position, _target.position);
+            float distance = Vector3.Distance(transform.position, Target.position);
 
             if (IsTargetInFOV() && distance <= _stopDistance)
             {
@@ -37,7 +37,7 @@ namespace Tank.AI
                 return;
             }
             
-            _pathfinder.FindPath(transform.position, _target.position);
+            _pathfinder.FindPath(transform.position, Target.position);
 
             if (_pathfinder.TryGetNextPathCell(out var cell))
             {
@@ -73,14 +73,20 @@ namespace Tank.AI
             } 
         }
 
+        public bool IsGunAimedToTarget()
+        {
+            // TODO: Add aiming prediction
+            return Physics.Raycast(_gunPivot.position, _gunPivot.forward, out RaycastHit _);
+        }
+
         private bool IsTargetInFOV()
         {
-            Vector3 direction = _target.position - transform.position;
+            Vector3 direction = Target.position - transform.position;
             Ray ray = new Ray(transform.position, direction);
 
             if (Physics.Raycast(ray, out RaycastHit hit, _targetMask))
             {
-                return hit.transform.root == _target.root;
+                return hit.transform.root == Target.root;
             }
             
             return false;

@@ -18,9 +18,9 @@ namespace Tank.Modules
             EnterNormalState();
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(ProjectileProps props)
         {
-            _currentHealth -= damage;
+            _currentHealth -= props.ModuleDamage;
 
             if (_currentHealth > 0 && !IsDamaged)
             {
@@ -34,11 +34,11 @@ namespace Tank.Modules
                 IsCritical = true;
             }
         }
-        
+
         public virtual void EnterNormalState() {}
-        
-        public virtual void EnterDamagedState() {}
-        
-        public virtual void EnterCriticalState() {}
+
+        protected virtual void EnterDamagedState() {}
+
+        protected virtual void EnterCriticalState() {}
     }
 }

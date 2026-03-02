@@ -29,6 +29,11 @@ namespace Tank
                 Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
             ClampAngles();
         }
+        
+        public void Shoot()
+        {
+            _shootingSystem.Shoot();
+        }
 
         private Vector3 GetShootingDirection(Vector3 targetPosition)
         {
@@ -74,11 +79,6 @@ namespace Tank
             localAngles.x = localAngles.x > 180 ? localAngles.x - 360 : localAngles.x;
             localAngles.x = Mathf.Clamp(localAngles.x, -_maxVerticalAngle, -_minVerticalAngle);
             transform.localEulerAngles = localAngles;
-        }
-        
-        public void Shoot()
-        {
-            _shootingSystem.Shoot();
         }
     }
 }

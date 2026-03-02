@@ -30,14 +30,14 @@ namespace Tank.Modules.Engine
             _state.Enter();
         }
 
-        public override void EnterDamagedState()
+        protected override void EnterDamagedState()
         {
             base.EnterDamagedState();
             _state = new DamagedEngineState(this);
             _state.Enter();
         }
 
-        public override void EnterCriticalState()
+        protected override void EnterCriticalState()
         {
             base.EnterCriticalState();
             _state = new CriticalEngineState(this);

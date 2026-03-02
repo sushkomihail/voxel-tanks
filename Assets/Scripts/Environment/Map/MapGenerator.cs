@@ -12,25 +12,9 @@ namespace Environment.Map
         [SerializeField] private GameObject _groundPrefab;
         [SerializeField] private float _blockSize = 3f;
 
-        public static MapGenerator Instance;
-
-        public float BlockSize => _blockSize;
-        public int[,] NavMatrix { get; private set; }
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            
-            Generate();
-        }
-
+        [ContextMenu("Generate")]
         private void Generate()
         {
-            NavMatrix = new int[_mapTexture.width,  _mapTexture.height];
-            
             for (int i = 0; i < _mapTexture.height; i++)
             {
                 for (int j = 0; j < _mapTexture.width; j++)
@@ -40,8 +24,6 @@ namespace Environment.Map
 
                     if (_mapLegend.TryGetBlockPrefab(pixelColor, out BlockType type, out GameObject prefab))
                     {
-                        NavMatrix[i, j] = 1;
-                        
                         if (prefab != null)
                         {
                             if (type == BlockType.Water)

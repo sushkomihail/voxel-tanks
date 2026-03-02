@@ -8,5 +8,10 @@ namespace Extensions
         {
             return Mathf.Abs((v1 - v2).magnitude) <= Mathf.Epsilon;
         }
+        
+        public static bool IsEqual(this Vector2 v1, Vector2 v2)
+        {
+            return Mathf.Abs((v1 - v2).magnitude) <= Mathf.Epsilon;
+        }
     }
 }

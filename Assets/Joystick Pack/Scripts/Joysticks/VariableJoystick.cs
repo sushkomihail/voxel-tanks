@@ -14,7 +14,7 @@ public class VariableJoystick : Joystick
 
     public void SetMode(JoystickType joystickType)
     {
-        this._joystickType = joystickType;
+        _joystickType = joystickType;
         if(joystickType == JoystickType.Fixed)
         {
             _background.anchoredPosition = _fixedPosition;
@@ -49,7 +49,7 @@ public class VariableJoystick : Joystick
         base.OnPointerUp(eventData);
     }
 
-    protected override void HandleInput(float magnitude, Vector2 normalised, Vector2 radius, UnityEngine.Camera cam)
+    protected override void HandleInput(float magnitude, Vector2 normalised, Vector2 radius, Camera cam)
     {
         if (_joystickType == JoystickType.Dynamic && magnitude > _moveThreshold)
         {

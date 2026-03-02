@@ -10,7 +10,7 @@ namespace Tank
         [SerializeField] private Engine _engine;
         [SerializeField] private Track _leftTrack;
         [SerializeField] private Track _rightTrack;
-        [SerializeField] private float _brakeTorque = 3000f;
+        [SerializeField] private float _brakeTorque = 5000f;
         [SerializeField] private float _rotationSpeed = 60f; // deg/s
 
         private const float StopThreshold = 0.2f;

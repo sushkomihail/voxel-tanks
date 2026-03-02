@@ -1,16 +1,16 @@
-﻿using Tank.Modules;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ShootingSystems
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Projectile : MonoBehaviour
     {
+        public ProjectileType Type { get; private set; }
+        
         private Rigidbody _rigidbody;
+        private ProjectileProps _props;
         private ShootingSystem _shootingSystem;
         
-        public ProjectileType Type { get; private set; }
-        public ProjectileProps Props { get; private set; }
 
         private void Update()
         {
@@ -21,7 +21,7 @@ namespace ShootingSystems
         {
             _rigidbody = GetComponent<Rigidbody>();
             Type = type;
-            Props = props;
+            _props = props;
             _shootingSystem = shootingSystem;
         }
         
@@ -29,7 +29,7 @@ namespace ShootingSystems
         {
             transform.position = pivot.position;
             transform.rotation = pivot.rotation;
-            _rigidbody.linearVelocity = pivot.forward * Props.Speed;
+            _rigidbody.linearVelocity = pivot.forward * _props.Speed;
         }
 
         private void Rotate()
@@ -40,12 +40,9 @@ namespace ShootingSystems
 
         private void OnCollisionEnter(Collision other)
         {
-            if (other.transform.TryGetComponent(out IDamageable damageable))
+            if (other.contacts[0].otherCollider.TryGetComponent(out IDamageable damageable))
             {
-                if (damageable is TankModule)
-                {
-                    damageable.TakeDamage(Props.DamageByModules);
-                }
+                damageable.TakeDamage(_props);
             }
             
             _shootingSystem.OnProjectileHit(this);

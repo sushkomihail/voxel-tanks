@@ -10,6 +10,7 @@ namespace CustomPhysics
         [SerializeField] private float _wheelRadius = 0.3f;
         [SerializeField] private float _wheelMass = 20f;
         [SerializeField] private float _gripFactor = 0.7f; // [0, 1]
+        [SerializeField] private LayerMask _groundLayer = 1 << 3;
     
         private Rigidbody _vehicleRigidbody;
         private RaycastHit _groundHit;
@@ -31,7 +32,7 @@ namespace CustomPhysics
             if (!_vehicleRigidbody) return;
             
             IsGrounded = Physics.Raycast(transform.position, -transform.up, 
-                out _groundHit, _suspensionRestDistance + _wheelRadius);
+                out _groundHit, _suspensionRestDistance + _wheelRadius, _groundLayer.value);
         
             if (IsGrounded)
             {

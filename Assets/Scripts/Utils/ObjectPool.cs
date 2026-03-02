@@ -29,7 +29,7 @@ namespace Utils
         {
             var obj = GetFirstNotActive();
 
-            if (obj == null)
+            if (!obj)
             {
                 AddObject(out obj);
             }

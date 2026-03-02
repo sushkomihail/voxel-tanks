@@ -1,4 +1,5 @@
-﻿using CustomPhysics;
+﻿using System;
+using CustomPhysics;
 using UnityEngine;
 
 namespace Tank.Modules.Track
@@ -43,14 +44,14 @@ namespace Tank.Modules.Track
             _state.Enter();
         }
 
-        public override void EnterDamagedState()
+        protected override void EnterDamagedState()
         {
             base.EnterDamagedState();
             _state = new DamagedTrackState(this);
             _state.Enter();
         }
 
-        public override void EnterCriticalState()
+        protected override void EnterCriticalState()
         {
             base.EnterCriticalState();
             _state = new CriticalTrackState(this);
