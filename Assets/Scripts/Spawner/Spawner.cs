@@ -20,6 +20,9 @@ namespace Spawner
         [Space(5), Header("Databases")]
         [SerializeField] private TanksDatabase _tanksDatabase;
         
+        [Space(5), Header("UI")]
+        [SerializeField] private TankHealthView _tankHealthView;
+        
         private void Awake()
         {
             Spawn();
@@ -28,6 +31,8 @@ namespace Spawner
         private void Spawn()
         {
             PlayerTank player = SpawnPlayer();
+            _tankHealthView?.Init(player.GetHealth().MaxHealth);
+            player.GetHealth().SetView(_tankHealthView);
             
             if (!player) return;
             
