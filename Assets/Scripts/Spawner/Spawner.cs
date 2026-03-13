@@ -4,6 +4,7 @@ using SaveSystem;
 using SaveSystem.SavableStructures;
 using Tank;
 using Tank.AI;
+using UI.Aims;
 using UnityEngine;
 
 namespace Spawner
@@ -19,26 +20,31 @@ namespace Spawner
         
         [Space(5), Header("Databases")]
         [SerializeField] private TanksDatabase _tanksDatabase;
+        [SerializeField] private AimsDatabase _aimsDatabase;
         
         [Space(5), Header("UI")]
+        [SerializeField] private Transform _canvas;
         [SerializeField] private TankHealthView _tankHealthView;
+        
+        private PlayerTank _playerTank;
         
         private void Awake()
         {
             Spawn();
+            
+            // TODO: Make ui initializer class
+            InitUI();
         }
 
         private void Spawn()
         {
-            PlayerTank player = SpawnPlayer();
-            _tankHealthView?.Init(player.GetHealth().MaxHealth);
-            player.GetHealth().SetView(_tankHealthView);
+            _playerTank = SpawnPlayer();
             
-            if (!player) return;
+            if (!_playerTank) return;
             
             foreach (var point in _npcSpawnPoints)
             {
-                SpawnNPC(point, player.transform);
+                SpawnNPC(point, _playerTank.transform);
             }
         }
 
@@ -64,6 +70,21 @@ namespace Spawner
             AITank npc = Instantiate(npcPrefab, spawnPoint.position, spawnPoint.rotation);
             npc.SetPathfinder(_pathfinder);
             npc.SetTarget(target);
+        }
+
+        private void InitUI()
+        {
+            if (!_playerTank) return;
+            
+            _tankHealthView?.Init(_playerTank.Health.MaxHealth);
+            _playerTank.Health.SetView(_tankHealthView);
+
+            Aim aimPrefab = _aimsDatabase.GetAimByShootingSystem(_playerTank.Gun.ShootingSystem);
+
+            if (!aimPrefab) return;
+            
+            Aim aim = Instantiate(aimPrefab, _canvas);
+            aim.Init(_playerTank.Gun, _tankCamera.Camera);
         }
     }
 }

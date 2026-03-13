@@ -1,27 +1,32 @@
 ﻿using Input;
+using ShootingSystems;
 using UnityEngine;
 
 namespace Tank
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody), typeof(TankHealth))]
     public class PlayerTank : MonoBehaviour
     {
         [SerializeField] private TankChassis _chassis;
         [SerializeField] private TankTurret _turret;
         [SerializeField] private TankGun _gun;
-        [SerializeField] private TankHealth _health;
         
         [Space(5), Header("Camera")]
         [SerializeField] private Transform _cameraTarget;
         [SerializeField] private Vector3 _cameraFollowingOffset = new(0f, 3f, -9.2f);
+
+        public TankGun Gun => _gun;
+        public TankHealth Health { get; private set; }
         
         private TankCamera _camera;
         
         private void Awake()
         {
+            Health = GetComponent<TankHealth>();
+            
             _chassis?.Init();
             _gun?.Init();
-            _health?.Init();
+            Health?.Init();
             
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
@@ -51,11 +56,6 @@ namespace Tank
         private void LateUpdate()
         {
             _camera.FollowTarget(_cameraTarget, _cameraFollowingOffset);
-        }
-
-        public TankHealth GetHealth()
-        {
-            return _health;
         }
 
         public void SetCamera(TankCamera camera)

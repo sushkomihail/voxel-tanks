@@ -6,6 +6,8 @@ namespace Tank
     public class TankCamera : MonoBehaviour
     {
         [SerializeField] private Camera _camera;
+        
+        public Camera Camera => _camera;
 
         private const float MaxRayDistance = 500f;
 

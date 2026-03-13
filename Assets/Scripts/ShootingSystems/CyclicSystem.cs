@@ -14,6 +14,11 @@ namespace ShootingSystems
 
             _elapsedReloadingTime += Time.deltaTime;
         }
+
+        public float GetReloadingRate()
+        {
+            return _elapsedReloadingTime / _reloadingTime;
+        }
         
         public override void Shoot()
         {

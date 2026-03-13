@@ -12,12 +12,26 @@ namespace Tank
         [SerializeField] private float _rotationSpeed = 50f;
         [SerializeField] private float _caliber = 100f;
         [SerializeField] private ShootingSystem _shootingSystem;
+        [SerializeField] private LayerMask _aimMask = 1 << 3 | 1 << 4 | 1 << 6 | 1 << 7 | 1 << 8;
+
+        public ShootingSystem ShootingSystem => _shootingSystem;
         
+        private const int _maxAimDistance = 100;
         private float _elapsedReloadingTime;
         
         public void Init()
         {
             _shootingSystem.Init();
+        }
+
+        public Vector3 GetAimPoint()
+        {
+            if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, _aimMask.value))
+            {
+                return hit.point;
+            }
+
+            return transform.position + transform.forward * _maxAimDistance;
         }
 
         public void Rotate(Vector3 lookPosition)
