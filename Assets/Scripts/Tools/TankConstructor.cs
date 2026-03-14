@@ -53,8 +53,8 @@ namespace Tools
             var internalModules = new GameObject("InternalModules");
             internalModules.transform.SetParent(root.transform);
             
-            var aimTarget = new GameObject("AimTarget");
-            aimTarget.transform.SetParent(root.transform);
+            var center = new GameObject("Center");
+            center.transform.SetParent(root.transform);
             
             // Second nesting level
             var turretPivot = new GameObject("TurretPivot");

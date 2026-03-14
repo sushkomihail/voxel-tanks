@@ -1,4 +1,5 @@
-﻿using Input;
+﻿using System;
+using Input;
 using UnityEngine;
 
 namespace Tank
@@ -20,9 +21,8 @@ namespace Tank
             _camera.transform.localPosition = offset;
         }
 
-        public void Rotate()
+        public void Rotate(Vector2 lookAxes)
         {
-            Vector2 lookAxes = PlayerInput.Instance.GetLookInputVector();
             Vector3 localAngles = transform.localEulerAngles;
             localAngles.y += lookAxes.x * Sensitivity * Time.deltaTime;
             localAngles.x -= lookAxes.y * Sensitivity * Time.deltaTime;

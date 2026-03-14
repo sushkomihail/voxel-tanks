@@ -16,7 +16,7 @@ namespace Tank
 
         public ShootingSystem ShootingSystem => _shootingSystem;
         
-        private const int _maxAimDistance = 100;
+        private const float MaxAimDistance = 100f;
         private float _elapsedReloadingTime;
         
         public void Init()
@@ -26,12 +26,14 @@ namespace Tank
 
         public Vector3 GetAimPoint()
         {
-            if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, _aimMask.value))
+            Ray ray = new Ray(transform.position, transform.forward);
+            
+            if (Physics.Raycast(ray, out RaycastHit hit, MaxAimDistance, _aimMask.value))
             {
                 return hit.point;
             }
 
-            return transform.position + transform.forward * _maxAimDistance;
+            return transform.position + transform.forward * MaxAimDistance;
         }
 
         public void Rotate(Vector3 lookPosition)

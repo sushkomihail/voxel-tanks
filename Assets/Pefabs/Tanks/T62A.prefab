@@ -319,6 +319,8 @@ GameObject:
   - component: {fileID: 8658915833079703757}
   - component: {fileID: 4875103179120229374}
   - component: {fileID: 7163723705141526253}
+  - component: {fileID: 7871049662525431139}
+  - component: {fileID: 6432841559861972424}
   m_Layer: 7
   m_Name: T62A
   m_TagString: Untagged
@@ -387,8 +389,35 @@ MonoBehaviour:
   _chassis: {fileID: 8633551605540415681}
   _turret: {fileID: 3678274390866753116}
   _gun: {fileID: 7163106945819749237}
+  _center: {fileID: 5167519765335588224}
   _cameraTarget: {fileID: 4536479098622439117}
   _cameraFollowingOffset: {x: 0, y: 3, z: -9.2}
+--- !u!114 &7871049662525431139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245987131929983312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca214a79f895457e8208dc4c3fee46d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Input.PlayerInput
+--- !u!114 &6432841559861972424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245987131929983312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fdb151fe79f45daa96e08b5ce830ec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tank.TankHealth
+  _maxHealth: 1000
+  _armorAreas: []
 --- !u!1 &1900582573928377137
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +594,9 @@ MonoBehaviour:
   _rotationSpeed: 50
   _caliber: 100
   _shootingSystem: {fileID: 2981873854212364217}
+  _aimMask:
+    serializedVersion: 2
+    m_Bits: 472
 --- !u!114 &2981873854212364217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -840,6 +872,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationSpeed: 65
+  _minHorizontalAngle: -180
+  _maxHorizontalAngle: 180
 --- !u!1 &5326484335646471785
 GameObject:
   m_ObjectHideFlags: 0
@@ -987,7 +1021,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5167519765335588224}
   m_Layer: 7
-  m_Name: AimTarget
+  m_Name: Center
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

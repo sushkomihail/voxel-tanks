@@ -1,5 +1,5 @@
 ﻿using System;
-using Tank.AI;
+using Tank;
 using UnityEngine;
 
 namespace Databases

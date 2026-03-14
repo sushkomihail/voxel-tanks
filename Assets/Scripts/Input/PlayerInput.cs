@@ -1,48 +1,39 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Input
 {
-    public class PlayerInput : MonoBehaviour
+    public class PlayerInput : MonoBehaviour, IInput
     {
-        public static PlayerInput Instance;
-        
-        public PlayerControls Controls { get; private set; }
+        private PlayerControls _controls;
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(this);
-            }
-
-            Controls = new PlayerControls();
+            _controls = new PlayerControls();
         }
         
         private void OnEnable()
         {
-            Controls.Enable();
+            _controls.Enable();
         }
 
         private void OnDisable()
         {
-            Controls.Disable();
+            _controls.Disable();
         }
 
-        public Vector2 GetMoveInputVector()
+        public Vector2 GetMoveInput()
         {
-            return Controls.Tank.Move.ReadValue<Vector2>();
+            return _controls.Tank.Move.ReadValue<Vector2>();
         }
 
-        public Vector2 GetLookInputVector()
+        public Vector2 GetLookInput()
         {
-            return Controls.Tank.Look.ReadValue<Vector2>();
+            return _controls.Tank.Look.ReadValue<Vector2>();
         }
 
-        public InputAction GetShootAction()
+        public bool GetShootInput()
         {
-            return Controls.Tank.Shoot;
+            return _controls.Tank.Shoot.IsPressed();
         }
     }
 }

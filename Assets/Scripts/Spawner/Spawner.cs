@@ -3,7 +3,6 @@ using Databases;
 using SaveSystem;
 using SaveSystem.SavableStructures;
 using Tank;
-using Tank.AI;
 using UI.Aims;
 using UnityEngine;
 
