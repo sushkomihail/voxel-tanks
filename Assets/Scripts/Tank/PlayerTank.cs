@@ -18,6 +18,7 @@ namespace Tank
         protected override void Awake()
         {
             base.Awake();
+            Health?.Init(true);
             _input = GetComponent<PlayerInput>();
         }
 

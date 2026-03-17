@@ -1,6 +1,4 @@
-﻿using System;
-using Input;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Tank
 {
@@ -13,7 +11,7 @@ namespace Tank
         private const float MaxRayDistance = 500f;
 
         // TODO: Make sensitivity settings
-        private const float Sensitivity = 50f;
+        private const float Sensitivity = 20f;
 
         public void FollowTarget(Transform target, Vector3 offset)
         {

@@ -10,6 +10,7 @@ namespace Tank
         protected override void Awake()
         {
             base.Awake();
+            Health?.Init(false);
             _input = GetComponent<AIInput>();
         }
 

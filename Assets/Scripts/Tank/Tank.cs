@@ -20,7 +20,6 @@ namespace Tank
             
             _chassis?.Init();
             _gun?.Init();
-            Health?.Init();
         }
 
         protected virtual void Start() {}
