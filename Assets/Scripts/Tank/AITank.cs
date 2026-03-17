@@ -12,6 +12,12 @@ namespace Tank
             base.Awake();
             _input = GetComponent<AIInput>();
         }
+
+        protected override void Start()
+        {
+            base.Start();
+            StartCoroutine(((AIInput)_input).UpdatePath());
+        }
         
         protected override void Update()
         {
@@ -29,7 +35,7 @@ namespace Tank
 
         public void SetTarget(Transform target)
         {
-            ((AIInput)_input).SetTarget(target);
+            ((AIInput)_input).SetPlayerTankCenter(target);
         }
     }
 }

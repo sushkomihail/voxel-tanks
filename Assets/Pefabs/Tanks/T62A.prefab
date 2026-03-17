@@ -596,7 +596,7 @@ MonoBehaviour:
   _shootingSystem: {fileID: 2981873854212364217}
   _aimMask:
     serializedVersion: 2
-    m_Bits: 472
+    m_Bits: 1983
 --- !u!114 &2981873854212364217
 MonoBehaviour:
   m_ObjectHideFlags: 0

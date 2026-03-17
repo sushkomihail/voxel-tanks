@@ -43,7 +43,7 @@ namespace Spawner
             
             foreach (var point in _npcSpawnPoints)
             {
-                SpawnNPC(point, _playerTank.transform);
+                SpawnNPC(point, _playerTank.Center);
             }
         }
 
@@ -67,8 +67,8 @@ namespace Spawner
             if (!npcPrefab) return;
             
             AITank npc = Instantiate(npcPrefab, spawnPoint.position, spawnPoint.rotation);
-            npc.SetPathfinder(_pathfinder);
             npc.SetTarget(target);
+            npc.SetPathfinder(_pathfinder);
         }
 
         private void InitUI()

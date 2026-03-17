@@ -12,7 +12,7 @@ namespace Tank
         [SerializeField] private float _rotationSpeed = 50f;
         [SerializeField] private float _caliber = 100f;
         [SerializeField] private ShootingSystem _shootingSystem;
-        [SerializeField] private LayerMask _aimMask = 1 << 3 | 1 << 4 | 1 << 6 | 1 << 7 | 1 << 8;
+        [SerializeField] private LayerMask _aimMask = ~(1 << 6);
 
         public ShootingSystem ShootingSystem => _shootingSystem;
         
@@ -38,7 +38,7 @@ namespace Tank
 
         public void Rotate(Vector3 lookPosition)
         {
-            Vector3 targetDirection = GetShootingDirection(lookPosition);
+            Vector3 targetDirection = Vector3.ProjectOnPlane(lookPosition - transform.position, _turret.right);
             Vector3 upwards = Vector3.Cross(targetDirection, transform.right);
             Quaternion targetRotation = Quaternion.LookRotation(targetDirection, upwards);
             transform.rotation =
@@ -49,44 +49,6 @@ namespace Tank
         public void Shoot()
         {
             _shootingSystem.Shoot();
-        }
-
-        private Vector3 GetShootingDirection(Vector3 targetPosition)
-        {
-            Vector3 projectedDirectionToTarget = 
-                Vector3.ProjectOnPlane(targetPosition - transform.position, _turret.right);
-            
-            Vector3 xzDirectionProjection = 
-                new Vector3(projectedDirectionToTarget.x, 0, projectedDirectionToTarget.z);
-            
-            float x = xzDirectionProjection.magnitude;
-            float y = projectedDirectionToTarget.y;
-
-            float v = _shootingSystem.GetProjectileSpeed();
-            float v2 = v * v;
-            float v4 = v2 * v2;
-            float x2 = x * x;
-            float g = Physics.gravity.magnitude;
-            
-            float launchAngleTan;
-
-            if (v4 - g * (g * x2 + 2 * y * v2) < 0)
-            {
-                launchAngleTan = 1;
-            }
-            else
-            {
-                launchAngleTan = Mathf.Min(
-                    (v2 - Mathf.Sqrt(v4 - g * (g * x2 + 2 * y * v2))) / (g * x), 
-                    (v2 + Mathf.Sqrt(v4 - g * (g * x2 + 2 * y * v2))) / (g * x));
-            }
-
-            float launchAngle = Mathf.Atan(launchAngleTan);
-            
-            Vector3 shootingDirection = xzDirectionProjection.normalized * (v * Mathf.Cos(launchAngle)) + 
-                        Vector3.up * (v * Mathf.Sin(launchAngle));
-            
-            return shootingDirection;
         }
 
         private void ClampAngles()

@@ -23,6 +23,8 @@ namespace Tank
             Health?.Init();
         }
 
+        protected virtual void Start() {}
+
         protected virtual void Update()
         {
             if (_input.GetShootInput())

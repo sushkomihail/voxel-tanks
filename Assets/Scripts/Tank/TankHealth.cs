@@ -33,7 +33,7 @@ namespace Tank
                 // TODO: Destroy with effects
             }
             
-            _view.UpdateSlider(_currentHealth);
+            _view?.UpdateSlider(_currentHealth);
         }
 
         private void InitArmorAreas()

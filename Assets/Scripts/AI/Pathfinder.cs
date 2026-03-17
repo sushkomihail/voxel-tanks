@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AI
@@ -6,11 +7,13 @@ namespace AI
     [RequireComponent(typeof(NavGrid))]
     public class Pathfinder : MonoBehaviour
     {
+        public static event Action OnPathRetraced;
+        
         private const int NormalTurnCost = 10;
         private const int DiagonalTurnCost = 14;
         
         private NavGrid _navGrid;
-        private readonly List<NavGridCell> _path = new();
+        private List<NavGridCell> _path = new();
         
         private void Awake()
         {
@@ -95,16 +98,28 @@ namespace AI
 
         private void RetracePath(NavGridCell start, NavGridCell end)
         {
-            _path.Clear();
+            bool isPathRetraced = false;
+            var newPath = new List<NavGridCell>();
             var currentCell = end;
 
             while (currentCell != start)
             {
-                _path.Add(currentCell);
+                if (!_path.Contains(currentCell))
+                {
+                    isPathRetraced = true;
+                }
+                
+                newPath.Add(currentCell);
                 currentCell = currentCell.ParentCell;
             }
             
-            _path.Reverse();
+            newPath.Reverse();
+
+            if (isPathRetraced)
+            {
+                _path = newPath;
+                OnPathRetraced?.Invoke();
+            }
         }
 
         private void OnDrawGizmos()

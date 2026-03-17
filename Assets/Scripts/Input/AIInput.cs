@@ -1,4 +1,5 @@
-﻿using AI;
+﻿using System.Collections;
+using AI;
 using UnityEngine;
 
 namespace Input
@@ -9,66 +10,65 @@ namespace Input
         [SerializeField] private Transform _gunPivot;
         [SerializeField] private LayerMask _targetMask = 1 << 7;
         [SerializeField] private LayerMask _fovMask = 1 << 10;
-        [SerializeField] private float _stopDistance = 50f;
+        [SerializeField] private float _stopDistance = 10f;
+        [SerializeField] private float _pathUpdateInterval = 1f;
         
-        private const float RotationThreshold = 0.95f;
+        private const float RotationThreshold = 0.5f;
+        private const float MoveThreshold = 3f;
         private const float MaxAimDistance = 100f;
         
         private Pathfinder _pathfinder;
-        private Transform _targetCenter;
+        private NavGridCell _targetPathCell;
+        private Transform _playerTankCenter;
+
+        private void OnEnable()
+        {
+            Pathfinder.OnPathRetraced += UpdateTargetPathCell;
+        }
+
+        private void OnDisable()
+        {
+            Pathfinder.OnPathRetraced -= UpdateTargetPathCell;
+        }
 
         public void SetPathfinder(Pathfinder pathfinder)
         {
             _pathfinder = pathfinder;
         }
 
-        public void SetTarget(Transform target)
+        public void SetPlayerTankCenter(Transform center)
         {
-            _targetCenter = target;
+            _playerTankCenter = center;
         }
 
         public Vector2 GetMoveInput()
         {
-            float distance = Vector3.Distance(_center.position, _targetCenter.position);
-
-            if (IsTargetInFOV() && distance <= _stopDistance)
-            {
-                return Vector2.zero;
-            }
-
+            float distanceToPlayer = Vector3.Distance(_center.position, _playerTankCenter.position);
             Vector2 moveInputVector = Vector2.zero;
-            _pathfinder.FindPath(_center.position, _targetCenter.position);
-
-            if (_pathfinder.TryGetNextPathCell(out var cell))
+            
+            if (IsTargetInFOV()) {
+                moveInputVector.x = GetRotationInput(_playerTankCenter.position);
+            }
+            
+            if (distanceToPlayer <= _stopDistance)
             {
-                Vector3 targetDirection = (cell.WorldPosition - _center.position).normalized;
-                targetDirection.y = 0;
-                float dot = Vector3.Dot(_center.forward, targetDirection);
-                
-                if (dot < RotationThreshold)
+                return moveInputVector;
+            }
+            
+            if (_targetPathCell == null) return Vector2.zero;
+            
+            moveInputVector.x = GetRotationInput(_targetPathCell.WorldPosition);
+            
+            if (Mathf.Abs(moveInputVector.x) < RotationThreshold)
+            {
+                if (Vector3.Distance(_center.position, _targetPathCell.WorldPosition) > MoveThreshold)
                 {
-                    if (RotationThreshold - dot > 1 - RotationThreshold)
-                    {
-                        moveInputVector.y = 0;
-                    }
-                    
-                    Vector3 cross = Vector3.Cross(_center.forward, targetDirection);
-                    
-                    if (cross.y > 0) moveInputVector.x = 1;
-                    else moveInputVector.x = -1;
+                    moveInputVector.y = 1;
                 }
                 else
                 {
-                    moveInputVector.x = 0;
-                    
-                    if (Vector3.Distance(_center.position, cell.WorldPosition) > 0.1f)
-                    {
-                        moveInputVector.y = 1;
-                    }
-                    else
-                    {
-                        moveInputVector.y = 0;
-                    }
+                    moveInputVector.y = 0;
+                    UpdateTargetPathCell();
                 }
             }
             
@@ -77,7 +77,7 @@ namespace Input
 
         public Vector3 GetLookInput()
         {
-            return _targetCenter.position;
+            return _playerTankCenter.position;
         }
 
         public bool GetShootInput()
@@ -87,11 +87,38 @@ namespace Input
             return Physics.Raycast(ray, MaxAimDistance, _targetMask.value);
         }
 
+        public IEnumerator UpdatePath()
+        {
+            if (!_pathfinder) yield break;
+            
+            // TODO: Make end of cycle
+            while (true)
+            {
+                _pathfinder.FindPath(_center.position, _playerTankCenter.position);
+                yield return new WaitForSeconds(_pathUpdateInterval);
+            }
+        }
+
         private bool IsTargetInFOV()
         {
-            Vector3 direction = _targetCenter.position - _center.position;
+            Vector3 direction = _playerTankCenter.position - _center.position;
             Ray ray = new Ray(_center.position, direction);
             return !Physics.Raycast(ray, direction.magnitude, _fovMask.value);
+        }
+
+        private void UpdateTargetPathCell()
+        {
+            if (_pathfinder.TryGetNextPathCell(out NavGridCell cell))
+            {
+                _targetPathCell = cell;
+            }
+        }
+
+        private float GetRotationInput(Vector3 observedPosition)
+        {
+            Vector3 targetDirection = (observedPosition - _center.position).normalized;
+            Vector3 localDirection = transform.InverseTransformDirection(targetDirection);
+            return Mathf.Clamp(localDirection.x, -1, 1);
         }
     }
 }
