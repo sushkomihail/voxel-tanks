@@ -1,4 +1,5 @@
-﻿using Managers;
+﻿using System;
+using Managers;
 using UnityEngine;
 
 namespace Tank
@@ -8,22 +9,18 @@ namespace Tank
         [SerializeField] private int _maxHealth = 1000;
         [SerializeField] private Armor.Armor[] _armorAreas;
         
-        public int MaxHealth => _maxHealth;
-        
-        private TankHealthView _view;
+        public event Action<int, int> OnHealthChanged;
+
+        private Tank _tank;
         private int _currentHealth;
         private bool _isPlayer;
 
-        public void Init(bool isPlayer)
+        public void Init(Tank tank)
         {
             _currentHealth = _maxHealth;
-            _isPlayer = isPlayer;
+            _tank = tank;
+            _isPlayer = tank is PlayerTank;
             InitArmorAreas();
-        }
-
-        public void SetView(TankHealthView view)
-        {
-            _view = view;
         }
 
         public void OnArmorDamaged(int damage)
@@ -31,19 +28,18 @@ namespace Tank
             if (_currentHealth == 0) return;
             
             _currentHealth -= damage;
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
+            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
             
-            if (_currentHealth <= 0)
+            if (_currentHealth == 0)
             {
-                _currentHealth = 0;
-
                 if (!_isPlayer)
                 {
                     KillsManager.Instance.IncreaseCounter();
                 }
-                // TODO: Destroy with effects
+                
+                _tank.Die();
             }
-            
-            _view?.UpdateSlider(_currentHealth);
         }
 
         private void InitArmorAreas()

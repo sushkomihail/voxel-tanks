@@ -13,7 +13,7 @@ namespace AI
         
         private NavGridCell[,] _cells;
 
-        private void Awake()
+        public void Initialize()
         {
             CreateCells();
         }

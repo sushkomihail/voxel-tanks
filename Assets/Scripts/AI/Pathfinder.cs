@@ -15,9 +15,10 @@ namespace AI
         private NavGrid _navGrid;
         private List<NavGridCell> _path = new();
         
-        private void Awake()
+        public void Initialize()
         {
             _navGrid = GetComponent<NavGrid>();
+            _navGrid.Initialize();
         }
 
         public void FindPath(Vector3 start, Vector3 end)

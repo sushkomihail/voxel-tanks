@@ -15,33 +15,39 @@ namespace Tank
         
         private TankCamera _camera;
 
-        protected override void Awake()
+        public void Initialize(TankCamera camera)
         {
-            base.Awake();
-            Health?.Init(true);
+            Health = GetComponent<TankHealth>();
+            Health.Init(this);
+            
+            _camera = camera;
+            
+            View = GetComponent<TankView>();
+            
             _input = GetComponent<PlayerInput>();
+            _input.Enable();
+            
+            _chassis.Init();
+            _gun.Init();
         }
 
-        protected override void Update()
+        private void Update()
         {
-            base.Update();
-            
             Vector2 lookInputVector = ((PlayerInput)_input).GetLookInput();
             _camera.Rotate(lookInputVector);
+            
+            if (!_input.IsActive) return;
             
             Vector3 lookPosition = _camera.CastRay();
             _turret.Rotate(lookPosition);
             _gun.Rotate(lookPosition);
+            
+            Shoot();
         }
 
         private void LateUpdate()
         {
             _camera.FollowTarget(_cameraTarget, _cameraFollowingOffset);
-        }
-
-        public void SetCamera(TankCamera camera)
-        {
-            _camera = camera;
         }
     }
 }

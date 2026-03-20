@@ -2,7 +2,7 @@
 
 namespace Input
 {
-    public class PlayerInput : MonoBehaviour, IInput
+    public class PlayerInput : Input
     {
         private PlayerControls _controls;
 
@@ -21,8 +21,10 @@ namespace Input
             _controls.Disable();
         }
 
-        public Vector2 GetMoveInput()
+        public override Vector2 GetMoveInput()
         {
+            if (!IsActive) return Vector2.zero;
+            
             return _controls.Tank.Move.ReadValue<Vector2>();
         }
 
@@ -31,8 +33,10 @@ namespace Input
             return _controls.Tank.Look.ReadValue<Vector2>();
         }
 
-        public bool GetShootInput()
+        public override bool GetShootInput()
         {
+            if (!IsActive) return false;
+            
             return _controls.Tank.Shoot.IsPressed();
         }
     }

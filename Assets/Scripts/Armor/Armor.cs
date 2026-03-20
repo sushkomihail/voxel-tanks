@@ -17,7 +17,6 @@ namespace Armor
         
         public void TakeDamage(ProjectileProps props)
         {
-            Debug.Log("damaged");
             int damage = props.ArmorDamage;
             float penetrationRate = damage / _thickness;
 

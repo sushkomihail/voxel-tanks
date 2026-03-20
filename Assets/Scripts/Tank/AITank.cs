@@ -7,36 +7,34 @@ namespace Tank
     [RequireComponent(typeof(AIInput))]
     public class AITank : Tank
     {
-        protected override void Awake()
+        [SerializeField] private Transform _healthBarPivot;
+        
+        public Transform HealthBarPivot => _healthBarPivot;
+        
+        public void Initialize(Pathfinder pathfinder, Transform playerTankCenter)
         {
-            base.Awake();
-            Health?.Init(false);
+            Health = GetComponent<TankHealth>();
+            Health.Init(this);
+            
+            View = GetComponent<TankView>();
+            
             _input = GetComponent<AIInput>();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            StartCoroutine(((AIInput)_input).UpdatePath());
+            ((AIInput)_input).Initialize(pathfinder, playerTankCenter);
+            _input.Enable();
+            
+            _chassis.Init();
+            _gun.Init();
         }
         
-        protected override void Update()
+        private void Update()
         {
-            base.Update();
-
+            if (!_input.IsActive) return;
+            
             Vector3 lookPosition = ((AIInput)_input).GetLookInput();
             _turret.Rotate(lookPosition);
             _gun.Rotate(lookPosition);
-        }
-
-        public void SetPathfinder(Pathfinder pathfinder)
-        {
-            ((AIInput)_input).SetPathfinder(pathfinder);
-        }
-
-        public void SetTarget(Transform target)
-        {
-            ((AIInput)_input).SetPlayerTankCenter(target);
+            
+            Shoot();
         }
     }
 }

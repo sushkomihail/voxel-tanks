@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Input
 {
-    public class AIInput : MonoBehaviour, IInput
+    public class AIInput : Input
     {
         [SerializeField] private Transform _center;
         [SerializeField] private Transform _gunPivot;
@@ -21,6 +21,13 @@ namespace Input
         private NavGridCell _targetPathCell;
         private Transform _playerTankCenter;
 
+        public void Initialize(Pathfinder pathfinder, Transform playerTankCenter)
+        {
+            _pathfinder = pathfinder;
+            _playerTankCenter = playerTankCenter;
+            StartCoroutine(UpdatePath());
+        }
+
         private void OnEnable()
         {
             Pathfinder.OnPathRetraced += UpdateTargetPathCell;
@@ -31,18 +38,10 @@ namespace Input
             Pathfinder.OnPathRetraced -= UpdateTargetPathCell;
         }
 
-        public void SetPathfinder(Pathfinder pathfinder)
+        public override Vector2 GetMoveInput()
         {
-            _pathfinder = pathfinder;
-        }
-
-        public void SetPlayerTankCenter(Transform center)
-        {
-            _playerTankCenter = center;
-        }
-
-        public Vector2 GetMoveInput()
-        {
+            if (!IsActive) return Vector2.zero;
+            
             float distanceToPlayer = Vector3.Distance(_center.position, _playerTankCenter.position);
             Vector2 moveInputVector = Vector2.zero;
             
@@ -80,14 +79,16 @@ namespace Input
             return _playerTankCenter.position;
         }
 
-        public bool GetShootInput()
+        public override bool GetShootInput()
         {
+            if (!IsActive) return false;
+            
             // TODO: Add aiming prediction and spread
             Ray ray = new Ray(_gunPivot.position, _gunPivot.forward);
             return Physics.Raycast(ray, MaxAimDistance, _targetMask.value);
         }
 
-        public IEnumerator UpdatePath()
+        private IEnumerator UpdatePath()
         {
             if (!_pathfinder) yield break;
             

@@ -321,6 +321,7 @@ GameObject:
   - component: {fileID: 7163723705141526253}
   - component: {fileID: 7871049662525431139}
   - component: {fileID: 6432841559861972424}
+  - component: {fileID: 1436680812305318633}
   m_Layer: 7
   m_Name: T62A
   m_TagString: Untagged
@@ -418,6 +419,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankHealth
   _maxHealth: 1000
   _armorAreas: []
+--- !u!114 &1436680812305318633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245987131929983312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e10b886b21d4a4b926ad397c489fb9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tank.TankView
+  _material: {fileID: 2100000, guid: 6950fbbfbaddc474597f06a42b324fda, type: 2}
+  _deadMaterialColor: {r: 0, g: 0, b: 0, a: 0}
+  _deathParticles: {fileID: 0}
 --- !u!1 &1900582573928377137
 GameObject:
   m_ObjectHideFlags: 0

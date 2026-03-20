@@ -1,42 +1,38 @@
-﻿using Input;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Tank
 {
-    [RequireComponent(typeof(Rigidbody), typeof(TankHealth))]
+    [RequireComponent(typeof(Rigidbody), typeof(TankHealth), typeof(TankView))]
     public abstract class Tank : MonoBehaviour
     {
         [SerializeField] protected TankChassis _chassis;
         [SerializeField] protected TankTurret _turret;
         [SerializeField] protected TankGun _gun;
         
-        public TankHealth Health { get; private set; }
+        public TankHealth Health { get; protected set; }
+        public TankView View { get; protected set; }
         
-        protected IInput _input;
-        
-        protected virtual void Awake()
+        protected Input.Input _input;
+
+        private void FixedUpdate()
         {
-            Health = GetComponent<TankHealth>();
-            
-            _chassis?.Init();
-            _gun?.Init();
+            Vector2 moveInputVector = _input.GetMoveInput();
+            _chassis.Move(moveInputVector);
+            _chassis.Rotate(moveInputVector);
         }
 
-        protected virtual void Start() {}
+        public void Die()
+        {
+            _input.Disable();
+            View.ShowDeathEffects();
+        }
 
-        protected virtual void Update()
+        protected void Shoot()
         {
             if (_input.GetShootInput())
             {
                 _gun.Shoot();
             }
-        }
-
-        protected virtual void FixedUpdate()
-        {
-            Vector2 moveInputVector = _input.GetMoveInput();
-            _chassis.Move(moveInputVector);
-            _chassis.Rotate(moveInputVector);
         }
     }
 }

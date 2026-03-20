@@ -19,7 +19,7 @@ namespace UI.Aims
             UpdateGunAimPointer();
         }
 
-        public virtual void Init(TankGun gun, Camera camera)
+        public virtual void Initialize(TankGun gun, Camera camera)
         {
             _gun = gun;
             _camera = camera;
