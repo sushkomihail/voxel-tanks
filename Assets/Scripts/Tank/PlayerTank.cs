@@ -1,4 +1,5 @@
 ﻿using Input;
+using Tank.Camera;
 using UnityEngine;
 
 namespace Tank
@@ -23,6 +24,7 @@ namespace Tank
             _camera = camera;
             
             View = GetComponent<TankView>();
+            View.Initialize();
             
             _input = GetComponent<PlayerInput>();
             _input.Enable();
@@ -35,6 +37,7 @@ namespace Tank
         {
             Vector2 lookInputVector = ((PlayerInput)_input).GetLookInput();
             _camera.Rotate(lookInputVector);
+            _camera.TryHighlightFocusObject();
             
             if (!_input.IsActive) return;
             

@@ -2,6 +2,7 @@
 using SaveSystem;
 using SaveSystem.SavableStructures;
 using Tank;
+using Tank.Camera;
 using UnityEngine;
 
 namespace Spawners

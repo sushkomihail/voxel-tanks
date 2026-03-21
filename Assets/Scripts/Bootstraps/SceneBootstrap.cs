@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Spawners;
 using Tank;
+using Tank.Camera;
 using UI;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ namespace Bootstraps
         
         private void Awake()
         {
+            _tankCamera.Initialize();
+            
             _playerTankSpawner.Initialize();
             _npcTanksSpawner.Initialize();
             

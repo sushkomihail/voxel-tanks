@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
 
-namespace Tank
+namespace Tank.Camera
 {
     public class TankCamera : MonoBehaviour
     {
-        [SerializeField] private Camera _camera;
+        [SerializeField] private UnityEngine.Camera _camera;
         
-        public Camera Camera => _camera;
+        public UnityEngine.Camera Camera => _camera;
 
         private const float MaxRayDistance = 500f;
+        private RaycastHit _hit;
+        private ObjectHighlighter _highlighter;
 
         // TODO: Make sensitivity settings
         private const float Sensitivity = 20f;
+
+        public void Initialize()
+        {
+            _highlighter = new ObjectHighlighter();
+        }
 
         public void FollowTarget(Transform target, Vector3 offset)
         {
@@ -31,12 +38,17 @@ namespace Tank
         {
             Ray ray = _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             
-            if (Physics.Raycast(ray, out RaycastHit hit, MaxRayDistance))
+            if (Physics.Raycast(ray, out _hit, MaxRayDistance))
             {
-                return hit.point;
+                return _hit.point;
             }
 
             return _camera.transform.position + _camera.transform.forward * MaxRayDistance;
+        }
+
+        public void TryHighlightFocusObject()
+        {
+            _highlighter.TryHighlightFocusObject(_hit);
         }
     }
 }

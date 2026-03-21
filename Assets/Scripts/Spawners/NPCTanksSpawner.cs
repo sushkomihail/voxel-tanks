@@ -2,6 +2,7 @@
 using AI;
 using Databases;
 using Tank;
+using Tank.Camera;
 using UnityEngine;
 
 namespace Spawners

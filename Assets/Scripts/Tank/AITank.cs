@@ -7,16 +7,13 @@ namespace Tank
     [RequireComponent(typeof(AIInput))]
     public class AITank : Tank
     {
-        [SerializeField] private Transform _healthBarPivot;
-        
-        public Transform HealthBarPivot => _healthBarPivot;
-        
         public void Initialize(Pathfinder pathfinder, Transform playerTankCenter)
         {
             Health = GetComponent<TankHealth>();
             Health.Init(this);
             
             View = GetComponent<TankView>();
+            View.Initialize();
             
             _input = GetComponent<AIInput>();
             ((AIInput)_input).Initialize(pathfinder, playerTankCenter);

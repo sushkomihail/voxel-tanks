@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Databases;
 using Tank;
+using Tank.Camera;
 using UI.Aims;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace UI
 
             foreach (AITank npcTank in npcTanks)
             {
-                HealthBar healthBar = Instantiate(_npcHealthBarPrefab, npcTank.HealthBarPivot);
+                HealthBar healthBar = Instantiate(_npcHealthBarPrefab, npcTank.View.Canvas.transform);
                 healthBar.Initialize(npcTank.Health);
             }
         }

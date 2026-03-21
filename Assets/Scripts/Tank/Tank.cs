@@ -24,7 +24,7 @@ namespace Tank
         public void Die()
         {
             _input.Disable();
-            View.ShowDeathEffects();
+            View.OnDeath();
         }
 
         protected void Shoot()
