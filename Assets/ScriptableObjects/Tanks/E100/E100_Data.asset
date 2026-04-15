@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63e8098b5fd0490f9585ef65e11127e2, type: 3}
+  m_Name: E100_Data
+  m_EditorClassIdentifier: Assembly-CSharp::Tank.Data.TankData
+  _chassisData:
+    _brakeTorque: 5000
+    _rotationSpeed: 60
+  _engineData:
+    _power: 700
+    _rpm: 3000
+    _damagedTorqueRate: 0.5
+    _fireProbability: 0.15
+  _trackData:
+    _damagedTorqueRate: 0.5
+  _turretData:
+    _rotationSpeed: 50
+    _minHorizontalAngle: -180
+    _maxHorizontalAngle: 180
+  _gunData:
+    _minVerticalAngle: -5
+    _maxVerticalAngle: 20
+    _rotationSpeed: 50
+    _aimMask:
+      serializedVersion: 2
+      m_Bits: 1983
+  _healthData:
+    _maxHealth: 1000

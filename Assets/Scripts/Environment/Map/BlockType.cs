@@ -6,6 +6,6 @@
         Steel,
         Bush,
         Water,
-        Flag
+        Base
     }
 }

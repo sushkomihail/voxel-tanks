@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using AI;
 using Databases;
+using Input;
 using Tank;
-using Tank.Camera;
 using UnityEngine;
 
 namespace Spawners
@@ -10,15 +10,16 @@ namespace Spawners
     public class NPCTanksSpawner : MonoBehaviour
     {
         [SerializeField] private Transform[] _spawnPoints;
-        [SerializeField] private Pathfinder _pathfinder;
         [SerializeField] private TanksDatabase _tanksDatabase;
         
-        public void Initialize()
+        private Pathfinder _pathfinder;
+        
+        public void Initialize(Pathfinder pathfinder)
         {
-            _pathfinder.Initialize();
+            _pathfinder = pathfinder;
         }
         
-        public List<AITank> Spawn(PlayerTank playerTank, TankCamera camera)
+        public List<AITank> Spawn()
         {
             var spawnedNpcTanks = new List<AITank>();
             
@@ -29,7 +30,6 @@ namespace Spawners
                 if (!npcPrefab) continue;
             
                 AITank npc = Instantiate(npcPrefab, point.position, point.rotation);
-                npc.Initialize(_pathfinder, playerTank.Center);
                 spawnedNpcTanks.Add(npc);
             }
             

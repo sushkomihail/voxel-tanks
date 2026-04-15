@@ -1,25 +1,23 @@
 ﻿using System;
-using Managers;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank
 {
     public class TankHealth : MonoBehaviour
     {
-        [SerializeField] private int _maxHealth = 1000;
         [SerializeField] private Armor.Armor[] _armorAreas;
         
         public event Action<int, int> OnHealthChanged;
+        public event Action OnDeath;
 
-        private Tank _tank;
+        private HealthData _data;
         private int _currentHealth;
-        private bool _isPlayer;
 
-        public void Init(Tank tank)
+        public void Initialize(HealthData data)
         {
-            _currentHealth = _maxHealth;
-            _tank = tank;
-            _isPlayer = tank is PlayerTank;
+            _data = data;
+            _currentHealth = _data.MaxHealth;
             InitArmorAreas();
         }
 
@@ -28,17 +26,12 @@ namespace Tank
             if (_currentHealth == 0) return;
             
             _currentHealth -= damage;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
-            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _data.MaxHealth);
+            OnHealthChanged?.Invoke(_currentHealth, _data.MaxHealth);
             
             if (_currentHealth == 0)
             {
-                if (!_isPlayer)
-                {
-                    KillsManager.Instance.IncreaseCounter();
-                }
-                
-                _tank.Die();
+                OnDeath?.Invoke();
             }
         }
 

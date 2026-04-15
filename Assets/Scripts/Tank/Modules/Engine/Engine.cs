@@ -1,22 +1,17 @@
-﻿using UnityEngine;
+﻿using Tank.Data;
+using UnityEngine;
 
 namespace Tank.Modules.Engine
 {
-    public class Engine : TankModule
+    public class Engine : TankModule<EngineData>
     {
-        [SerializeField] private float _power = 700f;
-        [SerializeField] private float _rpm = 3000f;
-        [SerializeField] private float _damagedTorqueRate = 0.5f;
-        [SerializeField] private float _fireProbability = 0.15f;
-
         private const float HpToKw = 0.7355f;
 
         private EngineState _state;
         private float _torqueRate;
 
-        public float Power => _power;
-        public float DamagedTorqueRate => _damagedTorqueRate;
-        public float Torque => _torqueRate * _power * HpToKw * 9550 / _rpm;
+        public float DamagedTorqueRate => _data.DamagedTorqueRate;
+        public float Torque => _torqueRate * _data.Power * HpToKw * 9550 / _data.RPM;
 
         public void SetTorqueRate(float torqueRate)
         {
@@ -44,10 +39,10 @@ namespace Tank.Modules.Engine
             _state.Enter();
         }
 
-        // private bool IsBurning()
-        // {
-        //     float probability = Random.Range(0f, 1f);
-        //     return probability <= _fireProbability;
-        // }
+        private bool IsBurning()
+        {
+            float probability = Random.Range(0f, 1f);
+            return probability <= _data.FireProbability;
+        }
     }
 }

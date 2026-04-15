@@ -1,30 +1,29 @@
 ﻿using System.Collections.Generic;
+using ShootingSystems.Data;
+using Tools;
 using UnityEngine;
-using Utils;
 
 namespace ShootingSystems
 {
     public abstract class ShootingSystem : MonoBehaviour
     {
         [SerializeField] protected Transform _projectilePivot;
-        [SerializeField] private ProjectileItem[] _projectileItems;
+        [SerializeField] private ProjectilesData _projectilesData;
+        [SerializeField] private int _projectilePoolDepth = 5;
         
         protected readonly Dictionary<ProjectileType, ObjectPool<Projectile>> _projectilePools = new();
         protected ProjectileType _selectedProjectileType;
         
-        private const int ProjectilesPoolDepth = 5;
-
-        public void Init()
+        public void Initialize()
         {
-            if (_projectileItems.Length != 0)
+            if (_projectilesData.Items.Count == 0) return;
+            
+            _selectedProjectileType = _projectilesData.Items[0].Type;
+            
+            foreach (ProjectileItem item in _projectilesData.Items)
             {
-                _selectedProjectileType = _projectileItems[0].Type;
-                
-                foreach (ProjectileItem item in _projectileItems)
-                {
-                    _projectilePools[item.Type] =  
-                        new ObjectPool<Projectile>(item.Prefab, InitProjectile, ProjectilesPoolDepth);
-                }
+                _projectilePools[item.Type] =  
+                    new ObjectPool<Projectile>(item.Prefab, InitProjectile, _projectilePoolDepth);
             }
         }
 
@@ -35,7 +34,7 @@ namespace ShootingSystems
 
         public void SetSelectedProjectileType(ProjectileType type)
         {
-            foreach (var item in _projectileItems)
+            foreach (var item in _projectilesData.Items)
             {
                 if (item.Type == type)
                 {
@@ -49,7 +48,7 @@ namespace ShootingSystems
 
         public float GetProjectileSpeed()
         {
-            foreach (var item in _projectileItems)
+            foreach (var item in _projectilesData.Items)
             {
                 if (item.Type == _selectedProjectileType)
                 {
@@ -69,7 +68,7 @@ namespace ShootingSystems
 
         private void InitProjectile(Projectile projectile)
         {
-            foreach (var item in _projectileItems)
+            foreach (var item in _projectilesData.Items)
             {
                 if (item.Type == _selectedProjectileType)
                 {

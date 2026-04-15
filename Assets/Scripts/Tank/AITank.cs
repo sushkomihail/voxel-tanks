@@ -1,5 +1,7 @@
-﻿using AI;
+﻿using System.Collections.Generic;
+using AI;
 using Input;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank
@@ -7,20 +9,24 @@ namespace Tank
     [RequireComponent(typeof(AIInput))]
     public class AITank : Tank
     {
-        public void Initialize(Pathfinder pathfinder, Transform playerTankCenter)
+        public void Initialize(Pathfinder pathfinder, List<IRouterTarget> routerTargets,
+            IRouterTarget defaultRouterTarget)
         {
             Health = GetComponent<TankHealth>();
-            Health.Init(this);
+            Health.Initialize(_data.HealthData);
             
             View = GetComponent<TankView>();
             View.Initialize();
             
             _input = GetComponent<AIInput>();
-            ((AIInput)_input).Initialize(pathfinder, playerTankCenter);
+            ((AIInput)_input).Initialize(pathfinder, routerTargets, defaultRouterTarget);
             _input.Enable();
             
-            _chassis.Init();
-            _gun.Init();
+            BattleData = new TankBattleData();
+            
+            _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TrackData);
+            _turret.Initialize(_data.TurretData);
+            _gun.Initialize(_data.GunData);
         }
         
         private void Update()

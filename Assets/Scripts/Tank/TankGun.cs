@@ -1,35 +1,31 @@
 ﻿using ShootingSystems;
-using Tank.Camera;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank
 {
     public class TankGun : MonoBehaviour
     {
-        [SerializeField] private TankCamera _camera;
         [SerializeField] private Transform _turret;
-        [SerializeField] private float _minVerticalAngle = -5f;
-        [SerializeField] private float _maxVerticalAngle = 20f;
-        [SerializeField] private float _rotationSpeed = 50f;
-        [SerializeField] private float _caliber = 100f;
         [SerializeField] private ShootingSystem _shootingSystem;
-        [SerializeField] private LayerMask _aimMask = ~(1 << 6);
 
         public ShootingSystem ShootingSystem => _shootingSystem;
         
+        private GunData _data;
         private const float MaxAimDistance = 100f;
         private float _elapsedReloadingTime;
         
-        public void Init()
+        public void Initialize(GunData data)
         {
-            _shootingSystem.Init();
+            _data = data;
+            _shootingSystem.Initialize();
         }
 
         public Vector3 GetAimPoint()
         {
             Ray ray = new Ray(transform.position, transform.forward);
             
-            if (Physics.Raycast(ray, out RaycastHit hit, MaxAimDistance, _aimMask.value))
+            if (Physics.Raycast(ray, out RaycastHit hit, MaxAimDistance, _data.AimMask.value))
             {
                 return hit.point;
             }
@@ -43,7 +39,7 @@ namespace Tank
             Vector3 upwards = Vector3.Cross(targetDirection, transform.right);
             Quaternion targetRotation = Quaternion.LookRotation(targetDirection, upwards);
             transform.rotation =
-                Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+                Quaternion.RotateTowards(transform.rotation, targetRotation, _data.RotationSpeed * Time.deltaTime);
             ClampAngles();
         }
         
@@ -56,7 +52,7 @@ namespace Tank
         {
             Vector3 localAngles = transform.localEulerAngles;
             localAngles.x = localAngles.x > 180 ? localAngles.x - 360 : localAngles.x;
-            localAngles.x = Mathf.Clamp(localAngles.x, -_maxVerticalAngle, -_minVerticalAngle);
+            localAngles.x = Mathf.Clamp(localAngles.x, -_data.MaxVerticalAngle, -_data.MinVerticalAngle);
             transform.localEulerAngles = localAngles;
         }
     }

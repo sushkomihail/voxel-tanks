@@ -1,20 +1,22 @@
 ﻿using ShootingSystems;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank.Modules
 {
-    public abstract class TankModule : MonoBehaviour, IDamageable
+    public abstract class TankModule<T> : MonoBehaviour, IDamageable where T : TankModuleData
     {
-        [SerializeField] private float _health = 100f;
-
-        private float _currentHealth;
-        
         public bool IsDamaged { get; private set; }
         public bool IsCritical { get; private set; }
+        
+        protected T _data;
+        
+        private float _currentHealth;
 
-        public void Init()
+        public void Initialize(T data)
         {
-            _currentHealth = _health;
+            _data = data;
+            _currentHealth = _data.MaxHealth;
             EnterNormalState();
         }
 

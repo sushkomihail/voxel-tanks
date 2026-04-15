@@ -29,3 +29,7 @@ MonoBehaviour:
     _color: {r: 0.54432184, g: 0.722538, b: 0.8301887, a: 1}
     _blockPrefab: {fileID: 1634203678270712564, guid: 37a057dab2990a74ca660db304e7cec3,
       type: 3}
+  - _blockType: 4
+    _color: {r: 1, g: 1, b: 1, a: 1}
+    _blockPrefab: {fileID: 2499678175123508180, guid: b06639b0564256046b3774f922d40c51,
+      type: 3}

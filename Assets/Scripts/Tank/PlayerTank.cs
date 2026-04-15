@@ -1,5 +1,5 @@
 ﻿using Input;
-using Tank.Camera;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank
@@ -19,7 +19,7 @@ namespace Tank
         public void Initialize(TankCamera camera)
         {
             Health = GetComponent<TankHealth>();
-            Health.Init(this);
+            Health.Initialize(_data.HealthData);
             
             _camera = camera;
             
@@ -29,8 +29,11 @@ namespace Tank
             _input = GetComponent<PlayerInput>();
             _input.Enable();
             
-            _chassis.Init();
-            _gun.Init();
+            BattleData = new TankBattleData();
+            
+            _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TrackData);
+            _turret.Initialize(_data.TurretData);
+            _gun.Initialize(_data.GunData);
         }
 
         private void Update()

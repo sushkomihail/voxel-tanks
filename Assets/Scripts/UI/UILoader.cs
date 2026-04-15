@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Databases;
+using Environment.Base;
 using Tank;
-using Tank.Camera;
 using UI.Aims;
 using UnityEngine;
 
@@ -13,6 +13,8 @@ namespace UI
         [SerializeField] private AimsDatabase _aimsDatabase;
         [SerializeField] private HealthBar _playerHealthBar;
         [SerializeField] private HealthBar _npcHealthBarPrefab;
+        [SerializeField] private Transform _baseViewsContainer;
+        [SerializeField] private BaseView _baseViewPrefab;
         
         private HealthBar _bar;
 
@@ -21,6 +23,13 @@ namespace UI
             InitializeAim(playerTank, camera);
             InitializeHealthBars(playerTank, npcTanks);
             LockCursor();
+        }
+
+        public BaseView InstantiateBaseView(int index)
+        {
+            BaseView view = Instantiate(_baseViewPrefab, _baseViewsContainer);
+            view.Initialize((char)('A' + index));
+            return view;
         }
 
         private void InitializeAim(PlayerTank playerTank, TankCamera camera)

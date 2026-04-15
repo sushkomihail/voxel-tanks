@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Environment.Brick
@@ -7,11 +8,12 @@ namespace Environment.Brick
     {
         [SerializeField] private List<BrickPart> _parts;
 
+        public static event Action OnDestroyed;
+
         private void Awake()
         {
             if (_parts.Count == 0)
             {
-                Debug.LogWarning("No brick parts defined");
                 return;
             }
 
@@ -28,6 +30,7 @@ namespace Environment.Brick
             if (_parts.Count == 1)
             {
                 _parts[0].Collider.enabled = false;
+                OnDestroyed?.Invoke();
             }
         }
     }

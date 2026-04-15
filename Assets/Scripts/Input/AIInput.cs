@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using AI;
+using Tank;
 using UnityEngine;
 
 namespace Input
@@ -18,13 +21,22 @@ namespace Input
         private const float MaxAimDistance = 100f;
         
         private Pathfinder _pathfinder;
+        private Router _router;
         private NavGridCell _targetPathCell;
         private Transform _playerTankCenter;
 
-        public void Initialize(Pathfinder pathfinder, Transform playerTankCenter)
+        public void Initialize(Pathfinder pathfinder, List<IRouterTarget> routerTargets,
+            IRouterTarget defaultRouterTarget)
         {
             _pathfinder = pathfinder;
-            _playerTankCenter = playerTankCenter;
+            _router = new Router(routerTargets, defaultRouterTarget);
+
+            if (defaultRouterTarget is not PlayerTank playerTank)
+            {
+                throw new Exception("The default router target must be a PlayerTank");
+            }
+            
+            _playerTankCenter = playerTank.Center;
             StartCoroutine(UpdatePath());
         }
 
@@ -92,10 +104,17 @@ namespace Input
         {
             if (!_pathfinder) yield break;
             
-            // TODO: Make end of cycle
+            // TODO: Make end of cycle when tank destroyed
             while (true)
             {
-                _pathfinder.FindPath(_center.position, _playerTankCenter.position);
+                _router.UpdateTarget(_center.position);
+                MonoBehaviour target = _router.CurrentTarget as MonoBehaviour;
+
+                if (target)
+                {
+                    _pathfinder.FindPath(_center.position, target.transform.position);
+                }
+                
                 yield return new WaitForSeconds(_pathUpdateInterval);
             }
         }

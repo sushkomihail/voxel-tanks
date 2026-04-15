@@ -17,6 +17,21 @@ namespace AI
         {
             CreateCells();
         }
+        
+        public void CreateCells()
+        {
+            _cells = new NavGridCell[_width, _height];
+            
+            for (int i = 0; i < _height; i++)
+            {
+                for (int j = 0; j < _width; j++)
+                {
+                    Vector3 position = new Vector3(j * _cellSize, 0, i * _cellSize);
+                    bool isWalkable = !Physics.CheckSphere(position, _obstacleCheckRadius, _unwalkableMask);
+                    _cells[i, j] = new NavGridCell(j, i, position, isWalkable);
+                }
+            }
+        }
 
         public NavGridCell GetClosestCell(Vector3 position)
         {
@@ -48,21 +63,6 @@ namespace AI
             }
             
             return neighbours;
-        }
-
-        private void CreateCells()
-        {
-            _cells = new NavGridCell[_width, _height];
-            
-            for (int i = 0; i < _height; i++)
-            {
-                for (int j = 0; j < _width; j++)
-                {
-                    Vector3 position = new Vector3(j * _cellSize, 0, i * _cellSize);
-                    bool isWalkable = !Physics.CheckSphere(position, _obstacleCheckRadius, _unwalkableMask);
-                    _cells[i, j] = new NavGridCell(j, i, position, isWalkable);
-                }
-            }
         }
 
         private void OnDrawGizmos()

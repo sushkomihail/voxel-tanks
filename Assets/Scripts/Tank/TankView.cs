@@ -8,6 +8,7 @@ namespace Tank
     public class TankView : MonoBehaviour
     {
         [SerializeField] private Material _deathMaterial;
+        // TODO: Collect mesh renderers from script
         [SerializeField] private MeshRenderer[] _meshRenderers;
         [SerializeField] private SpriteSheetAnimator _deathAnimator;
         [SerializeField] private Canvas _canvas;

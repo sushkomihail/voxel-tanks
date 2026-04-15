@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Environment.Base;
 using Environment.Water;
 using Extensions;
 using UnityEngine;
@@ -11,9 +12,13 @@ namespace Environment.Map
         [SerializeField] private MapLegend _mapLegend;
         [SerializeField] private GameObject _groundPrefab;
         [SerializeField] private float _blockSize = 3f;
+        
+        public IReadOnlyList<BaseModel> Bases => _bases.AsReadOnly();
+        
+        private readonly List<BaseModel> _bases = new();
 
         [ContextMenu("Generate")]
-        private void Generate()
+        public void Generate()
         {
             for (int i = 0; i < _mapTexture.height; i++)
             {
@@ -32,23 +37,42 @@ namespace Environment.Map
                             }
                             else
                             {
-                                Instantiate(prefab, position, Quaternion.identity, transform);
+                                GameObject gameObject = Instantiate(prefab, position, Quaternion.identity, transform);
+
+                                if (gameObject.TryGetComponent(out BaseModel baseModel))
+                                {
+                                    _bases.Add(baseModel);
+                                }
                             }
                         }
                     }
                     
-                    if (_groundPrefab == null) continue;
-                    
-                    Quaternion rotation = GetRandomBlockRotation();
-                    
-                    if (type == BlockType.Water)
-                    {
-                        position.y -= _blockSize;
-                    }
-                    
-                    Instantiate(_groundPrefab, position, rotation, transform);
+                    InstantiateGroundPrefab(position, type);
                 }
             }
+        }
+
+        [ContextMenu("Clear Map")]
+        public void ClearMap()
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--) 
+            {
+                DestroyImmediate(transform.GetChild(i).gameObject);
+            }
+        }
+
+        private void InstantiateGroundPrefab(Vector3 position, BlockType aboveGroundBlockType)
+        {
+            if (_groundPrefab == null) return;
+                    
+            Quaternion rotation = GetRandomBlockRotation();
+                    
+            if (aboveGroundBlockType == BlockType.Water)
+            {
+                position.y -= _blockSize;
+            }
+                    
+            Instantiate(_groundPrefab, position, rotation, transform);
         }
 
         private static Quaternion GetRandomBlockRotation()

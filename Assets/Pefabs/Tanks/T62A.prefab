@@ -322,6 +322,7 @@ GameObject:
   - component: {fileID: 7871049662525431139}
   - component: {fileID: 6432841559861972424}
   - component: {fileID: 1436680812305318633}
+  - component: {fileID: 8444993404992896411}
   m_Layer: 7
   m_Name: T62A
   m_TagString: Untagged
@@ -390,6 +391,7 @@ MonoBehaviour:
   _chassis: {fileID: 8633551605540415681}
   _turret: {fileID: 3678274390866753116}
   _gun: {fileID: 7163106945819749237}
+  _data: {fileID: 11400000, guid: 43d77427951f2dc47a6e29c3dc3eb7b3, type: 2}
   _center: {fileID: 5167519765335588224}
   _cameraTarget: {fileID: 4536479098622439117}
   _cameraFollowingOffset: {x: 0, y: 3, z: -9.2}
@@ -417,7 +419,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fdb151fe79f45daa96e08b5ce830ec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankHealth
-  _maxHealth: 1000
   _armorAreas: []
 --- !u!114 &1436680812305318633
 MonoBehaviour:
@@ -431,9 +432,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e10b886b21d4a4b926ad397c489fb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankView
-  _material: {fileID: 2100000, guid: 6950fbbfbaddc474597f06a42b324fda, type: 2}
-  _deadMaterialColor: {r: 0, g: 0, b: 0, a: 0}
-  _deathParticles: {fileID: 0}
+  _deathMaterial: {fileID: 0}
+  _meshRenderers: []
+  _deathAnimator: {fileID: 0}
+  _canvas: {fileID: 0}
+--- !u!114 &8444993404992896411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245987131929983312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2b419772de7421181edc57a81fea093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuickOutline.Scripts.SwitchableOutline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &1900582573928377137
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +504,6 @@ MonoBehaviour:
   _wheels:
   - {fileID: 7708312642486426686}
   - {fileID: 7550887989296669662}
-  _damagedTorqueRate: 0.5
 --- !u!1 &2018979767555425731
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,10 +571,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health: 100
-  _power: 700
-  _rpm: 3000
-  _damagedTorqueRate: 0.5
-  _fireProbability: 0.15
 --- !u!1 &3142394056045841596
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,16 +618,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ce7c4cadc7b14459bcb573f41d1f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _camera: {fileID: 0}
   _turret: {fileID: 1553849065742502068}
-  _minVerticalAngle: -7
-  _maxVerticalAngle: 20
-  _rotationSpeed: 50
-  _caliber: 100
   _shootingSystem: {fileID: 2981873854212364217}
-  _aimMask:
-    serializedVersion: 2
-    m_Bits: 1983
 --- !u!114 &2981873854212364217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,32 +633,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePivot: {fileID: 7527405949487928999}
-  _projectileItems:
-  - _type: 0
-    _prefab: {fileID: 8237230870406337322, guid: 76078b98c0830664f9cc12debecdb48a,
-      type: 3}
-    _props:
-      _speed: 50
-      _penetration: 100
-      _armorDamage: 300
-      _moduleDamage: 50
-  - _type: 3
-    _prefab: {fileID: 8852913365502919370, guid: a7977e930ea900448b1c9c0d1e1a9cc9,
-      type: 3}
-    _props:
-      _speed: 800
-      _penetration: 100
-      _armorDamage: 300
-      _moduleDamage: 50
-  - _type: 2
-    _prefab: {fileID: 4102392199253153247, guid: 76da1986101f82946a803da614794366,
-      type: 3}
-    _props:
-      _speed: 850
-      _penetration: 100
-      _armorDamage: 300
-      _moduleDamage: 50
-  _reloadingTime: 1
+  _projectilesData: {fileID: 11400000, guid: f99c61dcc23336a458076354cbd4ef28, type: 2}
+  _projectilePoolDepth: 5
+  _systemData: {fileID: 11400000, guid: e24852a701a5ee9489eb7c9bae591dc0, type: 2}
 --- !u!1 &3437741162789132839
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,7 +739,6 @@ MonoBehaviour:
   _wheels:
   - {fileID: 5059923213940436495}
   - {fileID: 2838254904526901933}
-  _damagedTorqueRate: 0.5
 --- !u!1 &4492300697767620033
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,9 +870,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb58959e66f44eabbc01891f051a8f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotationSpeed: 65
-  _minHorizontalAngle: -180
-  _maxHorizontalAngle: 180
 --- !u!1 &5326484335646471785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1025,8 +1005,6 @@ MonoBehaviour:
   _engine: {fileID: 8376792456898164973}
   _leftTrack: {fileID: 298297061060356123}
   _rightTrack: {fileID: 9170694319753351375}
-  _brakeTorque: 5000
-  _rotationSpeed: 80
 --- !u!1 &8849476274166043929
 GameObject:
   m_ObjectHideFlags: 0

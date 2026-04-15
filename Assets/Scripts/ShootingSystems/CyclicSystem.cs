@@ -1,28 +1,31 @@
-﻿using UnityEngine;
+﻿using ShootingSystems.Data;
+using UnityEngine;
 
 namespace ShootingSystems
 {
     public class CyclicSystem : ShootingSystem
     {
-        [SerializeField] private float _reloadingTime;
+        [SerializeField] private CyclicSystemData _systemData;
         
         private float _elapsedReloadingTime;
 
         private void Update()
         {
-            if (_elapsedReloadingTime >= _reloadingTime) return;
+            if (_elapsedReloadingTime >= _systemData.ReloadingTime) return;
 
             _elapsedReloadingTime += Time.deltaTime;
         }
 
         public float GetReloadingRate()
         {
-            return _elapsedReloadingTime / _reloadingTime;
+            if (_systemData.ReloadingTime == 0) return 0;
+            
+            return _elapsedReloadingTime / _systemData.ReloadingTime;
         }
         
         public override void Shoot()
         {
-            if (_elapsedReloadingTime < _reloadingTime) return;
+            if (_elapsedReloadingTime < _systemData.ReloadingTime) return;
 
             var projectile = _projectilePools[_selectedProjectileType].Get();
             projectile.Launch(_projectilePivot);

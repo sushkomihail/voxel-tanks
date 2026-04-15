@@ -1,18 +1,22 @@
-﻿using System;
-using CustomPhysics;
+﻿using CustomPhysics;
+using Tank.Data;
 using UnityEngine;
 
 namespace Tank.Modules.Track
 {
-    public class Track : TankModule
+    public class Track : TankModule<TrackData>
     {
         [SerializeField] private CustomWheelCollider[] _wheels;
-        [SerializeField] private float _damagedTorqueRate = 0.5f;
 
         private TrackState _state;
         private float _torqueRate; // [0, 1]
         
-        public float DamagedTorqueRate => _damagedTorqueRate;
+        public float DamagedTorqueRate => _data.DamagedTorqueRate;
+
+        public void SetData(TrackData data)
+        {
+            _data = data;
+        }
 
         public void SetTorqueRate(float torqueRate)
         {

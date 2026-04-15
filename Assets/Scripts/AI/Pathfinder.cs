@@ -7,24 +7,24 @@ namespace AI
     [RequireComponent(typeof(NavGrid))]
     public class Pathfinder : MonoBehaviour
     {
+        public NavGrid NavGrid {get; private set;}
         public static event Action OnPathRetraced;
         
         private const int NormalTurnCost = 10;
         private const int DiagonalTurnCost = 14;
         
-        private NavGrid _navGrid;
         private List<NavGridCell> _path = new();
         
         public void Initialize()
         {
-            _navGrid = GetComponent<NavGrid>();
-            _navGrid.Initialize();
+            NavGrid = GetComponent<NavGrid>();
+            NavGrid.Initialize();
         }
 
         public void FindPath(Vector3 start, Vector3 end)
         {
-            var startCell = _navGrid.GetClosestCell(start);
-            var endCell = _navGrid.GetClosestCell(end);
+            var startCell = NavGrid.GetClosestCell(start);
+            var endCell = NavGrid.GetClosestCell(end);
             
             var openSet = new List<NavGridCell>();
             var closedSet = new HashSet<NavGridCell>();
@@ -52,7 +52,7 @@ namespace AI
                     return;
                 }
 
-                foreach (var neighbour in _navGrid.GetNeighbours(currentCell))
+                foreach (var neighbour in NavGrid.GetNeighbours(currentCell))
                 {
                     if (!neighbour.IsWalkable || closedSet.Contains(neighbour)) continue;
                     

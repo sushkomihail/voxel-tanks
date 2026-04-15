@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using Tank.Data;
 using Tank.Modules.Engine;
 using Tank.Modules.Track;
 using UnityEngine;
@@ -10,20 +11,20 @@ namespace Tank
         [SerializeField] private Engine _engine;
         [SerializeField] private Track _leftTrack;
         [SerializeField] private Track _rightTrack;
-        [SerializeField] private float _brakeTorque = 5000f;
-        [SerializeField] private float _rotationSpeed = 60f; // deg/s
 
         private const float StopThreshold = 0.2f;
         
         private Rigidbody _tankRigidbody;
+        private ChassisData _data;
 
-        public void Init()
+        public void Initialize(ChassisData chassisData, EngineData engineData, TrackData trackData)
         {
             _tankRigidbody = transform.root.GetComponent<Rigidbody>();
+            _data = chassisData;
             
-            _engine.Init();
-            _leftTrack.Init();
-            _rightTrack.Init();
+            _engine.Initialize(engineData);
+            _leftTrack.Initialize(trackData);
+            _rightTrack.Initialize(trackData);
         }
 
         public void Move(Vector2 moveInputVector)
@@ -31,7 +32,7 @@ namespace Tank
             if (!_tankRigidbody) return;
             
             float speed = Vector3.Dot(transform.forward, _tankRigidbody.linearVelocity);
-            float breakTorque = _brakeTorque * -speed.Sign();
+            float breakTorque = _data.BrakeTorque * -speed.Sign();
 
             if (moveInputVector.y == 0)
             {
@@ -69,7 +70,7 @@ namespace Tank
             
             float xInputAxis = moveInputVector.y < 0 ? -moveInputVector.x : moveInputVector.x;
             Vector3 angularVelocity = _tankRigidbody.angularVelocity;
-            angularVelocity.y = _rotationSpeed * Mathf.Deg2Rad * xInputAxis;
+            angularVelocity.y = _data.RotationSpeed * Mathf.Deg2Rad * xInputAxis;
             _tankRigidbody.angularVelocity = angularVelocity;
         }
         
