@@ -18,6 +18,8 @@ namespace Tank
         {
             _data = data;
             _currentHealth = _data.MaxHealth;
+            OnHealthChanged?.Invoke(_currentHealth, _data.MaxHealth);
+            
             InitArmorAreas();
         }
 

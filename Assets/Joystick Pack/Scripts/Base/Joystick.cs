@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
@@ -26,14 +24,14 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public bool SnapY { get { return _snapY; } set { _snapY = value; } }
 
     [SerializeField] private float _handleRange = 1;
-    [SerializeField] private float _deadZone = 0;
+    [SerializeField] private float _deadZone;
     [SerializeField] private AxisOptions _axisOptions = AxisOptions.Both;
-    [SerializeField] private bool _snapX = false;
-    [SerializeField] private bool _snapY = false;
+    [SerializeField] private bool _snapX;
+    [SerializeField] private bool _snapY;
 
-    [SerializeField] protected RectTransform _background = null;
-    [SerializeField] private RectTransform _handle = null;
-    private RectTransform _baseRect = null;
+    [SerializeField] protected RectTransform _background;
+    [SerializeField] private RectTransform _handle;
+    private RectTransform _baseRect;
 
     private Canvas _canvas;
     private Camera _cam;
@@ -107,25 +105,22 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
             {
                 if (angle < 22.5f || angle > 157.5f)
                     return 0;
-                else
-                    return (value > 0) ? 1 : -1;
+                return (value > 0) ? 1 : -1;
             }
-            else if (snapAxis == AxisOptions.Vertical)
+
+            if (snapAxis == AxisOptions.Vertical)
             {
                 if (angle > 67.5f && angle < 112.5f)
                     return 0;
-                else
-                    return (value > 0) ? 1 : -1;
+                return (value > 0) ? 1 : -1;
             }
             return value;
         }
-        else
-        {
-            if (value > 0)
-                return 1;
-            if (value < 0)
-                return -1;
-        }
+
+        if (value > 0)
+            return 1;
+        if (value < 0)
+            return -1;
         return 0;
     }
 

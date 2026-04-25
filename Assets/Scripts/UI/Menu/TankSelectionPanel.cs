@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Databases;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace UI.Menu
 {

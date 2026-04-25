@@ -11,7 +11,7 @@ namespace Spawners
         [SerializeField] private Transform _spawnPoint;
         [SerializeField] private TanksDatabase _tanksDatabase;
 
-        private PlayerTank _prefab;
+        private PlayerTankController _prefab;
 
         public void Initialize()
         {
@@ -19,11 +19,11 @@ namespace Spawners
             _prefab = _tanksDatabase.Tanks[data.TankId].PlayerPrefab;
         }
 
-        public PlayerTank Spawn(TankCamera camera)
+        public PlayerTankController Spawn(TankCamera camera)
         {
             if (!_prefab) return null;
             
-            PlayerTank player = Instantiate(_prefab, _spawnPoint.position, _spawnPoint.rotation);
+            PlayerTankController player = Instantiate(_prefab, _spawnPoint.position, _spawnPoint.rotation);
             player.Initialize(camera);
             return player;
         }

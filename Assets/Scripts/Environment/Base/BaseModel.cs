@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Input;
+using Tank;
 using UnityEngine;
 
 namespace Environment.Base
@@ -36,18 +37,18 @@ namespace Environment.Base
         public string OwnerId { get; private set; }
         public string PreviousOwnerId { get; private set; }
         
-        private List<Tank.Tank> _onFieldTanks;
+        private List<TankController> _onFieldTanks;
         private readonly Dictionary<string, bool> _insideBaseTanks =  new();
 
         private string _playerId;
         private BaseState _state;
 
-        public void Initialize(List<Tank.Tank> onFieldTanks, string playerId)
+        public void Initialize(List<TankController> onFieldTanks, string playerId)
         {
             _onFieldTanks = onFieldTanks;
             _playerId = playerId;
 
-            foreach (Tank.Tank tank in _onFieldTanks)
+            foreach (TankController tank in _onFieldTanks)
             {
                 _insideBaseTanks.Add(tank.BattleData.Id, false);
                 tank.Health.OnDeath += () =>
@@ -103,12 +104,14 @@ namespace Environment.Base
 
         public bool IsPositionInside(Vector3 position)
         {
-            return true;
+            float sqrDistance = (position - transform.position).sqrMagnitude;
+            return sqrDistance <= _radius * _radius;
         }
 
         public void SetState(BaseState state)
         {
             _state = state;
+            _state.Enter();
         }
 
         public void SetOwnerId(string newOwnerId)
@@ -138,18 +141,16 @@ namespace Environment.Base
         
         private void ObserveOnFieldTanks()
         {
-            foreach (Tank.Tank tank in _onFieldTanks)
+            foreach (TankController tank in _onFieldTanks)
             {
-                float sqrDistance = (tank.transform.position - transform.position).sqrMagnitude;
-
-                if (sqrDistance < _radius * _radius && !_insideBaseTanks[tank.BattleData.Id])
+                if (IsPositionInside(tank.transform.position) && !_insideBaseTanks[tank.BattleData.Id])
                 {
                     _insideBaseTanks[tank.BattleData.Id] = true;
                     _state.OnTankEntersBase(tank.BattleData);
                     continue;
                 }
                 
-                if (sqrDistance > _radius * _radius && _insideBaseTanks[tank.BattleData.Id])
+                if (!IsPositionInside(tank.transform.position) && _insideBaseTanks[tank.BattleData.Id])
                 {
                     _insideBaseTanks[tank.BattleData.Id] = false;
                     _state.OnTankLeavesBase(tank.BattleData);

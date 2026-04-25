@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MobileControl : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
 {
@@ -46,16 +44,16 @@ public class MobileControl : MonoBehaviour, IDragHandler, IPointerUpHandler, IPo
     public bool Vertical1()
     {
         if (_input.y > 0 || _input.y < 0) return true;
-        else return false;
+        return false;
     }
     public bool Vertical2()
     {
         if (_input.y < 0) return true;
-        else return false;
+        return false;
     }
     public bool Horiz1()
     {
         if ((_input.x < 0 || _input.x > 0) && Mathf.Abs(_input.x) > Mathf.Abs(_input.y)) return true;
-        else return false;
+        return false;
     }
 }

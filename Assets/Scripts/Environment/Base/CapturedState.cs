@@ -1,11 +1,20 @@
-﻿using Tank.Data;
+﻿using System;
+using Input;
+using Tank.Data;
 
 namespace Environment.Base
 {
     public class CapturedState : BaseState
     {
+        public static event Action OnCaptured;
+        
         public CapturedState(BaseModel baseModelReference) : base(baseModelReference)
         {
+        }
+
+        public override void Enter()
+        {
+            OnCaptured?.Invoke();
         }
 
         public override void OnTankEntersBase(TankBattleData tankData)

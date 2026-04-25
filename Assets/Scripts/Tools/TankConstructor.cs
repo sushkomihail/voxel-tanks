@@ -39,7 +39,7 @@ namespace Tools
         private void Construct()
         {
             var root = new GameObject(_name);
-            root.AddComponent<PlayerTank>();
+            root.AddComponent<PlayerTankController>();
             
             // First nesting level
             var cameraTarget = new GameObject("CameraTarget");

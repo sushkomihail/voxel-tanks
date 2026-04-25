@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Input
+﻿namespace Input
 {
     public interface IRouterTarget
     {

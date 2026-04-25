@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AI;
 using Databases;
-using Input;
 using Tank;
 using UnityEngine;
 
@@ -19,24 +18,24 @@ namespace Spawners
             _pathfinder = pathfinder;
         }
         
-        public List<AITank> Spawn()
+        public List<AITankController> Spawn()
         {
-            var spawnedNpcTanks = new List<AITank>();
+            var spawnedNpcTanks = new List<AITankController>();
             
             foreach (var point in _spawnPoints)
             {
-                AITank npcPrefab = GetRandomPrefab();
+                AITankController npcPrefab = GetRandomPrefab();
             
                 if (!npcPrefab) continue;
             
-                AITank npc = Instantiate(npcPrefab, point.position, point.rotation);
+                AITankController npc = Instantiate(npcPrefab, point.position, point.rotation);
                 spawnedNpcTanks.Add(npc);
             }
             
             return spawnedNpcTanks;
         }
 
-        private AITank GetRandomPrefab()
+        private AITankController GetRandomPrefab()
         {
             int randomIndex = Random.Range(0, _tanksDatabase.Tanks.Length);
             return _tanksDatabase.Tanks[1].NpcPrefab;

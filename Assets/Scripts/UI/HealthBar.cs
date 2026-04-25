@@ -1,4 +1,4 @@
-using Tank;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,25 +7,22 @@ namespace UI
     public class HealthBar : MonoBehaviour
     {
         [SerializeField] private Image _fillRect;
-        private TankHealth _health;
-
-        public void Initialize(TankHealth health)
+        [SerializeField] private TMP_Text _currentHealthText;
+        
+        public void Initialize()
         {
-            _health = health;
-            _health.OnHealthChanged += UpdateSlider;
-            
             _fillRect.fillAmount = 1;
         }
 
-        private void OnDestroy()
+        public void UpdateSlider(float value)
         {
-            _health.OnHealthChanged -= UpdateSlider;
+            _fillRect.fillAmount = value;
+            // TODO: Make slider animation with DoTween
         }
 
-        private void UpdateSlider(int currentHealth, int maxHealth)
+        public void UpdateCurrentHealthText(int currentHealth, int maxHealth)
         {
-            _fillRect.fillAmount = (float)currentHealth / maxHealth;
-            // TODO: Make slider animation with DoTween
+            _currentHealthText.text = $"{currentHealth}/{maxHealth}";
         }
     }
 }

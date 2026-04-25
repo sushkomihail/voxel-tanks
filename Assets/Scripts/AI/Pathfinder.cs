@@ -84,6 +84,11 @@ namespace AI
             return true;
         }
 
+        public void ClearPath()
+        {
+            _path.Clear();
+        }
+
         private static int GetDistance(NavGridCell a, NavGridCell b)
         {
             int dx = Mathf.Abs(a.GridX - b.GridX);

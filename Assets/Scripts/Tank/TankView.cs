@@ -1,5 +1,7 @@
-﻿using Animation;
+﻿using System.Collections.Generic;
+using Animation;
 using QuickOutline.Scripts;
+using UI;
 using UnityEngine;
 
 namespace Tank
@@ -7,30 +9,60 @@ namespace Tank
     [RequireComponent(typeof(SwitchableOutline))]
     public class TankView : MonoBehaviour
     {
+        [SerializeField] private HealthBar _overTankHealthBar;
         [SerializeField] private Material _deathMaterial;
-        // TODO: Collect mesh renderers from script
-        [SerializeField] private MeshRenderer[] _meshRenderers;
         [SerializeField] private SpriteSheetAnimator _deathAnimator;
-        [SerializeField] private Canvas _canvas;
         
-        public Canvas Canvas => _canvas;
-        
+        private readonly List<MeshRenderer> _meshRenderers = new();
         private SwitchableOutline _outline;
 
         public void Initialize()
         {
             _outline = GetComponent<SwitchableOutline>();
-            _outline.enabled = false;
             _outline.SetIsInteractive(true);
+            _outline.enabled = false;
+            
+            CollectMeshRenderers(transform);
+
+            if (_overTankHealthBar)
+            {
+                _overTankHealthBar.Initialize();
+            }
+        }
+
+        public void OnHealthChanged(int currentHealth, int maxHealth)
+        {
+            float healthPercent = (float)currentHealth / maxHealth;
+
+            if (_overTankHealthBar)
+            {
+                _overTankHealthBar.UpdateSlider(healthPercent);
+                _overTankHealthBar.UpdateCurrentHealthText(currentHealth, maxHealth);
+            }
         }
         
         public void OnDeath()
         {
             ApplyDeathMaterial();
+            
+            _overTankHealthBar.gameObject.SetActive(false);
+            
             _deathAnimator.Play();
-            _canvas.enabled = false;
             _outline.enabled = false;
             _outline.SetIsInteractive(false);
+        }
+
+        private void CollectMeshRenderers(Transform parent)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.TryGetComponent(out MeshRenderer meshRenderer))
+                {
+                    _meshRenderers.Add(meshRenderer);
+                }
+                
+                CollectMeshRenderers(child);
+            }
         }
 
         private void ApplyDeathMaterial()

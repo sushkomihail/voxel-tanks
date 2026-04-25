@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using AI;
+using Environment.Base;
 using Tank;
 using UnityEngine;
 
@@ -19,35 +20,48 @@ namespace Input
         private const float RotationThreshold = 0.5f;
         private const float MoveThreshold = 3f;
         private const float MaxAimDistance = 100f;
-        
+
+        private string _tankId;
         private Pathfinder _pathfinder;
         private Router _router;
         private NavGridCell _targetPathCell;
         private Transform _playerTankCenter;
+        private Coroutine _updatePathCoroutine;
 
-        public void Initialize(Pathfinder pathfinder, List<IRouterTarget> routerTargets,
+        public void Initialize(string tankId, Pathfinder pathfinder, List<IRouterTarget> routerTargets,
             IRouterTarget defaultRouterTarget)
         {
+            _tankId = tankId;
             _pathfinder = pathfinder;
             _router = new Router(routerTargets, defaultRouterTarget);
 
-            if (defaultRouterTarget is not PlayerTank playerTank)
+            if (defaultRouterTarget is not PlayerTankController playerTank)
             {
                 throw new Exception("The default router target must be a PlayerTank");
             }
             
             _playerTankCenter = playerTank.Center;
-            StartCoroutine(UpdatePath());
+            _updatePathCoroutine = StartCoroutine(UpdatePathWithInterval());
         }
 
         private void OnEnable()
         {
             Pathfinder.OnPathRetraced += UpdateTargetPathCell;
+            CapturedState.OnCaptured += OnBaseCaptured;
         }
 
         private void OnDisable()
         {
             Pathfinder.OnPathRetraced -= UpdateTargetPathCell;
+            CapturedState.OnCaptured -= OnBaseCaptured;
+        }
+
+        public override void Disable()
+        {
+            base.Disable();
+            
+            StopCoroutine(_updatePathCoroutine);
+            _pathfinder.ClearPath();
         }
 
         public override Vector2 GetMoveInput()
@@ -100,22 +114,34 @@ namespace Input
             return Physics.Raycast(ray, MaxAimDistance, _targetMask.value);
         }
 
-        private IEnumerator UpdatePath()
+        private void OnBaseCaptured()
+        {
+            _router.UpdatePriorities(_tankId);
+            UpdatePath();
+        }
+
+        private IEnumerator UpdatePathWithInterval()
         {
             if (!_pathfinder) yield break;
             
             // TODO: Make end of cycle when tank destroyed
             while (true)
             {
-                _router.UpdateTarget(_center.position);
-                MonoBehaviour target = _router.CurrentTarget as MonoBehaviour;
-
-                if (target)
-                {
-                    _pathfinder.FindPath(_center.position, target.transform.position);
-                }
-                
+                UpdatePath();
                 yield return new WaitForSeconds(_pathUpdateInterval);
+            }
+        }
+
+        private void UpdatePath()
+        {
+            if (!_pathfinder || _router == null) return;
+            
+            _router.UpdateTarget(_center.position);
+            MonoBehaviour target = _router.CurrentTarget as MonoBehaviour;
+
+            if (target)
+            {
+                _pathfinder.FindPath(_center.position, target.transform.position);
             }
         }
 

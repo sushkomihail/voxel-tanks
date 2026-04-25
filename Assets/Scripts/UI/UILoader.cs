@@ -18,10 +18,10 @@ namespace UI
         
         private HealthBar _bar;
 
-        public void Initialize(PlayerTank playerTank, List<AITank> npcTanks, TankCamera camera)
+        public void Initialize(PlayerTankController playerTankController, List<AITankController> npcTanks, TankCamera camera)
         {
-            InitializeAim(playerTank, camera);
-            InitializeHealthBars(playerTank, npcTanks);
+            InitializeAim(playerTankController, camera);
+            InitializeHealthBars(playerTankController, npcTanks);
             LockCursor();
         }
 
@@ -32,25 +32,19 @@ namespace UI
             return view;
         }
 
-        private void InitializeAim(PlayerTank playerTank, TankCamera camera)
+        private void InitializeAim(PlayerTankController playerTankController, TankCamera camera)
         {
-            Aim aimPrefab = _aimsDatabase.GetAimByShootingSystem(playerTank.Gun.ShootingSystem);
+            Aim aimPrefab = _aimsDatabase.GetAimByShootingSystem(playerTankController.Gun.ShootingSystem);
 
             if (!aimPrefab) return;
             
             Aim aim = Instantiate(aimPrefab, _canvas.transform);
-            aim.Initialize(playerTank.Gun, camera.Camera);
+            aim.Initialize(playerTankController.Gun, camera.Camera);
         }
 
-        private void InitializeHealthBars(PlayerTank playerTank, List<AITank> npcTanks)
+        private void InitializeHealthBars(PlayerTankController playerTankController, List<AITankController> npcTanks)
         {
-            _playerHealthBar.Initialize(playerTank.Health);
-
-            foreach (AITank npcTank in npcTanks)
-            {
-                HealthBar healthBar = Instantiate(_npcHealthBarPrefab, npcTank.View.Canvas.transform);
-                healthBar.Initialize(npcTank.Health);
-            }
+            // _playerHealthBar.Initialize(playerTankController.Health);
         }
         
         private void LockCursor()

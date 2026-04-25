@@ -6,12 +6,12 @@ namespace Input
     {
         public bool IsActive { get; private set; }
 
-        public void Enable()
+        public virtual void Enable()
         {
             IsActive = true;
         }
 
-        public void Disable()
+        public virtual void Disable()
         {
             IsActive = false;
         }

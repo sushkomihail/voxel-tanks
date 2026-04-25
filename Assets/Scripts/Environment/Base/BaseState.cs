@@ -11,6 +11,8 @@ namespace Environment.Base
             _baseModel = baseModelReference;
         }
         
+        public virtual void Enter() {}
+        
         public virtual void OnTankEntersBase(TankBattleData tankData)
         {
             _baseModel.SetIsTankInsideBase(tankData.Id, true);

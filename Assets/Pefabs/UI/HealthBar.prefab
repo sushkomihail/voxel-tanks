@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6500206253288445799}
   - component: {fileID: 8937098188888123554}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: CurrentHealthText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,10 +65,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HP
+  m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a9e36845cf4865b4ebc1ffeddbe9e7b2, type: 2}
-  m_sharedMaterial: {fileID: -4938670059997509198, guid: a9e36845cf4865b4ebc1ffeddbe9e7b2,
+  m_fontAsset: {fileID: 11400000, guid: 96c4ca15dec99f4468cfe5d2fa17a233, type: 2}
+  m_sharedMaterial: {fileID: -3680201433047519893, guid: 96c4ca15dec99f4468cfe5d2fa17a233,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.HealthBar
   _fillRect: {fileID: 5280117397492322302}
+  _currentHealthText: {fileID: 8937098188888123554}
 --- !u!114 &6439160732826317668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,7 +317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6698113, g: 0.25591847, b: 0.25591847, a: 1}
+  m_Color: {r: 0.88235295, g: 0.1764706, b: 0.1764706, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0

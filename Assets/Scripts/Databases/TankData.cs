@@ -11,14 +11,14 @@ namespace Databases
         [SerializeField] private Sprite _lockedSprite;
         [SerializeField] private Sprite _unlockedSprite;
         [SerializeField] private GameObject _previewPrefab;
-        [SerializeField] private Tank.PlayerTank _playerPrefab;
-        [SerializeField] private AITank _npcPrefab;
+        [SerializeField] private PlayerTankController _playerPrefab;
+        [SerializeField] private AITankController _npcPrefab;
         
         public string Name => _name;
         public Sprite LockedSprite => _lockedSprite;
         public Sprite UnlockedSprite => _unlockedSprite;
         public GameObject PreviewPrefab => _previewPrefab;
-        public Tank.PlayerTank PlayerPrefab => _playerPrefab;
-        public AITank NpcPrefab => _npcPrefab;
+        public PlayerTankController PlayerPrefab => _playerPrefab;
+        public AITankController NpcPrefab => _npcPrefab;
     }
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
     _prefab: {fileID: 8237230870406337322, guid: 76078b98c0830664f9cc12debecdb48a,
       type: 3}
     _props:
-      _speed: 700
+      _speed: 50
       _penetration: 230
       _armorDamage: 360
       _moduleDamage: 50
