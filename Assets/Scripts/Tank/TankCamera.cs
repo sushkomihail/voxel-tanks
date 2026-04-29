@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Utils;
 
 namespace Tank
 {
@@ -8,7 +9,8 @@ namespace Tank
         
         public Camera Camera => _camera;
 
-        private const float MaxRayDistance = 500f;
+        private const float MaxRayDistance = 50f;
+        
         private RaycastHit _hit;
         private ObjectHighlighter _highlighter;
 

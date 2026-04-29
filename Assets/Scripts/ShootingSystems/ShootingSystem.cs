@@ -59,6 +59,19 @@ namespace ShootingSystems
             return 0f;
         }
 
+        public int GetProjectilePenetration()
+        {
+            foreach (var item in _projectilesData.Items)
+            {
+                if (item.Type == _selectedProjectileType)
+                {
+                    return item.Props.Penetration;
+                }
+            }
+
+            return -1;
+        }
+
         public abstract void Shoot();
 
         public void OnProjectileHit(Projectile projectile)
@@ -72,7 +85,7 @@ namespace ShootingSystems
             {
                 if (item.Type == _selectedProjectileType)
                 {
-                    projectile.Init(item.Type, item.Props, this);
+                    projectile.Initialize(item.Type, item.Props, this);
                     break;
                 }
             }

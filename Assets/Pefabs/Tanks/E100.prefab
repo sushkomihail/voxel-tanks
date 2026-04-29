@@ -100,7 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 878cfc624ca3440ba051e73ad1871001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.Modules.Track.Track
-  _health: 100
   _wheels:
   - {fileID: 5706047358779931544}
   - {fileID: 7943882330835005510}
@@ -283,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f8695947de422eab2d56beea9cd912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Armor.Armor
-  _thickness: 50
+  _thickness: 250
 --- !u!1 &3594974528574548305
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,13 +625,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e10b886b21d4a4b926ad397c489fb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankView
+  _overTankHealthBar: {fileID: 0}
   _deathMaterial: {fileID: 2100000, guid: f696cede7a6ec6c4584611de1e80786f, type: 2}
-  _meshRenderers:
-  - {fileID: 2541641371918504423}
-  - {fileID: 3092263275029042353}
-  - {fileID: 7799063543346443591}
   _deathAnimator: {fileID: 5006728440138716129}
-  _canvas: {fileID: 0}
 --- !u!114 &2654947994211812283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,6 +777,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankGun
   _turret: {fileID: 1999607492545525182}
   _shootingSystem: {fileID: 6488052246523762323}
+  _projectileTrajectoryPredictionIterations: 50
+  _projectileTrajectoryPredictionInterval: 0.1
 --- !u!114 &6488052246523762323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842,7 +839,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58f11a1f084f48c3a6c39adce4bbbba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.Modules.Engine.Engine
-  _health: 100
 --- !u!1 &8054205314989424762
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,7 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f8695947de422eab2d56beea9cd912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Armor.Armor
-  _thickness: 70
+  _thickness: 350
 --- !u!1 &8591507480015705234
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,7 +1178,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 878cfc624ca3440ba051e73ad1871001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.Modules.Track.Track
-  _health: 100
   _wheels:
   - {fileID: 2193898094381801935}
   - {fileID: 5091073113892248299}

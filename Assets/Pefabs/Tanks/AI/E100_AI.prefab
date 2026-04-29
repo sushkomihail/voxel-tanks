@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f8695947de422eab2d56beea9cd912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Armor.Armor
-  _thickness: 50
+  _thickness: 210
 --- !u!1 &3594974528574548305
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,6 +920,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankGun
   _turret: {fileID: 1999607492545525182}
   _shootingSystem: {fileID: 6488052246523762323}
+  _projectileTrajectoryPredictionIterations: 50
+  _projectileTrajectoryPredictionInterval: 0.1
 --- !u!114 &6488052246523762323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1159,7 +1161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f8695947de422eab2d56beea9cd912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Armor.Armor
-  _thickness: 70
+  _thickness: 350
 --- !u!1 &8591507480015705234
 GameObject:
   m_ObjectHideFlags: 0

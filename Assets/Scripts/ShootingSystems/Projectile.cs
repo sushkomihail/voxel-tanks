@@ -10,16 +10,17 @@ namespace ShootingSystems
         private Rigidbody _rigidbody;
         private ProjectileProps _props;
         private ShootingSystem _shootingSystem;
+        private bool _hasHit;
         
-
         private void Update()
         {
             Rotate();
         }
 
-        public void Init(ProjectileType type, ProjectileProps props, ShootingSystem shootingSystem)
+        public void Initialize(ProjectileType type, ProjectileProps props, ShootingSystem shootingSystem)
         {
             _rigidbody = GetComponent<Rigidbody>();
+            
             Type = type;
             _props = props;
             _shootingSystem = shootingSystem;
@@ -27,8 +28,12 @@ namespace ShootingSystems
         
         public void Launch(Transform pivot)
         {
+            _hasHit = false;
+            
             transform.position = pivot.position;
             transform.rotation = pivot.rotation;
+            
+            _rigidbody.angularVelocity = Vector3.zero;
             _rigidbody.linearVelocity = pivot.forward * _props.Speed;
         }
 
@@ -40,11 +45,25 @@ namespace ShootingSystems
 
         private void OnCollisionEnter(Collision other)
         {
-            if (other.contacts[0].otherCollider.TryGetComponent(out IDamageable damageable))
-            {
-                damageable.TakeDamage(_props);
-            }
+            if (_hasHit) return;
             
+            _hasHit = true;
+            ContactPoint contact = other.contacts[0];
+            
+            if (!contact.otherCollider.TryGetComponent(out IDamageable damageable)) return;
+            
+            if (damageable is Armor.Armor armor)
+            {
+                float reducedThickness = armor.GetReducedThickness(contact.normal, transform.forward);
+
+                if (reducedThickness > _props.Penetration)
+                {
+                    _shootingSystem.OnProjectileHit(this);
+                    return;
+                }
+            }
+                
+            damageable.TakeDamage(_props);
             _shootingSystem.OnProjectileHit(this);
         }
     }

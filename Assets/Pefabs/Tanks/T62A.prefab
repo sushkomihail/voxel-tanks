@@ -432,10 +432,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e10b886b21d4a4b926ad397c489fb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tank.TankView
+  _overTankHealthBar: {fileID: 0}
   _deathMaterial: {fileID: 0}
-  _meshRenderers: []
   _deathAnimator: {fileID: 0}
-  _canvas: {fileID: 0}
 --- !u!114 &8444993404992896411
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -500,7 +499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 878cfc624ca3440ba051e73ad1871001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
   _wheels:
   - {fileID: 7708312642486426686}
   - {fileID: 7550887989296669662}
@@ -570,7 +568,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58f11a1f084f48c3a6c39adce4bbbba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
 --- !u!1 &3142394056045841596
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +617,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _turret: {fileID: 1553849065742502068}
   _shootingSystem: {fileID: 2981873854212364217}
+  _projectileTrajectoryPredictionIterations: 50
+  _projectileTrajectoryPredictionInterval: 0.1
 --- !u!114 &2981873854212364217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,7 +734,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 878cfc624ca3440ba051e73ad1871001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
   _wheels:
   - {fileID: 5059923213940436495}
   - {fileID: 2838254904526901933}

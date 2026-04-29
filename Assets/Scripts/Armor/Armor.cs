@@ -6,7 +6,7 @@ namespace Armor
 {
     public class Armor : MonoBehaviour, IDamageable
     {
-        [SerializeField] private float _thickness;
+        [SerializeField] private int _thickness;
         
         private TankHealth _tankHealth;
 
@@ -17,15 +17,16 @@ namespace Armor
         
         public void TakeDamage(ProjectileProps props)
         {
-            int damage = props.ArmorDamage;
-            float penetrationRate = damage / _thickness;
+            _tankHealth.OnArmorDamaged(props.ArmorDamage);
+        }
 
-            if (penetrationRate < 1)
-            {
-                damage = (int)(damage * penetrationRate);
-            }
+        public float GetReducedThickness(Vector3 armorNormal, Vector3 hitDirection)
+        {
+            float angle = Vector3.Angle(-armorNormal, hitDirection);
+            float cos = Mathf.Cos(angle * Mathf.Deg2Rad);
             
-            _tankHealth.OnArmorDamaged(damage);
+            if (cos == 0) return _thickness;
+            return _thickness / cos;
         }
     }
 }

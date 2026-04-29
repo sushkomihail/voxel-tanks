@@ -53,7 +53,7 @@ namespace Tank
         {
             if (_input.GetShootInput())
             {
-                _gun.Shoot();
+                _gun.HandleShooting();
             }
         }
         
