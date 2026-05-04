@@ -10,7 +10,7 @@ namespace Armor
         
         private TankHealth _tankHealth;
 
-        public void Init(TankHealth tankHealth)
+        public void Initialize(TankHealth tankHealth)
         {
             _tankHealth = tankHealth;
         }

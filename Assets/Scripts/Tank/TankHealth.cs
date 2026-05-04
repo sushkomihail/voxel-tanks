@@ -41,7 +41,7 @@ namespace Tank
         {
             foreach (Armor.Armor armorArea in _armorAreas)
             {
-                armorArea.Init(this);
+                armorArea.Initialize(this);
             }
         }
     }

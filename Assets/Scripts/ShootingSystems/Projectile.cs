@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Settings;
+using UnityEngine;
 
 namespace ShootingSystems
 {
@@ -55,14 +56,17 @@ namespace ShootingSystems
             if (damageable is Armor.Armor armor)
             {
                 float reducedThickness = armor.GetReducedThickness(contact.normal, transform.forward);
+                float penetrationRatio =
+                    1 + Random.Range(-GlobalSettings.PenetrationError, GlobalSettings.PenetrationError);
+                float realPenetration = _props.Penetration * penetrationRatio;
 
-                if (reducedThickness > _props.Penetration)
+                if (reducedThickness > realPenetration)
                 {
                     _shootingSystem.OnProjectileHit(this);
                     return;
                 }
             }
-                
+            
             damageable.TakeDamage(_props);
             _shootingSystem.OnProjectileHit(this);
         }

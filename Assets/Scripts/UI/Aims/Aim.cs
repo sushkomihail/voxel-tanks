@@ -1,4 +1,5 @@
 ﻿using Armor;
+using Settings;
 using Tank;
 using TMPro;
 using UnityEngine;
@@ -9,11 +10,11 @@ namespace UI.Aims
     public abstract class Aim : MonoBehaviour
     {
         [SerializeField] protected Image _reloadIndicator;
-        [SerializeField] private Image _gunAimImage;
+        [SerializeField] private RectTransform _gunAim;
         [SerializeField] private Image _penetrationIndicator;
-        [SerializeField] private Color _penetrationColor = new(166, 224, 63);
-        [SerializeField] private Color _mootPenetrationColor = new(251, 142, 47);
-        [SerializeField] private Color _nonPenetrationColor = new(225, 45, 45);
+        [SerializeField] private Color _penetrationColor;
+        [SerializeField] private Color _mootPenetrationColor;
+        [SerializeField] private Color _nonPenetrationColor;
         [SerializeField] private TMP_Text _armorText;
 
         protected TankGun _gun;
@@ -41,7 +42,7 @@ namespace UI.Aims
             
             UpdateReloadIndicator();
             UpdateGunAim(aimPoint);
-            UpdatePenetrationIndicator(reducedThickness, _gun.ShootingSystem.GetProjectilePenetration());
+            UpdatePenetrationIndicator(reducedThickness);
             UpdateArmorText(reducedThickness);
         }
 
@@ -52,24 +53,34 @@ namespace UI.Aims
             if (!_gun) return;
             
             Vector3 screenPoint = _camera.WorldToScreenPoint(aimPoint);
-            _gunAimImage.rectTransform.position = screenPoint;
+            _gunAim.position = screenPoint;
         }
 
-        private void UpdatePenetrationIndicator(float reducedThickness, float penetration)
+        private void UpdatePenetrationIndicator(float reducedThickness)
         {
+            float penetration = _gun.ShootingSystem.GetProjectilePenetration();
+            
             if (penetration == -1 || reducedThickness == -1)
             {
                 _penetrationIndicator.color = Color.white;
                 return;
             }
 
-            if (reducedThickness > penetration)
+            float minPenetration = penetration * (1 - GlobalSettings.PenetrationError);
+            float maxPenetration = penetration * (1 + GlobalSettings.PenetrationError);
+
+            if (reducedThickness < minPenetration)
+            {
+                _penetrationIndicator.color = _penetrationColor;
+            }
+            else if (reducedThickness > maxPenetration)
             {
                 _penetrationIndicator.color = _nonPenetrationColor;
-                return;
             }
-
-            _penetrationIndicator.color = _penetrationColor;
+            else
+            {
+                _penetrationIndicator.color = _mootPenetrationColor;   
+            }
         }
 
         private void UpdateArmorText(float reducedThickness)
