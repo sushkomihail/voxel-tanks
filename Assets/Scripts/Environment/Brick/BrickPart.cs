@@ -1,4 +1,5 @@
-﻿using ShootingSystems;
+﻿using Projectiles;
+using ShootingSystems;
 using UnityEngine;
 
 namespace Environment.Brick

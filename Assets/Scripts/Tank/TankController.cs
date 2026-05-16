@@ -16,8 +16,7 @@ namespace Tank
         public TankBattleData BattleData { get; private set; }
         
         protected Input.Input _input;
-        
-        private TankView _view;
+        protected TankView _view;
 
         protected void Initialize()
         {

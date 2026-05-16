@@ -12,7 +12,6 @@ namespace UI
         [SerializeField] private Canvas _canvas;
         [SerializeField] private AimsDatabase _aimsDatabase;
         [SerializeField] private HealthBar _playerHealthBar;
-        [SerializeField] private HealthBar _npcHealthBarPrefab;
         [SerializeField] private Transform _baseViewsContainer;
         [SerializeField] private BaseView _baseViewPrefab;
         
@@ -21,7 +20,7 @@ namespace UI
         public void Initialize(PlayerTankController playerTankController, List<AITankController> npcTanks, TankCamera camera)
         {
             InitializeAim(playerTankController, camera);
-            InitializeHealthBars(playerTankController, npcTanks);
+            InitializePlayerHealthBar(playerTankController);
             LockCursor();
         }
 
@@ -42,9 +41,10 @@ namespace UI
             aim.Initialize(playerTankController.Gun, camera.Camera);
         }
 
-        private void InitializeHealthBars(PlayerTankController playerTankController, List<AITankController> npcTanks)
+        private void InitializePlayerHealthBar(PlayerTankController playerTankController)
         {
-            // _playerHealthBar.Initialize(playerTankController.Health);
+            _playerHealthBar.Initialize();
+            playerTankController.View.SetPlayerHealthBar(_playerHealthBar);
         }
         
         private void LockCursor()

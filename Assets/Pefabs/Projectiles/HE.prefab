@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2931861665621328320}
   - component: {fileID: 6333100489732864565}
-  - component: {fileID: 4102392199253153247}
+  - component: {fileID: 3932257370315563413}
   m_Layer: 6
   m_Name: HE
   m_TagString: Untagged
@@ -60,8 +60,8 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!114 &4102392199253153247
+  m_CollisionDetection: 2
+--- !u!114 &3932257370315563413
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,9 +70,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2754275190864736174}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bd7ca946d674baa94a69c152d84394b, type: 3}
+  m_Script: {fileID: 11500000, guid: 15fa88c38f6647428c3f5f4eddb07b97, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Projectiles.HE
 --- !u!1 &6526407873393894658
 GameObject:
   m_ObjectHideFlags: 0

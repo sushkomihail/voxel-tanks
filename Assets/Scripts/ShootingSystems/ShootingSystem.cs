@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Projectiles;
+using Settings;
 using ShootingSystems.Data;
 using Tools;
 using UnityEngine;
@@ -72,6 +74,16 @@ namespace ShootingSystems
             return -1;
         }
 
+        public float GetProjectileNormalization()
+        {
+            return GlobalSettings.Normalizations.GetValueOrDefault(_selectedProjectileType, 0);
+        }
+
+        public float GetProjectileRicochetAngle()
+        {
+            return GlobalSettings.RicochetAngles.GetValueOrDefault(_selectedProjectileType, -1);
+        }
+
         public abstract void Shoot();
 
         public void OnProjectileHit(Projectile projectile)
@@ -85,7 +97,7 @@ namespace ShootingSystems
             {
                 if (item.Type == _selectedProjectileType)
                 {
-                    projectile.Initialize(item.Type, item.Props, this);
+                    projectile.Initialize(item.Props, this);
                     break;
                 }
             }

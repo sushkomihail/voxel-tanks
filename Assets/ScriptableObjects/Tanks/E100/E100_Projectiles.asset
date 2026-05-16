@@ -14,26 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShootingSystems.Data.ProjectilesData
   _items:
   - _type: 0
-    _prefab: {fileID: 8237230870406337322, guid: 76078b98c0830664f9cc12debecdb48a,
+    _prefab: {fileID: 2040240931393412606, guid: 76078b98c0830664f9cc12debecdb48a,
       type: 3}
     _props:
       _speed: 500
       _penetration: 200
+      _splashRadius: 0
       _armorDamage: 750
       _moduleDamage: 100
   - _type: 3
-    _prefab: {fileID: 8852913365502919370, guid: a7977e930ea900448b1c9c0d1e1a9cc9,
+    _prefab: {fileID: 6342351449169156315, guid: a7977e930ea900448b1c9c0d1e1a9cc9,
       type: 3}
     _props:
       _speed: 300
       _penetration: 340
+      _splashRadius: 0
       _armorDamage: 600
       _moduleDamage: 100
   - _type: 2
-    _prefab: {fileID: 4102392199253153247, guid: 76da1986101f82946a803da614794366,
+    _prefab: {fileID: 3932257370315563413, guid: 76da1986101f82946a803da614794366,
       type: 3}
     _props:
       _speed: 400
       _penetration: 50
+      _splashRadius: 0
       _armorDamage: 1000
       _moduleDamage: 100

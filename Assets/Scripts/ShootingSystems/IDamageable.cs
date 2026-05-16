@@ -1,4 +1,6 @@
-﻿namespace ShootingSystems
+﻿using Projectiles;
+
+namespace ShootingSystems
 {
     public interface IDamageable
     {

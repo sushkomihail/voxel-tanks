@@ -11,6 +11,8 @@ namespace Tank
         [SerializeField] private Vector3 _cameraFollowingOffset = new(0f, 3f, -9.2f);
 
         public TankGun Gun => _gun;
+        public TankView View => _view;
+
         public Transform Center => _center;
         
         private TankCamera _camera;

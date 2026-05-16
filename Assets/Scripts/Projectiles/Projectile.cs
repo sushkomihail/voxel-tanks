@@ -1,16 +1,18 @@
 ﻿using Settings;
+using ShootingSystems;
 using UnityEngine;
 
-namespace ShootingSystems
+namespace Projectiles
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class Projectile : MonoBehaviour
     {
-        public ProjectileType Type { get; private set; }
+        public ProjectileType Type { get; protected set; }
+
+        protected ShootingSystem _shootingSystem;
+        protected ProjectileProps _props;
+        protected float _normalization;
         
         private Rigidbody _rigidbody;
-        private ProjectileProps _props;
-        private ShootingSystem _shootingSystem;
         private bool _hasHit;
         
         private void Update()
@@ -18,11 +20,9 @@ namespace ShootingSystems
             Rotate();
         }
 
-        public void Initialize(ProjectileType type, ProjectileProps props, ShootingSystem shootingSystem)
+        public virtual void Initialize(ProjectileProps props, ShootingSystem shootingSystem)
         {
             _rigidbody = GetComponent<Rigidbody>();
-            
-            Type = type;
             _props = props;
             _shootingSystem = shootingSystem;
         }
@@ -44,18 +44,18 @@ namespace ShootingSystems
             transform.rotation = targetRotation;
         }
 
-        private void OnCollisionEnter(Collision other)
+        private void OnCollisionEnter(Collision collision)
         {
             if (_hasHit) return;
             
             _hasHit = true;
-            ContactPoint contact = other.contacts[0];
+            ContactPoint contact = collision.contacts[0];
             
             if (!contact.otherCollider.TryGetComponent(out IDamageable damageable)) return;
             
             if (damageable is Armor.Armor armor)
             {
-                float reducedThickness = armor.GetReducedThickness(contact.normal, transform.forward);
+                float reducedThickness = armor.GetReducedThickness(contact.normal, transform.forward, _normalization);
                 float penetrationRatio =
                     1 + Random.Range(-GlobalSettings.PenetrationError, GlobalSettings.PenetrationError);
                 float realPenetration = _props.Penetration * penetrationRatio;

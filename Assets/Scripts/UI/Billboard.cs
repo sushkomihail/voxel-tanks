@@ -18,7 +18,7 @@ namespace UI
 
         private void LookAtCamera()
         {
-            transform.LookAt(_camera.transform);
+            transform.LookAt(_camera.transform, Vector3.down);
         }
     }
 }
