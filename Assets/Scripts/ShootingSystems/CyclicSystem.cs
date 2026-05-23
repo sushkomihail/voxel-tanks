@@ -27,7 +27,7 @@ namespace ShootingSystems
         {
             if (_elapsedReloadingTime < _systemData.ReloadingTime) return;
 
-            var projectile = _projectilePools[_selectedProjectileType].Get();
+            var projectile = _projectilePools[LoadProjectile()].Get();
             projectile.Launch(_projectilePivot);
             _elapsedReloadingTime = 0;
         }

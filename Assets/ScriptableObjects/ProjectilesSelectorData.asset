@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca930fe962c40e6bfa15c385aeb1dcb, type: 3}
+  m_Name: ProjectilesSelectorData
+  m_EditorClassIdentifier: Assembly-CSharp::UI.ProjectilesSelectorData
+  _itemsData:
+  - _type: 0
+    _sprite: {fileID: 546817930, guid: 544230935265ea047ac7823b584cfa18, type: 3}
+  - _type: 1
+    _sprite: {fileID: -1940509419, guid: 544230935265ea047ac7823b584cfa18, type: 3}
+  - _type: 2
+    _sprite: {fileID: 876461563, guid: 544230935265ea047ac7823b584cfa18, type: 3}
+  - _type: 3
+    _sprite: {fileID: -2122736005, guid: 544230935265ea047ac7823b584cfa18, type: 3}

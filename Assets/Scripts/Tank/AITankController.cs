@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using AI;
-using Input;
+using InputSystem;
 using UnityEngine;
 
 namespace Tank
@@ -13,16 +13,16 @@ namespace Tank
         {
             Initialize();
             
-            _input = GetComponent<AIInput>();
-            ((AIInput)_input).Initialize(BattleData.Id, pathfinder, routerTargets, defaultRouterTarget);
-            _input.Enable();
+            Input = GetComponent<AIInput>();
+            ((AIInput)Input).Initialize(BattleData.Id, pathfinder, routerTargets, defaultRouterTarget);
+            Input.Enable();
         }
         
         private void Update()
         {
-            if (!_input.IsActive) return;
+            if (!Input.IsActive) return;
             
-            Vector3 lookPosition = ((AIInput)_input).GetLookInput();
+            Vector3 lookPosition = ((AIInput)Input).GetLookInput();
             _turret.Rotate(lookPosition);
             _gun.Rotate(lookPosition);
             

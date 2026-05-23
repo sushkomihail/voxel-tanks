@@ -4,7 +4,7 @@ using AI;
 using Environment.Base;
 using Environment.Brick;
 using Environment.Map;
-using Input;
+using InputSystem;
 using Spawners;
 using Tank;
 using UI;
@@ -59,7 +59,7 @@ namespace Scenes
             
             InitializeBases();
             
-            _uiLoader.Initialize(_playerTankController, _npcTanks, _tankCamera);
+            _uiLoader.Initialize(_playerTankController, _tankCamera);
         }
 
         private void OnEnable()

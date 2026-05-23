@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Input
+namespace InputSystem
 {
     public abstract class Input : MonoBehaviour
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Projectiles;
 using Settings;
 using ShootingSystems.Data;
@@ -13,49 +14,46 @@ namespace ShootingSystems
         [SerializeField] private ProjectilesData _projectilesData;
         [SerializeField] private int _projectilePoolDepth = 5;
         
+        public IReadOnlyList<ProjectileType> ProjectileTypes => _projectileTypes.AsReadOnly();
+        public event Action OnCurrentProjectileTypeChanged;
+        
         protected readonly Dictionary<ProjectileType, ObjectPool<Projectile>> _projectilePools = new();
-        protected ProjectileType _selectedProjectileType;
+        
+        private readonly List<ProjectileType> _projectileTypes = new();
+        private readonly List<ProjectileType> _projectilesQueue = new();
         
         public void Initialize()
         {
             if (_projectilesData.Items.Count == 0) return;
             
-            _selectedProjectileType = _projectilesData.Items[0].Type;
+            _projectilesData.ExtractProps();
+            _projectilesQueue.Add(_projectilesData.Items[0].Type);
             
             foreach (ProjectileItem item in _projectilesData.Items)
             {
+                _projectileTypes.Add(item.Type);
                 _projectilePools[item.Type] =  
-                    new ObjectPool<Projectile>(item.Prefab, InitProjectile, _projectilePoolDepth);
+                    new ObjectPool<Projectile>(item.Prefab, InitializeProjectile, _projectilePoolDepth);
             }
         }
 
-        public void OnUpdate()
+        public void AddNextProjectileTypeToQueue(ProjectileType type)
         {
-            
-        }
-
-        public void SetSelectedProjectileType(ProjectileType type)
-        {
-            foreach (var item in _projectilesData.Items)
+            if (_projectilesQueue.Count > 1)
             {
-                if (item.Type == type)
-                {
-                    _selectedProjectileType = type;
-                    break;
-                }
+                _projectilesQueue[1] = type;
             }
-            
-            Debug.LogError("Failed to set projectile type: type not initialize for this shooting system");
+            else
+            {
+                _projectilesQueue.Add(type);
+            }
         }
 
         public float GetProjectileSpeed()
         {
-            foreach (var item in _projectilesData.Items)
+            if (_projectilesData.TryGetPropsByType(_projectilesQueue[0], out ProjectileProps props))
             {
-                if (item.Type == _selectedProjectileType)
-                {
-                    return item.Props.Speed;
-                }
+                return props.Speed;
             }
 
             return 0f;
@@ -63,12 +61,9 @@ namespace ShootingSystems
 
         public int GetProjectilePenetration()
         {
-            foreach (var item in _projectilesData.Items)
+            if (_projectilesData.TryGetPropsByType(_projectilesQueue[0], out ProjectileProps props))
             {
-                if (item.Type == _selectedProjectileType)
-                {
-                    return item.Props.Penetration;
-                }
+                return props.Penetration;
             }
 
             return -1;
@@ -76,12 +71,19 @@ namespace ShootingSystems
 
         public float GetProjectileNormalization()
         {
-            return GlobalSettings.Normalizations.GetValueOrDefault(_selectedProjectileType, 0);
+            return GlobalSettings.Normalizations.GetValueOrDefault(_projectilesQueue[0], 0);
         }
 
         public float GetProjectileRicochetAngle()
         {
-            return GlobalSettings.RicochetAngles.GetValueOrDefault(_selectedProjectileType, -1);
+            return GlobalSettings.RicochetAngles.GetValueOrDefault(_projectilesQueue[0], -1);
+        }
+        
+        public void SetNextProjectileTypeAsCurrent()
+        {
+            if (_projectilesQueue.Count < 2) return;
+            
+            _projectilesQueue.RemoveAt(0);
         }
 
         public abstract void Shoot();
@@ -91,15 +93,24 @@ namespace ShootingSystems
             _projectilePools[projectile.Type].Release(projectile);
         }
 
-        private void InitProjectile(Projectile projectile)
+        protected ProjectileType LoadProjectile()
         {
-            foreach (var item in _projectilesData.Items)
+            if (_projectilesQueue.Count > 1)
             {
-                if (item.Type == _selectedProjectileType)
-                {
-                    projectile.Initialize(item.Props, this);
-                    break;
-                }
+                ProjectileType type = _projectilesQueue[0];
+                SetNextProjectileTypeAsCurrent();
+                OnCurrentProjectileTypeChanged?.Invoke();
+                return type;
+            }
+
+            return _projectilesQueue[0];
+        }
+
+        private void InitializeProjectile(Projectile projectile)
+        {
+            if (_projectilesData.TryGetPropsByType(projectile.Type, out ProjectileProps props))
+            {
+                projectile.Initialize(props, this);
             }
         }
     }

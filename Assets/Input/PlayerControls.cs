@@ -12,10 +12,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
-using Object = UnityEngine.Object;
 
 /// <summary>
 /// Provides programmatic access to <see cref="InputActionAsset" />, <see cref="InputActionMap" />, <see cref="InputAction" /> and <see cref="InputControlScheme" /> instances defined in asset "Assets/Input/PlayerControls.inputactions".
@@ -201,6 +199,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Projectile"",
+            ""id"": ""b569d150-d8c8-4383-a90a-ec579fbb36b7"",
+            ""actions"": [
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""34b46b6d-57ba-48df-8242-633b38308f77"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""430b9224-357d-47ad-b08b-b63426eb1f25"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -221,11 +247,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Tank_Move = m_Tank.FindAction("Move", throwIfNotFound: true);
         m_Tank_Look = m_Tank.FindAction("Look", throwIfNotFound: true);
         m_Tank_Shoot = m_Tank.FindAction("Shoot", throwIfNotFound: true);
+        // Projectile
+        m_Projectile = asset.FindActionMap("Projectile", throwIfNotFound: true);
+        m_Projectile_Select = m_Projectile.FindAction("Select", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
-        Debug.Assert(!m_Tank.enabled, "This will cause a leak and performance issues, PlayerControls.Tank.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Tank.enabled, "This will cause a leak and performance issues, PlayerControls.Tank.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Projectile.enabled, "This will cause a leak and performance issues, PlayerControls.Projectile.Disable() has not been called.");
     }
 
     /// <summary>
@@ -233,7 +263,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public void Dispose()
     {
-        Object.Destroy(asset);
+        UnityEngine.Object.Destroy(asset);
     }
 
     /// <inheritdoc cref="UnityEngine.InputSystem.InputActionAsset.bindingMask" />
@@ -415,6 +445,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="TankActions" /> instance referencing this action map.
     /// </summary>
     public TankActions @Tank => new TankActions(this);
+
+    // Projectile
+    private readonly InputActionMap m_Projectile;
+    private List<IProjectileActions> m_ProjectileActionsCallbackInterfaces = new List<IProjectileActions>();
+    private readonly InputAction m_Projectile_Select;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Projectile".
+    /// </summary>
+    public struct ProjectileActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ProjectileActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Projectile/Select".
+        /// </summary>
+        public InputAction @Select => m_Wrapper.m_Projectile_Select;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Projectile; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ProjectileActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ProjectileActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ProjectileActions" />
+        public void AddCallbacks(IProjectileActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ProjectileActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ProjectileActionsCallbackInterfaces.Add(instance);
+            @Select.started += instance.OnSelect;
+            @Select.performed += instance.OnSelect;
+            @Select.canceled += instance.OnSelect;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ProjectileActions" />
+        private void UnregisterCallbacks(IProjectileActions instance)
+        {
+            @Select.started -= instance.OnSelect;
+            @Select.performed -= instance.OnSelect;
+            @Select.canceled -= instance.OnSelect;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ProjectileActions.UnregisterCallbacks(IProjectileActions)" />.
+        /// </summary>
+        /// <seealso cref="ProjectileActions.UnregisterCallbacks(IProjectileActions)" />
+        public void RemoveCallbacks(IProjectileActions instance)
+        {
+            if (m_Wrapper.m_ProjectileActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ProjectileActions.AddCallbacks(IProjectileActions)" />
+        /// <seealso cref="ProjectileActions.RemoveCallbacks(IProjectileActions)" />
+        /// <seealso cref="ProjectileActions.UnregisterCallbacks(IProjectileActions)" />
+        public void SetCallbacks(IProjectileActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ProjectileActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ProjectileActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ProjectileActions" /> instance referencing this action map.
+    /// </summary>
+    public ProjectileActions @Projectile => new ProjectileActions(this);
     private int m_KeyboardSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -469,5 +595,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShoot(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Projectile" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ProjectileActions.AddCallbacks(IProjectileActions)" />
+    /// <seealso cref="ProjectileActions.RemoveCallbacks(IProjectileActions)" />
+    public interface IProjectileActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelect(InputAction.CallbackContext context);
     }
 }

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: T62A_Projectiles
   m_EditorClassIdentifier: Assembly-CSharp::ShootingSystems.Data.ProjectilesData
   _items:
-  - _type: 2
-    _prefab: {fileID: 3932257370315563413, guid: 76da1986101f82946a803da614794366,
+  - _type: 1
+    _prefab: {fileID: 2040240931393412606, guid: 76078b98c0830664f9cc12debecdb48a,
       type: 3}
     _props:
-      _speed: 30
-      _penetration: 32
-      _splashRadius: 0.5
-      _armorDamage: 420
+      _speed: 50
+      _penetration: 230
+      _splashRadius: 0
+      _armorDamage: 360
       _moduleDamage: 50
-  - _type: 3
+  - _type: 4
     _prefab: {fileID: 6342351449169156315, guid: a7977e930ea900448b1c9c0d1e1a9cc9,
       type: 3}
     _props:
@@ -31,12 +31,12 @@ MonoBehaviour:
       _splashRadius: 0
       _armorDamage: 300
       _moduleDamage: 50
-  - _type: 0
-    _prefab: {fileID: 2040240931393412606, guid: 76078b98c0830664f9cc12debecdb48a,
+  - _type: 3
+    _prefab: {fileID: 3932257370315563413, guid: 76da1986101f82946a803da614794366,
       type: 3}
     _props:
-      _speed: 50
-      _penetration: 230
-      _splashRadius: 0
-      _armorDamage: 360
+      _speed: 30
+      _penetration: 32
+      _splashRadius: 0.5
+      _armorDamage: 420
       _moduleDamage: 50

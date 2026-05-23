@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Projectiles
 {
-    public class Projectile : MonoBehaviour
+    public abstract class Projectile : MonoBehaviour
     {
-        public ProjectileType Type { get; protected set; }
+        public virtual ProjectileType Type => ProjectileType.AP;
 
         protected ShootingSystem _shootingSystem;
         protected ProjectileProps _props;
@@ -14,7 +14,7 @@ namespace Projectiles
         
         private Rigidbody _rigidbody;
         private bool _hasHit;
-        
+
         private void Update()
         {
             Rotate();

@@ -6,13 +6,9 @@ namespace Projectiles
 {
     public class HE : Projectile
     {
+        public override ProjectileType Type => ProjectileType.HE;
+
         private readonly Collider[] _affectedColliders = new Collider[10];
-        
-        public override void Initialize(ProjectileProps props, ShootingSystem shootingSystem)
-        {
-            base.Initialize(props, shootingSystem);
-            Type = ProjectileType.HE;
-        }
 
         private void OnCollisionEnter(Collision collision)
         {

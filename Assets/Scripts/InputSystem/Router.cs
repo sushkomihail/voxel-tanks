@@ -4,7 +4,7 @@ using Environment.Base;
 using Tank;
 using UnityEngine;
 
-namespace Input
+namespace InputSystem
 {
     public class Router
     {

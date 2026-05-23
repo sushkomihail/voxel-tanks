@@ -1,4 +1,4 @@
-﻿using Input;
+﻿using InputSystem;
 using UnityEngine;
 
 namespace Tank
@@ -9,7 +9,7 @@ namespace Tank
         [SerializeField] private Transform _center;
         [SerializeField] private Transform _cameraTarget;
         [SerializeField] private Vector3 _cameraFollowingOffset = new(0f, 3f, -9.2f);
-
+        
         public TankGun Gun => _gun;
         public TankView View => _view;
 
@@ -23,17 +23,17 @@ namespace Tank
             
             _camera = camera;
             
-            _input = GetComponent<PlayerInput>();
-            _input.Enable();
+            Input = GetComponent<PlayerInput>();
+            Input.Enable();
         }
 
         private void Update()
         {
-            Vector2 lookInputVector = ((PlayerInput)_input).GetLookInput();
+            Vector2 lookInputVector = ((PlayerInput)Input).GetLookInput();
             _camera.Rotate(lookInputVector);
             _camera.TryHighlightFocusObject();
             
-            if (!_input.IsActive) return;
+            if (!Input.IsActive) return;
             
             Vector3 lookPosition = _camera.CastRay();
             _turret.Rotate(lookPosition);

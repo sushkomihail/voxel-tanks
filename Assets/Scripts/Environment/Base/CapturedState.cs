@@ -1,5 +1,4 @@
 ﻿using System;
-using Input;
 using Tank.Data;
 
 namespace Environment.Base

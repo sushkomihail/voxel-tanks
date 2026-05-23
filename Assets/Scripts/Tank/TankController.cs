@@ -1,6 +1,7 @@
-﻿using Input;
+﻿using InputSystem;
 using Tank.Data;
 using UnityEngine;
+using Input = InputSystem.Input;
 
 namespace Tank
 {
@@ -12,10 +13,10 @@ namespace Tank
         [SerializeField] protected TankGun _gun;
         [SerializeField] protected TankData _data;
         
+        public Input Input { get; protected set; }
         public TankHealth Health { get; private set; }
         public TankBattleData BattleData { get; private set; }
         
-        protected Input.Input _input;
         protected TankView _view;
 
         protected void Initialize()
@@ -43,14 +44,14 @@ namespace Tank
 
         private void FixedUpdate()
         {
-            Vector2 moveInputVector = _input.GetMoveInput();
+            Vector2 moveInputVector = Input.GetMoveInput();
             _chassis.Move(moveInputVector);
             _chassis.Rotate(moveInputVector);
         }
 
         protected void Shoot()
         {
-            if (_input.GetShootInput())
+            if (Input.GetShootInput())
             {
                 _gun.HandleShooting();
             }
@@ -58,7 +59,7 @@ namespace Tank
         
         private void OnDeath()
         {
-            _input.Disable();
+            Input.Disable();
             _view.OnDeath();
         }
     }

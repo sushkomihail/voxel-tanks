@@ -5,10 +5,11 @@ namespace Projectiles
 {
     public class APCR : Projectile
     {
+        public override ProjectileType Type => ProjectileType.APCR;
+
         public override void Initialize(ProjectileProps props, ShootingSystem shootingSystem)
         {
             base.Initialize(props, shootingSystem);
-            Type = ProjectileType.APCR;
             _normalization = GlobalSettings.Normalizations[Type];
         }
     }

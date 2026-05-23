@@ -1,4 +1,4 @@
-﻿namespace Input
+﻿namespace InputSystem
 {
     public interface IRouterTarget
     {
