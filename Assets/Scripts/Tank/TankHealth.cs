@@ -6,7 +6,7 @@ namespace Tank
 {
     public class TankHealth : MonoBehaviour
     {
-        [SerializeField] private Armor.Armor[] _armorAreas;
+        [SerializeField] private ArmorSystem.Armor[] _armorAreas;
         
         public event Action<int, int> OnHealthChanged;
         public event Action OnDeath;
@@ -39,7 +39,7 @@ namespace Tank
 
         private void InitArmorAreas()
         {
-            foreach (Armor.Armor armorArea in _armorAreas)
+            foreach (ArmorSystem.Armor armorArea in _armorAreas)
             {
                 armorArea.Initialize(this);
             }

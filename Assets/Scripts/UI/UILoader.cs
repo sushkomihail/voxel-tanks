@@ -31,7 +31,7 @@ namespace UI
         private void OnDestroy()
         {
             _playerTankController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged -=
-                _projectilesSelector.ReplaceCurrentWithNext;
+                _projectilesSelector.SetNextItemAsCurrent;
             
             _projectilesSelector.OnCurrentItemChanged -=
                 _playerTankController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;
@@ -63,7 +63,7 @@ namespace UI
             _projectilesSelector.Initialize(projectileTypes, _playerTankController.Input as PlayerInput);
 
             _playerTankController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged +=
-                _projectilesSelector.ReplaceCurrentWithNext;
+                _projectilesSelector.SetNextItemAsCurrent;
 
             _projectilesSelector.OnCurrentItemChanged +=
                 _playerTankController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;

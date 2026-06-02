@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13dcb2d612aa489b9f94362ed8988b37, type: 3}
+  m_Name: TracerColorComparator
+  m_EditorClassIdentifier: Assembly-CSharp::Projectiles.TracerColorComparator
+  _comparisons:
+  - ProjectileType: 0
+    Color: {r: 1, g: 1, b: 0.8537736, a: 0.50980395}
+  - ProjectileType: 1
+    Color: {r: 1, g: 1, b: 1, a: 0.39215687}
+  - ProjectileType: 2
+    Color: {r: 0.990566, g: 0.73353785, b: 0.5186454, a: 0.5882353}
+  - ProjectileType: 3
+    Color: {r: 1, g: 0.9035945, b: 0.5283019, a: 0.5882353}

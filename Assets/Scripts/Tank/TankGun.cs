@@ -1,6 +1,4 @@
-﻿using System;
-using Armor;
-using ShootingSystems;
+﻿using ShootingSystems;
 using Tank.Data;
 using UnityEngine;
 using Utils;
@@ -11,12 +9,9 @@ namespace Tank
     {
         [SerializeField] private Transform _turret;
         [SerializeField] private ShootingSystem _shootingSystem;
-        [SerializeField] private int _projectileTrajectoryPredictionIterations = 50;
-        [SerializeField] private float _projectileTrajectoryPredictionInterval = 0.1f;
+        [SerializeField] private int _projectileTrajectoryPredictionIterations = 70;
 
         public ShootingSystem ShootingSystem => _shootingSystem;
-
-        private const float MaxAimDistance = 50f;
 
         private GunData _data;
         private LaggedRotator _rotator;
@@ -33,33 +28,39 @@ namespace Tank
             hitTransform = null;
             hitNormal = Vector3.zero;
             hitDirection = Vector3.zero;
-            
-            Vector3 startPosition = transform.position;
+    
+            Vector3 currentPosition = transform.position;
             Vector3 velocity = transform.forward * _shootingSystem.GetProjectileSpeed();
-            Vector3 previousPosition = startPosition;
+    
+            float flightDistance = 0f;
 
-            for (int i = 1; i < _projectileTrajectoryPredictionIterations; i++)
+            for (int i = 0; i < _projectileTrajectoryPredictionIterations; i++)
             {
-                float time = i * _projectileTrajectoryPredictionInterval;
-                Vector3 nextPosition = startPosition + velocity * time + Physics.gravity * (time * time) / 2;
+                velocity += Physics.gravity * Time.fixedDeltaTime;
+                
+                Vector3 moveDirection = velocity * Time.fixedDeltaTime;
+                float moveDistance = moveDirection.magnitude;
+        
+                flightDistance += moveDistance;
 
-                if (Physics.Linecast(previousPosition, nextPosition, out RaycastHit hit, _data.AimMask.value))
-                {
-                    hitTransform = hit.collider.transform;
-                    hitNormal = hit.normal;
-                    hitDirection = nextPosition - previousPosition;
-                    return hit.point;
-                }
-
-                previousPosition = nextPosition;
-
-                if (Vector3.Distance(startPosition, nextPosition) >= MaxAimDistance)
+                if (flightDistance > _shootingSystem.GetProjectileMaxFlightDistance())
                 {
                     break;
                 }
+
+                Vector3 nextPosition = currentPosition + moveDirection;
+                if (Physics.Linecast(currentPosition, nextPosition, out RaycastHit hit, _data.AimMask.value))
+                {
+                    hitTransform = hit.collider.transform;
+                    hitNormal = hit.normal;
+                    hitDirection = moveDirection.normalized;
+                    return hit.point;
+                }
+
+                currentPosition = nextPosition;
             }
-            
-            return previousPosition;
+    
+            return currentPosition;
         }
 
         public void Rotate(Vector3 lookPosition)

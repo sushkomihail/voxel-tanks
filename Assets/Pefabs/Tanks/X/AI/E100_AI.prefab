@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f8695947de422eab2d56beea9cd912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Armor.Armor
-  _thickness: 220
+  _thickness: 120
 --- !u!1 &3594974528574548305
 GameObject:
   m_ObjectHideFlags: 0

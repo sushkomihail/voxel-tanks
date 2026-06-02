@@ -53,7 +53,7 @@ namespace UI
             }
         }
         
-        public void ReplaceCurrentWithNext()
+        public void SetNextItemAsCurrent()
         {
             _currentItem?.Deselect();
             _nextItem?.SelectAsCurrent();
@@ -90,7 +90,7 @@ namespace UI
 
             if (item == _nextItem)
             {
-                ReplaceCurrentWithNext();
+                SetNextItemAsCurrent();
                 OnCurrentItemChanged?.Invoke();
                 return;
             }

@@ -1,4 +1,4 @@
-﻿using Armor;
+﻿using ArmorSystem;
 using Settings;
 using Tank;
 using TMPro;
@@ -40,7 +40,7 @@ namespace UI.Aims
                 _gun.PredictHitPoint(out Transform hitTransform, out Vector3 hitNormal, out Vector3 hitDirection);
             float normalization = _gun.ShootingSystem.GetProjectileNormalization();
             float ricochetAngle = _gun.ShootingSystem.GetProjectileRicochetAngle();
-            (ArmorInfoCode code, float reducedThickness) = 
+            (ArmorInfo code, float reducedThickness) = 
                 _armorInformer.GetReducedThickness(hitTransform, hitNormal, hitDirection, normalization, ricochetAngle);
             
             UpdateReloadIndicator();
@@ -59,17 +59,17 @@ namespace UI.Aims
             _gunAim.position = screenPoint;
         }
 
-        private void UpdatePenetrationIndicator(ArmorInfoCode code, float reducedThickness)
+        private void UpdatePenetrationIndicator(ArmorInfo code, float reducedThickness)
         {
             float penetration = _gun.ShootingSystem.GetProjectilePenetration();
             
-            if (penetration == -1 || code == ArmorInfoCode.NotFound)
+            if (penetration == -1 || code == ArmorInfo.NotFound)
             {
                 _penetrationIndicator.color = Color.white;
                 return;
             }
 
-            if (code == ArmorInfoCode.Ricochet)
+            if (code == ArmorInfo.Ricochet)
             {
                 _penetrationIndicator.color = _nonPenetrationColor;
                 return;
@@ -92,15 +92,15 @@ namespace UI.Aims
             }
         }
 
-        private void UpdateArmorText(ArmorInfoCode code, float reducedThickness)
+        private void UpdateArmorText(ArmorInfo code, float reducedThickness)
         {
-            if (code == ArmorInfoCode.NotFound)
+            if (code == ArmorInfo.NotFound)
             {
                 _armorText.text = "";
                 return;
             }
 
-            if (code == ArmorInfoCode.Ricochet)
+            if (code == ArmorInfo.Ricochet)
             {
                 // TODO: Add localization
                 _armorText.text = "Рикошет";

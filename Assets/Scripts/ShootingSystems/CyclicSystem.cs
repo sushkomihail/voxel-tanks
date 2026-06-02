@@ -1,4 +1,5 @@
-﻿using ShootingSystems.Data;
+﻿using Projectiles;
+using ShootingSystems.Data;
 using UnityEngine;
 
 namespace ShootingSystems
@@ -22,13 +23,19 @@ namespace ShootingSystems
             
             return _elapsedReloadingTime / _systemData.ReloadingTime;
         }
-        
+
+        public override void SetNextProjectileTypeAsCurrent()
+        {
+            base.SetNextProjectileTypeAsCurrent();
+            
+            _elapsedReloadingTime = 0;
+        }
+
         public override void Shoot()
         {
             if (_elapsedReloadingTime < _systemData.ReloadingTime) return;
 
-            var projectile = _projectilePools[LoadProjectile()].Get();
-            projectile.Launch(_projectilePivot);
+            ProjectilesUpdater.Instance.AddProjectile(CreateProjectile());
             _elapsedReloadingTime = 0;
         }
     }

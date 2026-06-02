@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Projectiles;
 using Settings;
 using ShootingSystems.Data;
-using Tools;
 using UnityEngine;
 
 namespace ShootingSystems
@@ -12,15 +11,13 @@ namespace ShootingSystems
     {
         [SerializeField] protected Transform _projectilePivot;
         [SerializeField] private ProjectilesData _projectilesData;
-        [SerializeField] private int _projectilePoolDepth = 5;
         
         public IReadOnlyList<ProjectileType> ProjectileTypes => _projectileTypes.AsReadOnly();
         public event Action OnCurrentProjectileTypeChanged;
         
-        protected readonly Dictionary<ProjectileType, ObjectPool<Projectile>> _projectilePools = new();
-        
         private readonly List<ProjectileType> _projectileTypes = new();
         private readonly List<ProjectileType> _projectilesQueue = new();
+        private readonly Dictionary<ProjectileType, ProjectileFactory> _projectileFactories = new();
         
         public void Initialize()
         {
@@ -32,8 +29,14 @@ namespace ShootingSystems
             foreach (ProjectileItem item in _projectilesData.Items)
             {
                 _projectileTypes.Add(item.Type);
-                _projectilePools[item.Type] =  
-                    new ObjectPool<Projectile>(item.Prefab, InitializeProjectile, _projectilePoolDepth);
+                _projectileFactories.Add(item.Type, item.Type switch
+                {
+                    ProjectileType.AP => new APFactory(item.Props),
+                    ProjectileType.APCR => new APCRFactory(item.Props),
+                    ProjectileType.HE => new HEFactory(item.Props),
+                    ProjectileType.HEAT => new HEATFactory(item.Props),
+                    _ => throw new ArgumentOutOfRangeException()
+                });
             }
         }
 
@@ -59,6 +62,16 @@ namespace ShootingSystems
             return 0f;
         }
 
+        public float GetProjectileMaxFlightDistance()
+        {
+            if (_projectilesData.TryGetPropsByType(_projectilesQueue[0], out ProjectileProps props))
+            {
+                return props.MaxFlightDistance;
+            }
+
+            return 0f;
+        }
+
         public int GetProjectilePenetration()
         {
             if (_projectilesData.TryGetPropsByType(_projectilesQueue[0], out ProjectileProps props))
@@ -79,7 +92,7 @@ namespace ShootingSystems
             return GlobalSettings.RicochetAngles.GetValueOrDefault(_projectilesQueue[0], -1);
         }
         
-        public void SetNextProjectileTypeAsCurrent()
+        public virtual void SetNextProjectileTypeAsCurrent()
         {
             if (_projectilesQueue.Count < 2) return;
             
@@ -88,30 +101,17 @@ namespace ShootingSystems
 
         public abstract void Shoot();
 
-        public void OnProjectileHit(Projectile projectile)
+        protected Projectile CreateProjectile()
         {
-            _projectilePools[projectile.Type].Release(projectile);
-        }
-
-        protected ProjectileType LoadProjectile()
-        {
+            ProjectileType type = _projectilesQueue[0];
+            
             if (_projectilesQueue.Count > 1)
             {
-                ProjectileType type = _projectilesQueue[0];
                 SetNextProjectileTypeAsCurrent();
                 OnCurrentProjectileTypeChanged?.Invoke();
-                return type;
             }
 
-            return _projectilesQueue[0];
-        }
-
-        private void InitializeProjectile(Projectile projectile)
-        {
-            if (_projectilesData.TryGetPropsByType(projectile.Type, out ProjectileProps props))
-            {
-                projectile.Initialize(props, this);
-            }
+            return _projectileFactories[type].CreateProjectile(_projectilePivot.position, _projectilePivot.forward);
         }
     }
 }

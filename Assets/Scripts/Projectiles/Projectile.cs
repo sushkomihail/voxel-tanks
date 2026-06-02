@@ -1,74 +1,119 @@
-﻿using Settings;
+﻿using ArmorSystem;
+using Settings;
 using ShootingSystems;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Projectiles
 {
-    public abstract class Projectile : MonoBehaviour
+    public abstract class Projectile
     {
         public virtual ProjectileType Type => ProjectileType.AP;
-
-        protected ShootingSystem _shootingSystem;
-        protected ProjectileProps _props;
-        protected float _normalization;
         
-        private Rigidbody _rigidbody;
-        private bool _hasHit;
+        public float Scale => _props.Scale;
+        public Vector3 CurrentPosition { get; private set; }
+        public Vector3 Velocity { get; private set; }
+        public bool IsInactive { get; protected set; }
 
-        private void Update()
-        {
-            Rotate();
-        }
+        protected readonly ProjectileProps _props;
+        protected float _basePenetration;
+        protected float _baseNormalization;
+        
+        private float _flightDistance;
 
-        public virtual void Initialize(ProjectileProps props, ShootingSystem shootingSystem)
+        protected Projectile(ProjectileProps props, Vector3 position, Vector3 direction)
         {
-            _rigidbody = GetComponent<Rigidbody>();
             _props = props;
-            _shootingSystem = shootingSystem;
-        }
-        
-        public void Launch(Transform pivot)
-        {
-            _hasHit = false;
-            
-            transform.position = pivot.position;
-            transform.rotation = pivot.rotation;
-            
-            _rigidbody.angularVelocity = Vector3.zero;
-            _rigidbody.linearVelocity = pivot.forward * _props.Speed;
+            _basePenetration = _props.Penetration;
+            CurrentPosition = position;
+            Velocity = direction * _props.Speed;
         }
 
-        private void Rotate()
+        public void Update(float deltaTime)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(_rigidbody.linearVelocity);
-            transform.rotation = targetRotation;
-        }
+            if (IsInactive) return;
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (_hasHit) return;
+            Velocity += Physics.gravity * deltaTime;
             
-            _hasHit = true;
-            ContactPoint contact = collision.contacts[0];
+            Vector3 moveDirection = Velocity * deltaTime;
+            float moveDistance = moveDirection.magnitude;
             
-            if (!contact.otherCollider.TryGetComponent(out IDamageable damageable)) return;
-            
-            if (damageable is Armor.Armor armor)
+            _flightDistance += moveDistance;
+
+            if (_flightDistance > _props.MaxFlightDistance)
             {
-                float reducedThickness = armor.GetReducedThickness(contact.normal, transform.forward, _normalization);
-                float penetrationRatio =
-                    1 + Random.Range(-GlobalSettings.PenetrationError, GlobalSettings.PenetrationError);
-                float realPenetration = _props.Penetration * penetrationRatio;
+                IsInactive = true;
+                return;
+            }
 
-                if (reducedThickness > realPenetration)
+#if UNITY_EDITOR
+            Debug.DrawRay(CurrentPosition, moveDirection, Color.red, 5f);
+#endif
+            
+            if (Physics.Raycast(CurrentPosition, moveDirection, out RaycastHit hit, moveDistance))
+            {
+                if (hit.collider.TryGetComponent(out Armor armor))
                 {
-                    _shootingSystem.OnProjectileHit(this);
-                    return;
+                    HandleArmorHit(armor, hit, moveDirection.normalized);
+                }
+                else
+                {
+                    HandleEnvironmentHit(hit);
                 }
             }
+
+            if (IsInactive)
+            {
+                CurrentPosition = hit.point;
+            }
+            else
+            {
+                CurrentPosition += moveDirection;
+            }
+        }
+
+        protected abstract void HandleEnvironmentHit(RaycastHit hit);
+
+        protected abstract void HandleArmorHit(Armor armor, RaycastHit hit, Vector3 hitDirection);
+
+        protected float CalculateRealPenetration()
+        {
+            float penetrationRatio =
+                1 + Random.Range(-GlobalSettings.PenetrationError, GlobalSettings.PenetrationError);
+            return _basePenetration * penetrationRatio;
+        }
+        
+        protected bool CheckForThreeCaliberRule(Armor armor)
+        {
+            return _props.Caliber > armor.Thickness * 3;
+        }
+        
+        protected float ApplyTwoCaliberRule(Armor armor)
+        {
+            if (_props.Caliber > armor.Thickness * 2)
+            {
+                return _baseNormalization * 1.4f * _props.Caliber / armor.Thickness;
+            }
             
-            damageable.TakeDamage(_props);
-            _shootingSystem.OnProjectileHit(this);
+            return _baseNormalization;
+        }
+
+        protected void OnRicochet(RaycastHit hit)
+        {
+            CurrentPosition = hit.point + hit.normal * 0.01f;
+            Velocity = Vector3.Reflect(Velocity, hit.normal);
+        }
+
+        protected bool TryDealDamageToArmor(Armor armor, float reducedThickness, float realPenetration)
+        {
+            if (reducedThickness <= realPenetration)
+            {
+                armor.TakeDamage(_props);
+                IsInactive = true;
+                return true;
+            }
+            
+            return false;
         }
     }
 }

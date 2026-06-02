@@ -617,8 +617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _turret: {fileID: 1553849065742502068}
   _shootingSystem: {fileID: 2981873854212364217}
-  _projectileTrajectoryPredictionIterations: 50
-  _projectileTrajectoryPredictionInterval: 0.1
+  _projectileTrajectoryPredictionIterations: 70
 --- !u!114 &2981873854212364217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,7 +632,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectilePivot: {fileID: 7527405949487928999}
   _projectilesData: {fileID: 11400000, guid: f99c61dcc23336a458076354cbd4ef28, type: 2}
-  _projectilePoolDepth: 5
   _systemData: {fileID: 11400000, guid: e24852a701a5ee9489eb7c9bae591dc0, type: 2}
 --- !u!1 &3437741162789132839
 GameObject:

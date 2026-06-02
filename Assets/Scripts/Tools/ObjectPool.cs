@@ -18,10 +18,8 @@ namespace Tools
             
             for (int i = 0; i < objectsCount; i++)
             {
-                var obj = Object.Instantiate(_prefab, Vector3.zero, Quaternion.identity);
-                _initializeFunction(obj);
+                AddObject(out T obj);
                 obj.gameObject.SetActive(false);
-                _objects.Add(obj);
             }
         }
 
