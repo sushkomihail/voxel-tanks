@@ -9,14 +9,14 @@ namespace ArmorSystem
         private Armor _lastArmor;
         
         public (ArmorInfo, float) GetReducedThickness(Transform hitTransform, Vector3 hitNormal, Vector3 hitDirection,
-            float normalization, float ricochetAngle)
+            float normalization, float ricochetAngle, int caliber)
         {
             if (!hitTransform) return (ArmorInfo.NotFound, 0);
             
             if (hitTransform == _lastArmorTransform)
             {
                 if (_lastArmor)
-                    return CheckForRicochetAndSetReducedThickness(hitNormal, hitDirection, normalization, ricochetAngle);
+                    return GetReducedThickness(hitNormal, hitDirection, normalization, ricochetAngle, caliber);
                 return (ArmorInfo.NotFound, 0);
             }
 
@@ -26,17 +26,17 @@ namespace ArmorSystem
             {
                 _lastArmorTransform = hitTransform;
                 _lastArmor = armor;
-                return CheckForRicochetAndSetReducedThickness(hitNormal, hitDirection, normalization, ricochetAngle);
+                return GetReducedThickness(hitNormal, hitDirection, normalization, ricochetAngle, caliber);
             }
             
             _lastTransform = hitTransform;
             return (ArmorInfo.NotFound, 0);
         }
 
-        private (ArmorInfo, float) CheckForRicochetAndSetReducedThickness(Vector3 hitNormal, Vector3 hitDirection,
-            float normalization, float ricochetAngle)
+        private (ArmorInfo, float) GetReducedThickness(Vector3 hitNormal, Vector3 hitDirection,
+            float normalization, float ricochetAngle, int caliber)
         {
-            if (Armor.IsRicochet(hitNormal, hitDirection, normalization, ricochetAngle, out float hitAngle)
+            if (_lastArmor.IsRicochet(hitNormal, hitDirection, normalization, ricochetAngle, caliber, out float hitAngle)
                 && ricochetAngle != -1)
             {
                 return (ArmorInfo.Ricochet, 0);

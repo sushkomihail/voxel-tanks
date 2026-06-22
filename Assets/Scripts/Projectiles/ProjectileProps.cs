@@ -14,6 +14,8 @@ namespace Projectiles
         [SerializeField] private float _splashRadius;
         [SerializeField] private int _armorDamage = 300;
         [SerializeField] private int _moduleDamage = 50;
+        [SerializeField] private LayerMask _hitMask = (1 << 3) | (1 << 9) | (1 << 10) | (1 << 11);
+        [SerializeField] private LayerMask _armorMask = 1 << 11;
         
         public float Scale => _scale;
         public int Caliber => _caliber;
@@ -23,5 +25,7 @@ namespace Projectiles
         public float SplashRadius => _splashRadius;
         public virtual int ArmorDamage => _armorDamage;
         public int ModuleDamage => _moduleDamage;
+        public LayerMask HitMask => _hitMask;
+        public LayerMask ArmorMask => _armorMask;
     }
 }

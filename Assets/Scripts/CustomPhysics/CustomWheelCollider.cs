@@ -8,23 +8,31 @@ namespace CustomPhysics
         [SerializeField] private float _springStrength = 100f;
         [SerializeField] private float _springDamper = 10f;
         [SerializeField] private float _wheelRadius = 0.3f;
-        [SerializeField] private float _wheelMass = 20f;
+        [SerializeField] private float _massPerWheel = 150f;
         [SerializeField] private float _gripFactor = 0.7f; // [0, 1]
         [SerializeField] private LayerMask _groundLayer = 1 << 3;
     
         private Rigidbody _vehicleRigidbody;
         private RaycastHit _groundHit;
+        private float _currentGripFactor;
         
         public bool IsGrounded { get; private set; }
+        public float RPM => 30 * _vehicleRigidbody.linearVelocity.magnitude / (Mathf.PI * _wheelRadius);
 
         private void Awake()
         {
             _vehicleRigidbody = transform.root.GetComponent<Rigidbody>();
+            _currentGripFactor = _gripFactor;
         }
     
         private void FixedUpdate()
         {
             UpdateWheelPhysics();
+        }
+
+        public void SetGripFactor(float gripFactor)
+        {
+            _currentGripFactor = gripFactor;
         }
     
         private void UpdateWheelPhysics()
@@ -60,10 +68,10 @@ namespace CustomPhysics
             Vector3 velocity = _vehicleRigidbody.GetPointVelocity(_groundHit.point);
         
             float sidewaysSpeed = Vector3.Dot(velocity, transform.right);
-            float desiredSidewaysSpeed = -sidewaysSpeed * _gripFactor;
+            float desiredSidewaysSpeed = -sidewaysSpeed * _currentGripFactor;
             float desiredSidewaysAcceleration = desiredSidewaysSpeed / Time.fixedDeltaTime;
             
-            Vector3 sidewaysForce = transform.right * (desiredSidewaysAcceleration * _wheelMass);
+            Vector3 sidewaysForce = transform.right * (desiredSidewaysAcceleration * _massPerWheel);
             return sidewaysForce;
         }
     

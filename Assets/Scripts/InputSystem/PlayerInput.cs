@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace InputSystem
 {
@@ -7,17 +6,13 @@ namespace InputSystem
     {
         public PlayerControls Controls { get; private set; }
 
-        private void Awake()
+        public override void Initialize()
         {
             Controls = new PlayerControls();
-        }
-        
-        private void OnEnable()
-        {
             Controls.Enable();
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             Controls.Disable();
         }

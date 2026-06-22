@@ -17,7 +17,7 @@ namespace Tank
         // TODO: Make sensitivity settings
         private const float Sensitivity = 20f;
 
-        public void Initialize()
+        private void Awake()
         {
             _highlighter = new ObjectHighlighter();
         }

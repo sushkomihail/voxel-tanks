@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6500206253288445799}
   - component: {fileID: 8937098188888123554}
   m_Layer: 5
-  m_Name: CurrentHealthText
+  m_Name: HealthText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.HealthBar
   _fillRect: {fileID: 5280117397492322302}
-  _currentHealthText: {fileID: 8937098188888123554}
+  _healthText: {fileID: 8937098188888123554}
 --- !u!114 &6439160732826317668
 MonoBehaviour:
   m_ObjectHideFlags: 0

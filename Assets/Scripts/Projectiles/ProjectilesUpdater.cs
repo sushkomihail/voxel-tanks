@@ -63,7 +63,7 @@ namespace Projectiles
             _activeProjectiles.Add(projectile, tracer);
         }
 
-        private void InitializeTracer(Tracer tracer)
+        private static void InitializeTracer(Tracer tracer)
         {
             tracer.SetEnabled(false);
         }

@@ -11,7 +11,7 @@ namespace Projectiles
         public override ProjectileType Type => ProjectileType.HE;
 
         private const int ShardRaysNumber = 32;
-        private readonly Dictionary<TankController, int> _tankDamages = new();
+        private readonly Dictionary<TankHealth, int> _tankDamages = new();
         private Vector3[] _shardRayDirections;
         
         public HE(ProjectileProps props, Vector3 position, Vector3 direction) : base(props, position, direction)
@@ -30,7 +30,7 @@ namespace Projectiles
         {
             float realPenetration = CalculateRealPenetration();
             float reducedThickness =
-                armor.GetReducedThickness(hit.normal, hitDirection, 0f);
+                armor.GetReducedThickness(hit.normal, hitDirection, 0f, _props.Caliber);
 
             if (armor.IsScreen)
             {
@@ -97,7 +97,7 @@ namespace Projectiles
                 Debug.DrawRay(origin, _shardRayDirections[i].normalized * _props.SplashRadius, Color.red, 5f);
 #endif
                 
-                if (!Physics.Raycast(origin, _shardRayDirections[i], out RaycastHit hit, _props.SplashRadius)) continue;
+                if (!Physics.Raycast(origin, _shardRayDirections[i], out RaycastHit hit, _props.SplashRadius, _props.HitMask.value)) continue;
                 
                 if (!hit.collider.TryGetComponent(out IDamageable damageable)) continue;
 
@@ -105,14 +105,12 @@ namespace Projectiles
                 {
                     if (armor.IsScreen) continue;
                     
-                    if (hit.transform.root.TryGetComponent(out TankController tank))
-                    {
-                        int realDamage = CalculateRealDamage(armor.Thickness, hit.distance);
+                    int realDamage = CalculateRealDamage(armor.Thickness, hit.distance);
+                    // Debug.Log($"HE hit armor: penetration: {realDamage}");
                             
-                        if (!_tankDamages.TryGetValue(tank, out int currentDamage) || realDamage > currentDamage)
-                        {
-                            _tankDamages[tank] = realDamage;
-                        }
+                    if (!_tankDamages.TryGetValue(armor.TankHealth, out int currentDamage) || realDamage > currentDamage)
+                    {
+                        _tankDamages[armor.TankHealth] = realDamage;
                     }
                 }
                 else
@@ -121,9 +119,9 @@ namespace Projectiles
                 }
             }
             
-            foreach ((TankController tank, int damage) in _tankDamages)
+            foreach ((TankHealth health, int damage) in _tankDamages)
             {
-                tank.Health.OnArmorDamaged(damage);
+                health.OnArmorDamaged(damage);
             }
         }
     }

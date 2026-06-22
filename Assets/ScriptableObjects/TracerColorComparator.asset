@@ -20,4 +20,4 @@ MonoBehaviour:
   - ProjectileType: 2
     Color: {r: 0.990566, g: 0.73353785, b: 0.5186454, a: 0.5882353}
   - ProjectileType: 3
-    Color: {r: 1, g: 0.9035945, b: 0.5283019, a: 0.5882353}
+    Color: {r: 1, g: 0.9035945, b: 0.5283019, a: 0.50980395}

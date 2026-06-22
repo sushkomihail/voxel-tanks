@@ -1,4 +1,5 @@
 ﻿using ArmorSystem;
+using Projectiles;
 using Settings;
 using Tank;
 using TMPro;
@@ -38,15 +39,26 @@ namespace UI.Aims
         {
             Vector3 aimPoint = 
                 _gun.PredictHitPoint(out Transform hitTransform, out Vector3 hitNormal, out Vector3 hitDirection);
+            
             float normalization = _gun.ShootingSystem.GetProjectileNormalization();
             float ricochetAngle = _gun.ShootingSystem.GetProjectileRicochetAngle();
-            (ArmorInfo code, float reducedThickness) = 
-                _armorInformer.GetReducedThickness(hitTransform, hitNormal, hitDirection, normalization, ricochetAngle);
+
+            if (_gun.ShootingSystem.TryGetSelectedProjectileProps(out ProjectileProps projectileProps))
+            {
+                (ArmorInfo code, float reducedThickness) = _armorInformer.GetReducedThickness(
+                    hitTransform,
+                    hitNormal,
+                    hitDirection,
+                    normalization,
+                    ricochetAngle,
+                    projectileProps.Caliber);
             
-            UpdateReloadIndicator();
-            UpdateGunAim(aimPoint);
-            UpdatePenetrationIndicator(code, reducedThickness);
-            UpdateArmorText(code, reducedThickness);
+                UpdateReloadIndicator();
+                UpdateGunAim(aimPoint);
+                
+                UpdatePenetrationIndicator(code, reducedThickness, projectileProps.Penetration);
+                UpdateArmorText(code, reducedThickness);
+            }
         }
 
         protected abstract void UpdateReloadIndicator();
@@ -59,11 +71,9 @@ namespace UI.Aims
             _gunAim.position = screenPoint;
         }
 
-        private void UpdatePenetrationIndicator(ArmorInfo code, float reducedThickness)
+        private void UpdatePenetrationIndicator(ArmorInfo code, float reducedThickness, int penetration)
         {
-            float penetration = _gun.ShootingSystem.GetProjectilePenetration();
-            
-            if (penetration == -1 || code == ArmorInfo.NotFound)
+            if (code == ArmorInfo.NotFound)
             {
                 _penetrationIndicator.color = Color.white;
                 return;

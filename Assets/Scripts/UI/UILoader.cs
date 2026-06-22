@@ -4,40 +4,48 @@ using InputSystem;
 using Tank;
 using UI.Aims;
 using UnityEngine;
+using VContainer;
 
 namespace UI
 {
     public class UILoader : MonoBehaviour
     {
-        [SerializeField] private Canvas _canvas;
         [SerializeField] private AimsDatabase _aimsDatabase;
         [SerializeField] private ProjectilesSelector _projectilesSelector;
         [SerializeField] private HealthBar _playerHealthBar;
+        [SerializeField] private TankChassisView _tankChassisView;
         [SerializeField] private Transform _baseViewsContainer;
         [SerializeField] private BaseView _baseViewPrefab;
         
-        private PlayerTankController _playerTankController;
+        private TankCamera _tankCamera;
+        private PlayerController _playerController;
 
-        public void Initialize(PlayerTankController playerTankController, TankCamera camera)
+        [Inject]
+        public void Construct(TankCamera tankCamera)
         {
-            _playerTankController = playerTankController;
+            _tankCamera = tankCamera;
+        }
+
+        public void Initialize(PlayerController playerController)
+        {
+            _playerController = playerController;
             
-            InitializeAim(playerTankController, camera);
+            InitializeAim(playerController);
             InitializeProjectilesSelector();
-            InitializePlayerHealthBar(playerTankController);
+            _tankChassisView.Initialize(_playerController.Chassis);
             LockCursor();
         }
 
         private void OnDestroy()
         {
-            _playerTankController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged -=
+            _playerController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged -=
                 _projectilesSelector.SetNextItemAsCurrent;
             
             _projectilesSelector.OnCurrentItemChanged -=
-                _playerTankController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;
+                _playerController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;
             
             _projectilesSelector.OnNextItemChanged -= 
-                _playerTankController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
+                _playerController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
         }
 
         public BaseView InstantiateBaseView(int index)
@@ -47,35 +55,29 @@ namespace UI
             return view;
         }
 
-        private void InitializeAim(PlayerTankController playerTankController, TankCamera camera)
+        private void InitializeAim(PlayerController playerController)
         {
-            Aim aimPrefab = _aimsDatabase.GetAimByShootingSystem(playerTankController.Gun.ShootingSystem);
+            Aim aimPrefab = _aimsDatabase.GetAimByShootingSystem(playerController.Gun.ShootingSystem);
 
             if (!aimPrefab) return;
             
-            Aim aim = Instantiate(aimPrefab, _canvas.transform);
-            aim.Initialize(playerTankController.Gun, camera.Camera);
+            Aim aim = Instantiate(aimPrefab, transform);
+            aim.Initialize(playerController.Gun, _tankCamera.Camera);
         }
 
         private void InitializeProjectilesSelector()
         {
-            var projectileTypes = _playerTankController.Gun.ShootingSystem.ProjectileTypes;
-            _projectilesSelector.Initialize(projectileTypes, _playerTankController.Input as PlayerInput);
+            var projectileTypes = _playerController.Gun.ShootingSystem.ProjectileTypes;
+            _projectilesSelector.Initialize(projectileTypes, _playerController.Input as PlayerInput);
 
-            _playerTankController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged +=
+            _playerController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged +=
                 _projectilesSelector.SetNextItemAsCurrent;
 
             _projectilesSelector.OnCurrentItemChanged +=
-                _playerTankController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;
+                _playerController.Gun.ShootingSystem.SetNextProjectileTypeAsCurrent;
             
             _projectilesSelector.OnNextItemChanged +=
-                _playerTankController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
-        }
-
-        private void InitializePlayerHealthBar(PlayerTankController playerTankController)
-        {
-            _playerHealthBar.Initialize();
-            playerTankController.View.SetPlayerHealthBar(_playerHealthBar);
+                _playerController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
         }
         
         private static void LockCursor()

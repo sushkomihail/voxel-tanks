@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace Tank
 {
-    public class TankHealth : MonoBehaviour
+    public class TankHealth
     {
-        [SerializeField] private ArmorSystem.Armor[] _armorAreas;
-        
         public event Action<int, int> OnHealthChanged;
         public event Action OnDeath;
 
@@ -18,30 +16,20 @@ namespace Tank
         {
             _data = data;
             _currentHealth = _data.MaxHealth;
-            OnHealthChanged?.Invoke(_currentHealth, _data.MaxHealth);
             
-            InitArmorAreas();
+            OnHealthChanged?.Invoke(_currentHealth, _data.MaxHealth);
         }
 
         public void OnArmorDamaged(int damage)
         {
             if (_currentHealth == 0) return;
             
-            _currentHealth -= damage;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, _data.MaxHealth);
+            _currentHealth = Mathf.Max(0, _currentHealth - damage);
             OnHealthChanged?.Invoke(_currentHealth, _data.MaxHealth);
             
             if (_currentHealth == 0)
             {
                 OnDeath?.Invoke();
-            }
-        }
-
-        private void InitArmorAreas()
-        {
-            foreach (ArmorSystem.Armor armorArea in _armorAreas)
-            {
-                armorArea.Initialize(this);
             }
         }
     }

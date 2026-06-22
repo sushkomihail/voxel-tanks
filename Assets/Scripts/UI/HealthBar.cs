@@ -7,12 +7,7 @@ namespace UI
     public class HealthBar : MonoBehaviour
     {
         [SerializeField] private Image _fillRect;
-        [SerializeField] private TMP_Text _currentHealthText;
-        
-        public void Initialize()
-        {
-            _fillRect.fillAmount = 1;
-        }
+        [SerializeField] private TMP_Text _healthText;
 
         public void UpdateSlider(float value)
         {
@@ -20,9 +15,9 @@ namespace UI
             // TODO: Make slider animation with DoTween
         }
 
-        public void UpdateCurrentHealthText(int currentHealth, int maxHealth)
+        public void UpdateHealthText(int currentHealth, int maxHealth)
         {
-            _currentHealthText.text = $"{currentHealth}/{maxHealth}";
+            _healthText.text = $"{currentHealth}/{maxHealth}";
         }
     }
 }

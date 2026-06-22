@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using InputSystem;
+using Navigation;
 using Tank;
 using UnityEngine;
 
@@ -12,6 +12,9 @@ namespace Environment.Base
         [SerializeField] private float _captureTime = 10;
 
         public event Action OnCapturingProgressChanged;
+        
+        public Vector3 Position => transform.position;
+        public bool IsActive { get; private set; }
         
         public float CaptureTime => _captureTime;
         public float CapturingProgress { get; private set; }
@@ -48,13 +51,17 @@ namespace Environment.Base
             _onFieldTanks = onFieldTanks;
             _playerId = playerId;
 
+            // TODO: Refactor foreach
             foreach (TankController tank in _onFieldTanks)
             {
                 _insideBaseTanks.Add(tank.BattleData.Id, false);
-                tank.Health.OnDeath += () =>
+                tank.Health.OnHealthChanged += (currentHealth, _) =>
                 {
-                    _onFieldTanks.Remove(tank);
-                    _insideBaseTanks.Remove(tank.BattleData.Id);
+                    if (currentHealth <= 0)
+                    {
+                        _onFieldTanks.Remove(tank);
+                        _insideBaseTanks.Remove(tank.BattleData.Id);
+                    }
                 };
             }
             
@@ -70,8 +77,8 @@ namespace Environment.Base
 
         private void Update()
         {
-            ObserveOnFieldTanks();
-            _state.UpdateCaptureProgress();
+            // ObserveOnFieldTanks();
+            // _state.UpdateCaptureProgress();
         }
 
         public int GetInsideBaseTanksCount()

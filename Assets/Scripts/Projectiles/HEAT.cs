@@ -21,29 +21,23 @@ namespace Projectiles
         protected override void HandleArmorHit(Armor armor, RaycastHit hit, Vector3 hitDirection)
         {
             float realPenetration = CalculateRealPenetration();
-            float reducedThickness;
-
-            if (CheckForThreeCaliberRule(armor))
-            {
-                reducedThickness = armor.GetReducedThickness(hit.normal, hitDirection, _baseNormalization);
-
-                if (armor.IsScreen) IsInactive = true;
-                else TryDealDamageToArmor(armor, reducedThickness, realPenetration);
-                
-                return;
-            }
-
             float ricochetAngle = GlobalSettings.RicochetAngles[Type];
-
-            if (Armor.IsRicochet(hit.normal, hitDirection, _baseNormalization, ricochetAngle,
+            
+            if (armor.IsRicochet(hit.normal, hitDirection, _baseNormalization, ricochetAngle, _props.Caliber,
                     out float hitAngle))
             {
                 OnRicochet(hit);
                 return;
             }
 
-            reducedThickness = armor.GetReducedThickness(hitAngle);
-            TryDealDamageToArmor(armor, reducedThickness, realPenetration);
+            float reducedThickness = armor.GetReducedThickness(hitAngle);
+
+            if (!armor.IsScreen)
+            {
+                TryDealDamageToArmor(armor, reducedThickness, realPenetration);
+            }
+            
+            IsInactive = true;
         }
     }
 }

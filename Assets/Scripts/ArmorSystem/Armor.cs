@@ -5,29 +5,29 @@ using UnityEngine;
 
 namespace ArmorSystem
 {
-    public class Armor : MonoBehaviour, IDamageable
+    public sealed class Armor : MonoBehaviour, IDamageable
     {
         [SerializeField] private int _thickness;
         [SerializeField] private bool _isScreen;
         
+        public TankHealth TankHealth { get; private set; }
         public int Thickness => _thickness;
         public bool IsScreen => _isScreen;
         
-        private TankHealth _tankHealth;
 
         public void Initialize(TankHealth tankHealth)
         {
-            _tankHealth = tankHealth;
+            TankHealth = tankHealth;
         }
         
-        public virtual void TakeDamage(ProjectileProps props)
+        public void TakeDamage(ProjectileProps props)
         {
-            _tankHealth.OnArmorDamaged(props.ArmorDamage);
+            TankHealth.OnArmorDamaged(props.ArmorDamage);
         }
 
-        public float GetReducedThickness(Vector3 armorNormal, Vector3 hitDirection, float normalization)
+        public float GetReducedThickness(Vector3 armorNormal, Vector3 hitDirection, float normalization, int caliber)
         {
-            float angle = CalculateHitAngle(armorNormal, hitDirection, normalization);
+            float angle = CalculateHitAngle(armorNormal, hitDirection, normalization, caliber);
             float cos = Mathf.Cos(angle * Mathf.Deg2Rad);
             
             if (cos == 0) return _thickness;
@@ -42,16 +42,25 @@ namespace ArmorSystem
             return _thickness / cos;
         }
 
-        public static bool IsRicochet(Vector3 armorNormal, Vector3 hitDirection, float normalization,
-            float ricochetAngle, out float hitAngle)
+        public bool IsRicochet(Vector3 armorNormal, Vector3 hitDirection, float normalization,
+            float ricochetAngle, int caliber, out float hitAngle)
         {
-            hitAngle = CalculateHitAngle(armorNormal, hitDirection, normalization);
+            hitAngle = CalculateHitAngle(armorNormal, hitDirection, normalization, caliber);
+
+            if (caliber > _thickness * 3) return false;
             return hitAngle >= ricochetAngle;
         }
 
-        private static float CalculateHitAngle(Vector3 armorNormal, Vector3 hitDirection, float normalization)
+        private float CalculateHitAngle(Vector3 armorNormal, Vector3 hitDirection, float normalization, int caliber)
         {
-            return Mathf.Clamp(Vector3.Angle(-armorNormal, hitDirection) - normalization, 0, 90);
+            float realNormalization = normalization;
+            
+            if (caliber > _thickness * 2)
+            {
+                realNormalization = normalization * 1.4f * caliber / _thickness;
+            }
+            
+            return Mathf.Clamp(Vector3.Angle(-armorNormal, hitDirection) - realNormalization, 0, 90);
         }
     }
 }

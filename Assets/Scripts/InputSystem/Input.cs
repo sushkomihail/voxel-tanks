@@ -5,6 +5,8 @@ namespace InputSystem
     public abstract class Input : MonoBehaviour
     {
         public bool IsActive { get; private set; }
+        
+        public abstract void Initialize();
 
         public virtual void Enable()
         {

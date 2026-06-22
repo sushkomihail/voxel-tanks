@@ -1,13 +1,17 @@
-﻿using ShootingSystems;
+﻿using ArmorSystem;
+using ShootingSystems;
 using Tank.Data;
 using UnityEngine;
 using Utils;
+using VContainer;
 
 namespace Tank
 {
     public class TankGun : MonoBehaviour
     {
         [SerializeField] private Transform _turret;
+        [SerializeField] private Transform _collider;
+        [SerializeField] private Transform _projectilePivot;
         [SerializeField] private ShootingSystem _shootingSystem;
         [SerializeField] private int _projectileTrajectoryPredictionIterations = 70;
 
@@ -15,12 +19,21 @@ namespace Tank
 
         private GunData _data;
         private LaggedRotator _rotator;
+        private CollidersUpdater _collidersUpdater;
 
-        public void Initialize(GunData data)
+        [Inject]
+        public void Construct(CollidersUpdater collidersUpdater)
+        {
+            _collidersUpdater = collidersUpdater;
+        }
+        
+        public void Initialize(GunData data, TankHealth health)
         {
             _data = data;
             _rotator = new LaggedRotator(transform);
             _shootingSystem.Initialize();
+            
+            InitializeCollider(health);
         }
 
         public Vector3 PredictHitPoint(out Transform hitTransform, out Vector3 hitNormal, out Vector3 hitDirection)
@@ -29,8 +42,8 @@ namespace Tank
             hitNormal = Vector3.zero;
             hitDirection = Vector3.zero;
     
-            Vector3 currentPosition = transform.position;
-            Vector3 velocity = transform.forward * _shootingSystem.GetProjectileSpeed();
+            Vector3 currentPosition = _projectilePivot.position;
+            Vector3 velocity = _projectilePivot.forward * _shootingSystem.GetProjectileSpeed();
     
             float flightDistance = 0f;
 
@@ -68,8 +81,10 @@ namespace Tank
             Vector3 launchDirection = GetLaunchDirection(lookPosition);
             Vector3 targetDirection = Vector3.ProjectOnPlane(launchDirection, _turret.right);
             Vector3 upwards = Vector3.Cross(targetDirection, transform.right);
+            
             Quaternion targetRotation = Quaternion.LookRotation(targetDirection, upwards);
             _rotator.Rotate(targetRotation, _data.RotationSpeed, _data.RotationLag);
+            
             ClampAngles();
         }
         
@@ -80,7 +95,7 @@ namespace Tank
         
         private Vector3 GetLaunchDirection(Vector3 targetPosition, bool highArc = false)
         {
-            Vector3 directionToTarget = targetPosition - transform.position;
+            Vector3 directionToTarget = targetPosition - _projectilePivot.position;
             Vector3 directionToTargetXZ = new Vector3(directionToTarget.x, 0f, directionToTarget.z);
             float x = directionToTargetXZ.magnitude;
             float y = directionToTarget.y;
@@ -117,6 +132,27 @@ namespace Tank
             localAngles.x = localAngles.x > 180 ? localAngles.x - 360 : localAngles.x;
             localAngles.x = Mathf.Clamp(localAngles.x, -_data.MaxVerticalAngle, -_data.MinVerticalAngle);
             transform.localEulerAngles = localAngles;
+        }
+
+        private void InitializeCollider(TankHealth health)
+        {
+            if (!_collider) return;
+            
+            Transform collider = Instantiate(_collider, transform.position, transform.rotation);
+
+            var armorAreas = collider.GetComponentsInChildren<Armor>();
+            InitializeArmorAreas(armorAreas, health);
+            
+            _collidersUpdater.AddCollider(collider, transform);
+            collider.parent = _collidersUpdater.transform;
+        }
+        
+        private static void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
+        {
+            foreach (Armor armor in armorAreas)
+            {
+                armor.Initialize(health);
+            }
         }
     }
 }

@@ -37,9 +37,8 @@ namespace Projectiles
             
             Vector3 moveDirection = Velocity * deltaTime;
             float moveDistance = moveDirection.magnitude;
-            
-            _flightDistance += moveDistance;
 
+            _flightDistance += moveDistance;
             if (_flightDistance > _props.MaxFlightDistance)
             {
                 IsInactive = true;
@@ -49,8 +48,8 @@ namespace Projectiles
 #if UNITY_EDITOR
             Debug.DrawRay(CurrentPosition, moveDirection, Color.red, 5f);
 #endif
-            
-            if (Physics.Raycast(CurrentPosition, moveDirection, out RaycastHit hit, moveDistance))
+
+            if (Physics.Raycast(CurrentPosition, moveDirection, out RaycastHit hit, moveDistance, _props.HitMask.value))
             {
                 if (hit.collider.TryGetComponent(out Armor armor))
                 {
@@ -60,16 +59,18 @@ namespace Projectiles
                 {
                     HandleEnvironmentHit(hit);
                 }
-            }
 
-            if (IsInactive)
-            {
-                CurrentPosition = hit.point;
+                if (IsInactive)
+                {
+                    CurrentPosition = hit.point;
+                    return; 
+                }
+                
+                moveDistance -= hit.distance;
+                moveDirection = Velocity.normalized;
             }
-            else
-            {
-                CurrentPosition += moveDirection;
-            }
+            
+            CurrentPosition += moveDirection * moveDistance;
         }
 
         protected abstract void HandleEnvironmentHit(RaycastHit hit);
@@ -81,21 +82,6 @@ namespace Projectiles
             float penetrationRatio =
                 1 + Random.Range(-GlobalSettings.PenetrationError, GlobalSettings.PenetrationError);
             return _basePenetration * penetrationRatio;
-        }
-        
-        protected bool CheckForThreeCaliberRule(Armor armor)
-        {
-            return _props.Caliber > armor.Thickness * 3;
-        }
-        
-        protected float ApplyTwoCaliberRule(Armor armor)
-        {
-            if (_props.Caliber > armor.Thickness * 2)
-            {
-                return _baseNormalization * 1.4f * _props.Caliber / armor.Thickness;
-            }
-            
-            return _baseNormalization;
         }
 
         protected void OnRicochet(RaycastHit hit)
@@ -109,7 +95,6 @@ namespace Projectiles
             if (reducedThickness <= realPenetration)
             {
                 armor.TakeDamage(_props);
-                IsInactive = true;
                 return true;
             }
             

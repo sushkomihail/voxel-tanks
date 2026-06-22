@@ -11,19 +11,16 @@ namespace ShootingSystems.Data
         
         public IReadOnlyList<ProjectileItem> Items => _items;
         
-        private readonly Dictionary<ProjectileType, ProjectileProps> _props = new();
-
-        public void ExtractProps()
+        public Dictionary<ProjectileType, ProjectileProps> ExtractProps()
         {
+            Dictionary<ProjectileType, ProjectileProps> props = new();
+            
             foreach (ProjectileItem item in _items)
             {
-                _props.Add(item.Type, item.Props);
+                props.Add(item.Type, item.Props);
             }
-        }
-
-        public bool TryGetPropsByType(ProjectileType type, out ProjectileProps props)
-        {
-            return _props.TryGetValue(type, out props);
+            
+            return props;
         }
     }
 }

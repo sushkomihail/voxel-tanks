@@ -18,7 +18,11 @@ namespace UI
 
         private void LookAtCamera()
         {
-            transform.LookAt(_camera.transform, Vector3.down);
+            if (_camera)
+            {
+                Vector3 targetDirection = transform.position - _camera.transform.position;
+                transform.rotation = Quaternion.LookRotation(targetDirection);
+            }
         }
     }
 }

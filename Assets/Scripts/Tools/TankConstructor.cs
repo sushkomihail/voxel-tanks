@@ -1,6 +1,5 @@
 using CustomPhysics;
 using Tank;
-using Tank.Modules.Engine;
 using Tank.Modules.Track;
 using UnityEditor;
 using UnityEngine;
@@ -39,7 +38,7 @@ namespace Tools
         private void Construct()
         {
             var root = new GameObject(_name);
-            root.AddComponent<PlayerTankController>();
+            root.AddComponent<PlayerController>();
             
             // First nesting level
             var cameraTarget = new GameObject("CameraTarget");
@@ -69,10 +68,6 @@ namespace Tools
             var rightTrack = new GameObject("RightTrack");
             rightTrack.transform.SetParent(chassisPivot.transform);
             rightTrack.AddComponent<Track>();
-            
-            var engine = new GameObject("Engine");
-            engine.transform.SetParent(internalModules.transform);
-            engine.AddComponent<Engine>();
             
             // Third nesting level
             var gunPivot = new GameObject("GunPivot");

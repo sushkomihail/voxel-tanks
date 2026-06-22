@@ -13,48 +13,12 @@ MonoBehaviour:
   m_Name: TanksDatabase
   m_EditorClassIdentifier: Assembly-CSharp::Databases.TanksDatabase
   _tanks:
-  - _name: T-62A
-    _lockedSprite: {fileID: 21300000, guid: 83bf98a1161f34c4bbfd040d1a2e5812, type: 3}
-    _unlockedSprite: {fileID: 21300000, guid: 840fcbfeee9e1fa45a9e11bf1d0575bb, type: 3}
-    _previewPrefab: {fileID: 1245987131929983312, guid: 2334cada3d7872f4a9285ce5f892c2cb,
-      type: 3}
-    _playerPrefab: {fileID: 7163723705141526253, guid: e20de48159dc4cc44be8daea9c736e79,
-      type: 3}
-    _npcPrefab: {fileID: 5081038071049647632, guid: 2c2840c1401b01e4abaf6c0d4b04a77d,
-      type: 3}
-  - _name: E100
-    _lockedSprite: {fileID: 21300000, guid: 1c42974bc2d716f4e8fe375f58d699d2, type: 3}
-    _unlockedSprite: {fileID: 21300000, guid: f7b1f6d7daf285049bd1dad2d39be2e4, type: 3}
-    _previewPrefab: {fileID: 101046089412869537, guid: ed928933502f56043b3d1ce97b5b14d1,
-      type: 3}
-    _playerPrefab: {fileID: 2660322042515418793, guid: fdc6f802d46fb374abedc5fbda5c0178,
-      type: 3}
-    _npcPrefab: {fileID: 7771141577856195660, guid: 9d0443ac69bcbad4e96a09971d864857,
-      type: 3}
-  - _name: T110E5
-    _lockedSprite: {fileID: 21300000, guid: c157ff25d8e996e4282f95a267a5c35f, type: 3}
-    _unlockedSprite: {fileID: 21300000, guid: 911996f9a36ff694191c347c669851dd, type: 3}
-    _previewPrefab: {fileID: 1598021993350805005, guid: 40d243be38151dc4eaf6a28d89b81737,
-      type: 3}
-    _playerPrefab: {fileID: 4303822475858534536, guid: f6c6d46b20080124aacfe58a1baca763,
-      type: 3}
-    _npcPrefab: {fileID: 2992758377046537675, guid: eba772e7d80ca00458882b3ad298a03e,
-      type: 3}
-  - _name: Foch 155
-    _lockedSprite: {fileID: 21300000, guid: 1a4111f40024eb749a224711722a500d, type: 3}
-    _unlockedSprite: {fileID: 21300000, guid: fc27d53140d80744eaddac81894672aa, type: 3}
-    _previewPrefab: {fileID: 5890528848136665319, guid: 5b423d1b52e767a4ab10a8b1039e9c05,
-      type: 3}
-    _playerPrefab: {fileID: 8421055058957209853, guid: 06ecce1102eb732409a2d4c953640ff9,
-      type: 3}
-    _npcPrefab: {fileID: 6960081661303255733, guid: 86da45e11dbeec64b80067289b229b47,
-      type: 3}
-  - _name: FV215b 183
+  - _name: "\u041C\u0421-1"
     _lockedSprite: {fileID: 21300000, guid: f2a875306c96cd14ab56dd120a879422, type: 3}
     _unlockedSprite: {fileID: 21300000, guid: 405dfc8a26bf6c84795bd9352385ba31, type: 3}
     _previewPrefab: {fileID: 5722925370275054514, guid: c741e53505244c948bec449c9db0e07b,
       type: 3}
-    _playerPrefab: {fileID: 9214998942644733099, guid: 3d5de40af686f524b899680f4a270d93,
+    _playerPrefab: {fileID: 7351126229157280883, guid: 4fac3caa2144eca4187c02e644c3ed24,
       type: 3}
-    _npcPrefab: {fileID: 3169849012088356596, guid: 7cbd3f9a09dbe9642a408b465e4f9339,
+    _npcPrefab: {fileID: 8921875540956356529, guid: 94ed64fbf04e02642b79aa92f4ba2c5f,
       type: 3}

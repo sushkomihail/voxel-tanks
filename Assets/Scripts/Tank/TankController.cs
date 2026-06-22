@@ -1,11 +1,12 @@
-﻿using InputSystem;
+﻿using Navigation;
 using Tank.Data;
+using Tank.View;
 using UnityEngine;
 using Input = InputSystem.Input;
 
 namespace Tank
 {
-    [RequireComponent(typeof(Rigidbody), typeof(TankHealth), typeof(TankView))]
+    [RequireComponent(typeof(Rigidbody), typeof(TankView))]
     public abstract class TankController : MonoBehaviour, IRouterTarget
     {
         [SerializeField] protected TankChassis _chassis;
@@ -14,39 +15,40 @@ namespace Tank
         [SerializeField] protected TankData _data;
         
         public Input Input { get; protected set; }
-        public TankHealth Health { get; private set; }
+        public TankHealth Health { get; } = new();
         public TankBattleData BattleData { get; private set; }
-        
+        public Vector3 Position => transform.position;
+        public bool IsActive { get; private set; } = true;
+
         protected TankView _view;
 
-        protected void Initialize()
+        public virtual void Initialize()
         {
             _view = GetComponent<TankView>();
             _view.Initialize();
-            
-            Health = GetComponent<TankHealth>();
-            Health.OnHealthChanged += _view.OnHealthChanged;
+
+            // Order is important
+            Health.OnHealthChanged += _view.UpdateHealthVisuals;
             Health.OnDeath += OnDeath;
             Health.Initialize(_data.HealthData);
             
-            _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TrackData);
-            _turret.Initialize(_data.TurretData);
-            _gun.Initialize(_data.GunData);
+            _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TransmissionData, _data.TrackData, Health);
+            _turret.Initialize(_data.TurretData, Health);
+            _gun.Initialize(_data.GunData, Health);
             
             BattleData = new TankBattleData();
         }
 
         private void OnDestroy()
         {
-            Health.OnHealthChanged -= _view.OnHealthChanged;
+            Health.OnHealthChanged -= _view.UpdateHealthVisuals;
             Health.OnDeath -= OnDeath;
         }
 
         private void FixedUpdate()
         {
             Vector2 moveInputVector = Input.GetMoveInput();
-            _chassis.Move(moveInputVector);
-            _chassis.Rotate(moveInputVector);
+            _chassis.HandleMovement(moveInputVector);
         }
 
         protected void Shoot()
@@ -56,11 +58,12 @@ namespace Tank
                 _gun.HandleShooting();
             }
         }
-        
+
         private void OnDeath()
         {
+            IsActive = false;
             Input.Disable();
-            _view.OnDeath();
+            _view.ShowDeathVisuals();
         }
     }
 }
