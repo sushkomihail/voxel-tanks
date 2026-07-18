@@ -10,12 +10,14 @@ namespace Tank.Data
         [SerializeField] private float _maxVerticalAngle = 20f;
         [SerializeField] private float _rotationSpeed = 50f;
         [SerializeField] private float _rotationLag = 0.5f;
+        [SerializeField] private int _projectileTrajectoryPredictionIterations = 100;
         [SerializeField] private LayerMask _aimMask = ~(1 << 6);
         
         public float MinVerticalAngle => _minVerticalAngle;
         public float MaxVerticalAngle => _maxVerticalAngle;
         public float RotationSpeed => _rotationSpeed;
         public float RotationLag => _rotationLag;
+        public int ProjectileTrajectoryPredictionIterations => _projectileTrajectoryPredictionIterations;
         public LayerMask AimMask => _aimMask;
     }
 }

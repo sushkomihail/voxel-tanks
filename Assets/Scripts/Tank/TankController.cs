@@ -1,8 +1,11 @@
-﻿using Navigation;
+﻿using EquipmentSystem;
+using InputSystem;
+using Navigation;
 using Tank.Data;
 using Tank.View;
 using UnityEngine;
-using Input = InputSystem.Input;
+using UpgradeSystem;
+using VContainer;
 
 namespace Tank
 {
@@ -14,13 +17,23 @@ namespace Tank
         [SerializeField] protected TankGun _gun;
         [SerializeField] protected TankData _data;
         
-        public Input Input { get; protected set; }
+        public IInput Input { get; protected set; }
         public TankHealth Health { get; } = new();
-        public TankBattleData BattleData { get; private set; }
+        public Equipment Equipment { get; private set; }
         public Vector3 Position => transform.position;
         public bool IsActive { get; private set; } = true;
 
         protected TankView _view;
+        
+        private UpgradeManager _upgradeManager;
+        private UpgradeBroker _upgradeBroker;
+        
+        [Inject]
+        public void Construct(UpgradeManager upgradeManager, UpgradeBroker upgradeBroker)
+        {
+            _upgradeManager = upgradeManager;
+            _upgradeBroker = upgradeBroker;
+        }
 
         public virtual void Initialize()
         {
@@ -30,19 +43,23 @@ namespace Tank
             // Order is important
             Health.OnHealthChanged += _view.UpdateHealthVisuals;
             Health.OnDeath += OnDeath;
-            Health.Initialize(_data.HealthData);
+            Health.Initialize(_data.HealthData, _upgradeManager, _upgradeBroker, this);
+
+            _upgradeBroker.OnStatModifierChanged += Health.QueryMaxHealth;
+
+            Equipment = new Equipment(_data.EquipmentData);
             
             _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TransmissionData, _data.TrackData, Health);
             _turret.Initialize(_data.TurretData, Health);
-            _gun.Initialize(_data.GunData, Health);
-            
-            BattleData = new TankBattleData();
+            _gun.Initialize(_data.GunData, Health, this);
         }
 
         private void OnDestroy()
         {
             Health.OnHealthChanged -= _view.UpdateHealthVisuals;
             Health.OnDeath -= OnDeath;
+            
+            _upgradeBroker.OnStatModifierChanged -= Health.QueryMaxHealth;
         }
 
         private void FixedUpdate()

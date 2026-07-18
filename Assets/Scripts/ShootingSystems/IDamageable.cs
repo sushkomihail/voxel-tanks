@@ -1,9 +1,7 @@
-﻿using Projectiles;
-
-namespace ShootingSystems
+﻿namespace ShootingSystems
 {
     public interface IDamageable
     {
-        public void TakeDamage(ProjectileProps props);
+        public void TakeDamage(int damage, object attacker);
     }
 }

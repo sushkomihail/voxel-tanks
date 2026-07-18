@@ -1,63 +1,77 @@
-﻿using Projectiles;
-using ShootingSystems;
+﻿using ShootingSystems;
 using Tank;
 using UnityEngine;
+using UpgradeSystem;
 
 namespace ArmorSystem
 {
-    public sealed class Armor : MonoBehaviour, IDamageable
+    public class Armor : MonoBehaviour, IDamageable
     {
         [SerializeField] private int _thickness;
-        [SerializeField] private bool _isScreen;
+
+        private UpgradeBroker _upgradeBroker;
+        private object _owner;
         
         public TankHealth TankHealth { get; private set; }
-        public int Thickness => _thickness;
-        public bool IsScreen => _isScreen;
         
-
-        public void Initialize(TankHealth tankHealth)
+        public int Thickness
         {
-            TankHealth = tankHealth;
+            get
+            {
+                StatQuery query = new StatQuery(StatType.Armor, _thickness);
+                _upgradeBroker.Query(_owner, query);
+                return Mathf.RoundToInt(query.Value);
+            }
         }
         
-        public void TakeDamage(ProjectileProps props)
+        public void Initialize(TankHealth tankHealth, UpgradeBroker upgradeBroker, object owner)
         {
-            TankHealth.OnArmorDamaged(props.ArmorDamage);
+            TankHealth = tankHealth;
+            _upgradeBroker = upgradeBroker;
+            _owner = owner;
+        }
+        
+        public virtual void TakeDamage(int damage, object attacker)
+        {
+            TankHealth.TakeDamage(damage, attacker);
         }
 
         public float GetReducedThickness(Vector3 armorNormal, Vector3 hitDirection, float normalization, int caliber)
         {
+            int thickness = Thickness;
             float angle = CalculateHitAngle(armorNormal, hitDirection, normalization, caliber);
             float cos = Mathf.Cos(angle * Mathf.Deg2Rad);
             
-            if (cos == 0) return _thickness;
-            return _thickness / cos;
+            if (cos == 0) return thickness;
+            return thickness / cos;
         }
         
         public float GetReducedThickness(float hitAngle)
         {
+            int thickness = Thickness;
             float cos = Mathf.Cos(hitAngle * Mathf.Deg2Rad);
             
-            if (cos == 0) return _thickness;
-            return _thickness / cos;
+            if (cos == 0) return thickness;
+            return thickness / cos;
         }
 
-        public bool IsRicochet(Vector3 armorNormal, Vector3 hitDirection, float normalization,
+        public bool IsRicochet(Vector3 armorNormal, Vector3 hitDirection, float baseNormalization,
             float ricochetAngle, int caliber, out float hitAngle)
         {
-            hitAngle = CalculateHitAngle(armorNormal, hitDirection, normalization, caliber);
+            hitAngle = CalculateHitAngle(armorNormal, hitDirection, baseNormalization, caliber);
 
-            if (caliber > _thickness * 3) return false;
+            if (caliber > Thickness * 3) return false;
             return hitAngle >= ricochetAngle;
         }
 
-        private float CalculateHitAngle(Vector3 armorNormal, Vector3 hitDirection, float normalization, int caliber)
+        private float CalculateHitAngle(Vector3 armorNormal, Vector3 hitDirection, float baseNormalization, int caliber)
         {
-            float realNormalization = normalization;
+            int thickness = Thickness;
+            float realNormalization = baseNormalization;
             
-            if (caliber > _thickness * 2)
+            if (caliber > thickness * 2)
             {
-                realNormalization = normalization * 1.4f * caliber / _thickness;
+                realNormalization = baseNormalization * 1.4f * caliber / thickness;
             }
             
             return Mathf.Clamp(Vector3.Angle(-armorNormal, hitDirection) - realNormalization, 0, 90);

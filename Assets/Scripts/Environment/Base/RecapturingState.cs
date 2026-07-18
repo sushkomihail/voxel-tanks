@@ -1,4 +1,4 @@
-﻿using Tank.Data;
+﻿using Tank;
 
 namespace Environment.Base
 {
@@ -8,9 +8,9 @@ namespace Environment.Base
         {
         }
 
-        public override void OnTankEntersBase(TankBattleData tankData)
+        public override void OnTankEntersBase(TankController tankController)
         {
-            base.OnTankEntersBase(tankData);
+            base.OnTankEntersBase(tankController);
             
             _baseModel.SetState(_baseModel.RecapturingPauseState);
         }
@@ -27,13 +27,13 @@ namespace Environment.Base
             }
         }
 
-        public override void OnTankLeavesBase(TankBattleData tankData)
+        public override void OnTankLeavesBase(TankController tankController)
         {
-            base.OnTankLeavesBase(tankData);
+            base.OnTankLeavesBase(tankController);
 
-            if (tankData.Id == _baseModel.OwnerId)
+            if (tankController == _baseModel.OwnerController)
             {
-                _baseModel.SetOwnerId(_baseModel.PreviousOwnerId);
+                _baseModel.SetOwnerController(_baseModel.PreviousOwnerController);
             }
             
             _baseModel.SetState(_baseModel.CapturedState);

@@ -4,12 +4,24 @@ using UnityEngine;
 
 namespace Tank.Modules.Track
 {
-    public class Track : TankModule<TrackData>
+    public class Track : TankModule
     {
         [SerializeField] private CustomWheelCollider[] _wheels;
         
         public int WheelsCount => _wheels.Length;
-        public float DamagedTorqueRate => _data.DamagedTorqueRate;
+        
+        public float DamagedTorqueRate
+        {
+            get
+            {
+                if (_data is TrackData trackData)
+                {
+                    return trackData.DamagedTorqueRate;
+                }
+                
+                return 0f;
+            }
+        }
 
         private TrackState _state;
         private float _torqueRate; // [0, 1]

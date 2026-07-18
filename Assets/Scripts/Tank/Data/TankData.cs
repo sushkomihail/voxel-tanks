@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using EquipmentSystem;
+using UnityEngine;
 using Vehicles;
 
 namespace Tank.Data
@@ -13,6 +14,7 @@ namespace Tank.Data
         [SerializeField] private TurretData _turretData;
         [SerializeField] private GunData _gunData;
         [SerializeField] private HealthData _healthData;
+        [SerializeField] private EquipmentData _equipmentData;
         
         public ChassisData ChassisData => _chassisData;
         public EngineData EngineData => _engineData;
@@ -21,5 +23,6 @@ namespace Tank.Data
         public TurretData TurretData => _turretData;
         public GunData GunData => _gunData;
         public HealthData HealthData => _healthData;
+        public EquipmentData EquipmentData => _equipmentData;
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Databases;
 using Environment.Base;
-using InputSystem;
 using Tank;
 using UI.Aims;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UpgradeSystem;
 using VContainer;
+using PlayerInput = InputSystem.PlayerInput;
 
 namespace UI
 {
@@ -12,32 +14,48 @@ namespace UI
     {
         [SerializeField] private AimsDatabase _aimsDatabase;
         [SerializeField] private ProjectilesSelector _projectilesSelector;
+        [SerializeField] private UpgradesSelector _upgradesSelector;
         [SerializeField] private HealthBar _playerHealthBar;
-        [SerializeField] private TankChassisView _tankChassisView;
+        [SerializeField] private DrivingView _drivingView;
         [SerializeField] private Transform _baseViewsContainer;
         [SerializeField] private BaseView _baseViewPrefab;
         
+        private GameInput _inputActions;
         private TankCamera _tankCamera;
+        private UpgradeManager _upgradeManager;
         private PlayerController _playerController;
 
         [Inject]
-        public void Construct(TankCamera tankCamera)
+        public void Construct(GameInput inputActions, TankCamera tankCamera, UpgradeManager upgradeManager)
         {
+            _inputActions = inputActions;
             _tankCamera = tankCamera;
+            _upgradeManager = upgradeManager;
         }
 
         public void Initialize(PlayerController playerController)
         {
+            _inputActions.Global.SwitchCursor.started += OnCursorStarted;
+            _inputActions.Global.SwitchCursor.canceled += OnCursorCanceled;
+            
             _playerController = playerController;
             
             InitializeAim(playerController);
+            
             InitializeProjectilesSelector();
-            _tankChassisView.Initialize(_playerController.Chassis);
-            LockCursor();
+            
+            _upgradesSelector.Initialize(_upgradeManager, playerController);
+            
+            _drivingView.Initialize(_playerController.Chassis);
+            
+            CursorSwitch.DisableCursor();
         }
 
         private void OnDestroy()
         {
+            _inputActions.Global.SwitchCursor.started -= OnCursorStarted;
+            _inputActions.Global.SwitchCursor.canceled -= OnCursorCanceled;
+            
             _playerController.Gun.ShootingSystem.OnCurrentProjectileTypeChanged -=
                 _projectilesSelector.SetNextItemAsCurrent;
             
@@ -46,6 +64,16 @@ namespace UI
             
             _projectilesSelector.OnNextItemChanged -= 
                 _playerController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
+        }
+
+        private static void OnCursorStarted(InputAction.CallbackContext _)
+        {
+            CursorSwitch.EnableCursor();
+        }
+
+        private static void OnCursorCanceled(InputAction.CallbackContext _)
+        {
+            CursorSwitch.DisableCursor();
         }
 
         public BaseView InstantiateBaseView(int index)
@@ -78,12 +106,6 @@ namespace UI
             
             _projectilesSelector.OnNextItemChanged +=
                 _playerController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
-        }
-        
-        private static void LockCursor()
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 }

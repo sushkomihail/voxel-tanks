@@ -1,6 +1,7 @@
 ﻿using ArmorSystem;
 using Tank.Data;
 using UnityEngine;
+using UpgradeSystem;
 using Utils;
 using VContainer;
 
@@ -13,17 +14,35 @@ namespace Tank
         private TurretData _data;
         private LaggedRotator _rotator;
         private CollidersUpdater _collidersUpdater;
+        private UpgradeBroker _upgradeBroker;
+        private object _owner;
+
+        private float RotationSpeed
+        {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.TurretRotationSpeed, _data.RotationSpeed);
+                _upgradeBroker.Query(_owner, query);
+                return query.Value;
+            }
+        }
         
         [Inject]
-        public void Construct(CollidersUpdater collidersUpdater)
+        public void Construct(CollidersUpdater collidersUpdater, UpgradeBroker upgradeBroker)
         {
             _collidersUpdater = collidersUpdater;
+            _upgradeBroker = upgradeBroker;
         }
 
         public void Initialize(TurretData data, TankHealth health)
         {
             _data = data;
             _rotator = new LaggedRotator(transform);
+
+            if (transform.root.TryGetComponent(out TankController controller))
+            {
+                _owner = controller;
+            }
             
             InitializeCollider(health);
         }
@@ -32,7 +51,7 @@ namespace Tank
         {
             Vector3 targetDirection = Vector3.ProjectOnPlane(lookPosition - transform.position, transform.up);
             Quaternion targetRotation = Quaternion.LookRotation(targetDirection, transform.up);
-            _rotator.Rotate(targetRotation, _data.RotationSpeed, _data.RotationLag);            
+            _rotator.Rotate(targetRotation, RotationSpeed, _data.RotationLag);            
             ClampRotation();
         }
 
@@ -57,11 +76,11 @@ namespace Tank
             collider.parent = _collidersUpdater.transform;
         }
         
-        private static void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
+        private void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
         {
             foreach (Armor armor in armorAreas)
             {
-                armor.Initialize(health);
+                armor.Initialize(health, _upgradeBroker, _owner);
             }
         }
     }

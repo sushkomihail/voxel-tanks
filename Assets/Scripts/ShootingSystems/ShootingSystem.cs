@@ -4,6 +4,8 @@ using Projectiles;
 using Settings;
 using ShootingSystems.Data;
 using UnityEngine;
+using UpgradeSystem;
+using VContainer;
 
 namespace ShootingSystems
 {
@@ -14,14 +16,25 @@ namespace ShootingSystems
         
         public IReadOnlyList<ProjectileType> ProjectileTypes => _projectileTypes.AsReadOnly();
         public event Action OnCurrentProjectileTypeChanged;
-
+        
+        protected UpgradeBroker _upgradeBroker;
+        protected object _owner;
+        
         private Dictionary<ProjectileType, ProjectileProps> _props;
         private readonly List<ProjectileType> _projectileTypes = new();
         private readonly List<ProjectileType> _projectilesQueue = new();
         private readonly Dictionary<ProjectileType, ProjectileFactory> _projectileFactories = new();
-        
-        public void Initialize()
+
+        [Inject]
+        public void Construct(UpgradeBroker upgradeBroker)
         {
+            _upgradeBroker = upgradeBroker;
+        }
+        
+        public void Initialize(object owner)
+        {
+            _owner = owner;
+            
             if (_projectilesData.Items.Count == 0) return;
             
             _props = _projectilesData.ExtractProps();
@@ -32,10 +45,10 @@ namespace ShootingSystems
                 _projectileTypes.Add(item.Type);
                 _projectileFactories.Add(item.Type, item.Type switch
                 {
-                    ProjectileType.AP => new APFactory(item.Props),
-                    ProjectileType.APCR => new APCRFactory(item.Props),
-                    ProjectileType.HE => new HEFactory(item.Props),
-                    ProjectileType.HEAT => new HEATFactory(item.Props),
+                    ProjectileType.AP => new APFactory(item.Props, _upgradeBroker, _owner),
+                    ProjectileType.APCR => new APCRFactory(item.Props, _upgradeBroker, _owner),
+                    ProjectileType.HE => new HEFactory(item.Props, _upgradeBroker, _owner),
+                    ProjectileType.HEAT => new HEATFactory(item.Props, _upgradeBroker, _owner),
                     _ => throw new ArgumentOutOfRangeException()
                 });
             }
@@ -78,17 +91,6 @@ namespace ShootingSystems
             }
 
             return 0f;
-        }
-
-        // TODO: Refactor GetProjectilePenetration()
-        public int GetProjectilePenetration()
-        {
-            if (TryGetPropsByType(_projectilesQueue[0], out ProjectileProps props))
-            {
-                return props.Penetration;
-            }
-
-            return -1;
         }
 
         public float GetProjectileNormalization()

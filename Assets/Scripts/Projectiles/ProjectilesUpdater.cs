@@ -36,7 +36,7 @@ namespace Projectiles
             
             foreach ((Projectile projectile, Tracer tracer) in _activeProjectiles)
             {
-                projectile.Update(Time.fixedDeltaTime);
+                projectile.Update();
                 tracer.UpdateLocation(projectile.CurrentPosition, projectile.Velocity);
 
                 if (projectile.IsInactive)

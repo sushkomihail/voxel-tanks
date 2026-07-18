@@ -23,7 +23,7 @@ namespace UI
 
         public void Initialize(IReadOnlyList<ProjectileType> projectileTypes, PlayerInput input)
         {
-            input.Controls.Projectile.Select.performed += HandleSelection;
+            input.Actions.Projectile.Select.performed += HandleSelection;
             
             foreach (ProjectileType type in projectileTypes)
             {
@@ -68,7 +68,7 @@ namespace UI
             for (int i = 1; i <= bindingsNumber; i++)
             {
                 _keyCodes.Add(i.ToString(), i - 1);
-                input.Controls.Projectile.Select.AddBinding($"<keyboard>/{i}");
+                input.Actions.Projectile.Select.AddBinding($"<keyboard>/{i}");
             }
         }
         

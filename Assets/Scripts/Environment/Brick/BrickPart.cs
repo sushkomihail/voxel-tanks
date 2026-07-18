@@ -20,10 +20,10 @@ namespace Environment.Brick
             _brick = brick;
         }
 
-        public void TakeDamage(ProjectileProps props)
+        public void TakeDamage(int damage, object attacker)
         {
             Collider.enabled = false;
-            _nextPart?.TakeDamage(props);
+            _nextPart?.TakeDamage(damage, attacker);
             
             if (_hideOnHit)
             {

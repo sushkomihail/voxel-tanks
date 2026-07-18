@@ -3,6 +3,8 @@ using Environment.Base;
 using Environment.Water;
 using Extensions;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Environment.Map
 {
@@ -16,6 +18,13 @@ namespace Environment.Map
         public IReadOnlyList<BaseModel> Bases => _bases.AsReadOnly();
         
         private readonly List<BaseModel> _bases = new();
+        private IObjectResolver _resolver;
+
+        [Inject]
+        public void Construct(IObjectResolver resolver)
+        {
+            _resolver = resolver;
+        }
 
         [ContextMenu("Generate")]
         public void Generate()
@@ -37,7 +46,7 @@ namespace Environment.Map
                             }
                             else
                             {
-                                GameObject gameObject = Instantiate(prefab, position, Quaternion.identity, transform);
+                                GameObject gameObject = _resolver.Instantiate(prefab, position, Quaternion.identity, transform);
 
                                 if (gameObject.TryGetComponent(out BaseModel baseModel))
                                 {
@@ -72,7 +81,7 @@ namespace Environment.Map
                 position.y -= _blockSize;
             }
                     
-            Instantiate(_groundPrefab, position, rotation, transform);
+            _resolver.Instantiate(_groundPrefab, position, rotation, transform);
         }
 
         private static Quaternion GetRandomBlockRotation()
@@ -84,7 +93,7 @@ namespace Environment.Map
 
         private void InstantiateWaterBlock(GameObject prefab, Vector3 worldPosition, Vector2Int mapCoords)
         {
-            GameObject obj = Instantiate(prefab, worldPosition, Quaternion.identity, transform);
+            GameObject obj = _resolver.Instantiate(prefab, worldPosition, Quaternion.identity, transform);
 
             if (!_mapLegend.TryGetBlockColor(BlockType.Water, out Color color)) return;
             

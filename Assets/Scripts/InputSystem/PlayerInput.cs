@@ -2,38 +2,46 @@
 
 namespace InputSystem
 {
-    public class PlayerInput : Input
+    public class PlayerInput : IInput
     {
-        public PlayerControls Controls { get; private set; }
+        public GameInput Actions { get; }
+        public bool IsActive { get; private set; }
 
-        public override void Initialize()
+        public PlayerInput(GameInput actions)
         {
-            Controls = new PlayerControls();
-            Controls.Enable();
+            Actions = actions;
+            Actions.Enable();
+        }
+        
+        public void Enable()
+        {
+            IsActive = true;
         }
 
-        private void OnDestroy()
+        public void Disable()
         {
-            Controls.Disable();
+            IsActive = false;
         }
 
-        public override Vector2 GetMoveInput()
+        public Vector2 GetMoveInput()
         {
             if (!IsActive) return Vector2.zero;
             
-            return Controls.Tank.Move.ReadValue<Vector2>();
+            return Actions.Tank.Move.ReadValue<Vector2>();
         }
 
         public Vector2 GetLookInput()
         {
-            return Controls.Tank.Look.ReadValue<Vector2>();
+            if (!IsActive) return Vector2.zero;
+            
+            return Actions.Tank.Look.ReadValue<Vector2>();
         }
 
-        public override bool GetShootInput()
+        public bool GetShootInput()
         {
             if (!IsActive) return false;
             
-            return Controls.Tank.Shoot.IsPressed();
+            return Actions.Tank.Shoot.IsPressed();
         }
     }
 }

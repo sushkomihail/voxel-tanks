@@ -4,6 +4,8 @@ using ArmorSystem;
 using Settings;
 using ShootingSystems;
 using UnityEngine;
+using UpgradeSystem;
+using Screen = ArmorSystem.Screen;
 
 namespace Projectiles
 {
@@ -15,8 +17,11 @@ namespace Projectiles
         
         private readonly RaycastHit[] _behindScreenHits = new RaycastHit[5];
         private readonly DistanceComparer _distanceComparer = new();
+
+        private float FlightDistanceAfterScreenHit => _props.Caliber / 1000f * FlightDistanceAfterScreenHitInCalibers;
         
-        public AP(ProjectileProps props, Vector3 position, Vector3 direction) : base(props, position, direction)
+        public AP(ProjectileProps props, UpgradeBroker upgradeBroker, object owner,
+            Vector3 position, Vector3 direction) : base(props, upgradeBroker, owner, position, direction)
         {
             _baseNormalization = GlobalSettings.Normalizations[ProjectileType.AP];
         }
@@ -25,7 +30,7 @@ namespace Projectiles
         {
             if (hit.collider.TryGetComponent(out IDamageable damageable))
             {
-                damageable.TakeDamage(_props);
+                damageable.TakeDamage(ArmorDamage, _owner);
             }
             
             IsInactive = true;
@@ -34,64 +39,87 @@ namespace Projectiles
         protected override void HandleArmorHit(Armor armor, RaycastHit hit, Vector3 hitDirection)
         {
             float realPenetration = CalculateRealPenetration();
-            float ricochetAngle = GlobalSettings.RicochetAngles[Type];
-
-            if (armor.IsRicochet(hit.normal, hitDirection, _baseNormalization, ricochetAngle, _props.Caliber,
-                    out float hitAngle))
-            {
-                OnRicochet(hit);
-                return;
-            }
+            float? reducedThickness = TryGetReducedThickness(armor, hit, hitDirection);
             
-            float reducedThickness = armor.GetReducedThickness(hitAngle);
+            if (reducedThickness is null) return;
 
-            if (armor.IsScreen)
+            if (armor is Screen screen)
             {
-                OnScreenArmorHit(hit, hitDirection, reducedThickness, realPenetration);
+                HandleScreenHit(screen, reducedThickness.Value, realPenetration);
+                
+                if (IsInactive) return;
+                
+                int hitCount = CountBehindScreenHits(hit, hitDirection);
+                HandleBehindScreenHits(hitCount, hitDirection);
             }
             else
             {
-                TryDealDamageToArmor(armor, reducedThickness, realPenetration);
+                TryDealDamageToArmor(armor, reducedThickness.Value, realPenetration);
                 IsInactive = true;
             }
         }
 
-        private void OnScreenArmorHit(RaycastHit hit, Vector3 hitDirection, float reducedThickness, float realPenetration)
+        private void HandleScreenHit(Screen screen, float reducedThickness, float realPenetration)
         {
-            if (IsInactive) return;
-            
-            if (reducedThickness <= realPenetration)
-            {
-                _basePenetration -= reducedThickness;
-                
-                Vector3 behindScreenPosition = hit.point - hit.normal * 0.01f;
-                Ray ray = new Ray(behindScreenPosition, hitDirection);
-                float rayDistance = _props.Caliber / 1000f * FlightDistanceAfterScreenHitInCalibers;
-                int hitCount = Physics.RaycastNonAlloc(ray, _behindScreenHits, rayDistance, _props.ArmorMask.value);
-
-                if (hitCount > 0)
-                {
-                    Array.Sort(_behindScreenHits, 0, hitCount, _distanceComparer);
-
-                    for (int i = 0; i < hitCount; i++)
-                    {
-                        if (!_behindScreenHits[i].collider.TryGetComponent(out Armor armor)) continue;
-
-                        if (armor.IsScreen)
-                        {
-                            OnScreenArmorHit(_behindScreenHits[i], hitDirection, reducedThickness, realPenetration);
-                        }
-                        else
-                        {
-                            HandleArmorHit(armor, _behindScreenHits[i], hitDirection);
-                        }
-                    }
-                }
-            }
-            else
+            if (reducedThickness > realPenetration)
             {
                 IsInactive = true;
+                return;
             }
+            
+            screen.TakeDamage(ModuleDamage, _owner);
+            _basePenetration -= reducedThickness;
+        }
+
+        private int CountBehindScreenHits(RaycastHit hit, Vector3 hitDirection)
+        {
+            Vector3 behindScreenPosition = hit.point - hit.normal * 0.01f;
+            Ray ray = new Ray(behindScreenPosition, hitDirection);
+            return Physics.RaycastNonAlloc(ray, _behindScreenHits, FlightDistanceAfterScreenHit, _props.ArmorMask.value);
+        }
+
+        private void HandleBehindScreenHits(int hitCount, Vector3 hitDirection)
+        {
+            if (hitCount == 0) return;
+            
+            Array.Sort(_behindScreenHits, 0, hitCount, _distanceComparer);
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (IsInactive) return;
+                
+                RaycastHit hit = _behindScreenHits[i];
+                        
+                if (!hit.collider.TryGetComponent(out Armor armor)) continue;
+                
+                float realPenetration = CalculateRealPenetration();
+                float? reducedThickness = TryGetReducedThickness(armor, hit, hitDirection);
+                
+                if (reducedThickness is null) return;
+
+                if (armor is Screen screen)
+                {
+                    HandleScreenHit(screen, reducedThickness.Value, realPenetration);
+                }
+                else
+                {
+                    TryDealDamageToArmor(armor, reducedThickness.Value, realPenetration);
+                    IsInactive = true;
+                }
+            }
+        }
+        
+        private float? TryGetReducedThickness(Armor armor, RaycastHit hit, Vector3 hitDirection)
+        {
+            float ricochetAngle = GlobalSettings.RicochetAngles[Type];
+    
+            if (armor.IsRicochet(hit.normal, hitDirection, _baseNormalization, ricochetAngle, _props.Caliber, out float hitAngle))
+            {
+                OnRicochet(hit);
+                return null;
+            }
+    
+            return armor.GetReducedThickness(hitAngle);
         }
         
         private class DistanceComparer : IComparer<RaycastHit>

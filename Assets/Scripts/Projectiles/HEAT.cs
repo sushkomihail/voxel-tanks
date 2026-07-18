@@ -2,6 +2,8 @@
 using Settings;
 using ShootingSystems;
 using UnityEngine;
+using UpgradeSystem;
+using Screen = ArmorSystem.Screen;
 
 namespace Projectiles
 {
@@ -9,7 +11,8 @@ namespace Projectiles
     {
         public override ProjectileType Type => ProjectileType.HEAT;
         
-        public HEAT(ProjectileProps props, Vector3 position, Vector3 direction) : base(props, position, direction)
+        public HEAT(ProjectileProps props, UpgradeBroker upgradeBroker, object owner,
+            Vector3 position, Vector3 direction) : base(props, upgradeBroker, owner, position, direction)
         {
         }
 
@@ -32,11 +35,14 @@ namespace Projectiles
 
             float reducedThickness = armor.GetReducedThickness(hitAngle);
 
-            if (!armor.IsScreen)
+            if (armor is Screen screen && screen.Module)
             {
-                TryDealDamageToArmor(armor, reducedThickness, realPenetration);
+                screen.TakeDamage(ModuleDamage, _owner);
+                IsInactive = true;
+                return;
             }
             
+            TryDealDamageToArmor(armor, reducedThickness, realPenetration);
             IsInactive = true;
         }
     }

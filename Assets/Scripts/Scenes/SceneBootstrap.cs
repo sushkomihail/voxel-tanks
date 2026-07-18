@@ -15,9 +15,9 @@ namespace Scenes
 {
     public class SceneBootstrap : MonoBehaviour
     {
-        [SerializeField] private MapGenerator _mapGenerator;
         [SerializeField] private List<Transform> _spawnPoints;
 
+        private MapGenerator _mapGenerator;
         private IRouterTargetRegistry _routerTargetRegistry;
         private PlayerSpawner _playerSpawner;
         private NPCSpawner _npcSpawner;
@@ -30,12 +30,14 @@ namespace Scenes
 
         [Inject]
         public void Construct(
+            MapGenerator mapGenerator,
             IRouterTargetRegistry routerTargetRegistry,
             PlayerSpawner playerSpawner,
             NPCSpawner npcSpawner,
             Pathfinder pathfinder,
             UILoader uiLoader)
         {
+            _mapGenerator = mapGenerator;
             _routerTargetRegistry = routerTargetRegistry;
             _playerSpawner = playerSpawner;
             _npcSpawner = npcSpawner;
@@ -55,7 +57,6 @@ namespace Scenes
             SpawnPlayerTank();
             SpawnNpcTanks();
             _uiLoader.Initialize(_playerController);
-            return;
             
             _onFieldTanks.Add(_playerController);
             _onFieldTanks.AddRange(_npcControllers);
@@ -103,7 +104,7 @@ namespace Scenes
                 BaseModel model = _mapGenerator.Bases[i];
                 BaseView view = _uiLoader.InstantiateBaseView(i);
                 
-                model.Initialize(_onFieldTanks, _playerController.BattleData.Id);
+                model.Initialize(_onFieldTanks, _playerController);
                 
                 _disposables.Add(new BasePresenter(model, view));
             }

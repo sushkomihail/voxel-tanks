@@ -10,9 +10,12 @@ namespace Tank.View
     public abstract class TankView : MonoBehaviour
     {
         [SerializeField] private HealthBar _overTankHealthBar;
-        [SerializeField] private Material _deathMaterial;
         [SerializeField] private SpriteSheetAnimator _deathAnimator;
+        [SerializeField] private Color _deathColor = new(0.4f, 0.4f, 0.4f);
         
+        private static MaterialPropertyBlock _propertyBlock;
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+
         private readonly List<MeshRenderer> _meshRenderers = new();
         private SwitchableOutline _outline;
         
@@ -64,9 +67,13 @@ namespace Tank.View
 
         private void ApplyDeathMaterial()
         {
+            _propertyBlock ??= new MaterialPropertyBlock();
+            
             foreach (MeshRenderer meshRenderer in _meshRenderers)
             {
-                meshRenderer.sharedMaterial = _deathMaterial;
+                meshRenderer.GetPropertyBlock(_propertyBlock);
+                _propertyBlock.SetColor(BaseColor, _deathColor);
+                meshRenderer.SetPropertyBlock(_propertyBlock);
             }
         }
     }

@@ -2,6 +2,7 @@
 using ShootingSystems;
 using Tank.Data;
 using UnityEngine;
+using UpgradeSystem;
 using Utils;
 using VContainer;
 
@@ -13,25 +14,32 @@ namespace Tank
         [SerializeField] private Transform _collider;
         [SerializeField] private Transform _projectilePivot;
         [SerializeField] private ShootingSystem _shootingSystem;
-        [SerializeField] private int _projectileTrajectoryPredictionIterations = 70;
 
         public ShootingSystem ShootingSystem => _shootingSystem;
 
         private GunData _data;
         private LaggedRotator _rotator;
         private CollidersUpdater _collidersUpdater;
+        private UpgradeBroker _upgradeBroker;
+        private object _owner;
 
         [Inject]
-        public void Construct(CollidersUpdater collidersUpdater)
+        public void Construct(CollidersUpdater collidersUpdater, UpgradeBroker upgradeBroker)
         {
             _collidersUpdater = collidersUpdater;
+            _upgradeBroker = upgradeBroker;
         }
         
-        public void Initialize(GunData data, TankHealth health)
+        public void Initialize(GunData data, TankHealth health, object owner)
         {
             _data = data;
+            _owner = owner;
             _rotator = new LaggedRotator(transform);
-            _shootingSystem.Initialize();
+            
+            if (transform.root.TryGetComponent(out TankController controller))
+            {
+                _shootingSystem.Initialize(controller);
+            }
             
             InitializeCollider(health);
         }
@@ -47,7 +55,7 @@ namespace Tank
     
             float flightDistance = 0f;
 
-            for (int i = 0; i < _projectileTrajectoryPredictionIterations; i++)
+            for (int i = 0; i < _data.ProjectileTrajectoryPredictionIterations; i++)
             {
                 velocity += Physics.gravity * Time.fixedDeltaTime;
                 
@@ -118,7 +126,7 @@ namespace Tank
             }
             else
             {
-                angle = Mathf.Atan(x / (x + Mathf.Sqrt(x * x + y * y))) * 0.5f + Mathf.PI / 4;
+                angle = 45f * Mathf.Deg2Rad;
             }
 
             Vector3 launchDirection = directionToTargetXZ.normalized * Mathf.Cos(angle);
@@ -147,11 +155,11 @@ namespace Tank
             collider.parent = _collidersUpdater.transform;
         }
         
-        private static void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
+        private void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
         {
             foreach (Armor armor in armorAreas)
             {
-                armor.Initialize(health);
+                armor.Initialize(health, _upgradeBroker, _owner);
             }
         }
     }

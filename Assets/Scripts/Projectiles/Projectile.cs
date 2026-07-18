@@ -2,12 +2,21 @@
 using Settings;
 using ShootingSystems;
 using UnityEngine;
+using UpgradeSystem;
 using Random = UnityEngine.Random;
 
 namespace Projectiles
 {
     public abstract class Projectile
     {
+        protected readonly ProjectileProps _props;
+        protected readonly object _owner;
+        protected float _basePenetration;
+        protected float _baseNormalization;
+        
+        private readonly UpgradeBroker _upgradeBroker;
+        private float _flightDistance;
+        
         public virtual ProjectileType Type => ProjectileType.AP;
         
         public float Scale => _props.Scale;
@@ -15,45 +24,57 @@ namespace Projectiles
         public Vector3 Velocity { get; private set; }
         public bool IsInactive { get; protected set; }
 
-        protected readonly ProjectileProps _props;
-        protected float _basePenetration;
-        protected float _baseNormalization;
-        
-        private float _flightDistance;
+        protected int ArmorDamage {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.Damage, _props.ArmorDamage);
+                _upgradeBroker.Query(_owner, query);
+                return (int)query.Value;
+            }
+        }
 
-        protected Projectile(ProjectileProps props, Vector3 position, Vector3 direction)
+        protected int ModuleDamage
+        {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.Damage, _props.ModuleDamage);
+                _upgradeBroker.Query(_owner, query);
+                return (int)query.Value;
+            }
+        }
+
+        protected Projectile(ProjectileProps props, UpgradeBroker upgradeBroker, object owner,
+            Vector3 position, Vector3 direction)
         {
             _props = props;
+            _owner = owner;
+            _upgradeBroker = upgradeBroker;
+            
             _basePenetration = _props.Penetration;
             CurrentPosition = position;
             Velocity = direction * _props.Speed;
         }
 
-        public void Update(float deltaTime)
+        public void Update()
         {
             if (IsInactive) return;
 
-            Velocity += Physics.gravity * deltaTime;
+            Velocity += Physics.gravity * Time.fixedDeltaTime;
             
-            Vector3 moveDirection = Velocity * deltaTime;
+            Vector3 moveDirection = Velocity * Time.fixedDeltaTime;
+            Vector3 moveDirectionNormalized = moveDirection.normalized;
             float moveDistance = moveDirection.magnitude;
 
-            _flightDistance += moveDistance;
-            if (_flightDistance > _props.MaxFlightDistance)
+            if (_flightDistance + moveDistance > _props.MaxFlightDistance)
             {
-                IsInactive = true;
-                return;
+                moveDistance = _props.MaxFlightDistance - _flightDistance;
             }
 
-#if UNITY_EDITOR
-            Debug.DrawRay(CurrentPosition, moveDirection, Color.red, 5f);
-#endif
-
-            if (Physics.Raycast(CurrentPosition, moveDirection, out RaycastHit hit, moveDistance, _props.HitMask.value))
+            if (Physics.Raycast(CurrentPosition, moveDirectionNormalized, out RaycastHit hit, moveDistance, _props.HitMask.value))
             {
                 if (hit.collider.TryGetComponent(out Armor armor))
                 {
-                    HandleArmorHit(armor, hit, moveDirection.normalized);
+                    HandleArmorHit(armor, hit, moveDirectionNormalized);
                 }
                 else
                 {
@@ -63,14 +84,15 @@ namespace Projectiles
                 if (IsInactive)
                 {
                     CurrentPosition = hit.point;
-                    return; 
+                    return;
                 }
                 
+                moveDirection = Velocity * Time.fixedDeltaTime;
+                moveDirectionNormalized = moveDirection.normalized;
                 moveDistance -= hit.distance;
-                moveDirection = Velocity.normalized;
             }
             
-            CurrentPosition += moveDirection * moveDistance;
+            CurrentPosition += moveDirectionNormalized * moveDistance;
         }
 
         protected abstract void HandleEnvironmentHit(RaycastHit hit);
@@ -94,7 +116,7 @@ namespace Projectiles
         {
             if (reducedThickness <= realPenetration)
             {
-                armor.TakeDamage(_props);
+                armor.TakeDamage(ArmorDamage, _owner);
                 return true;
             }
             

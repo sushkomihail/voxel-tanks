@@ -1,5 +1,5 @@
 ﻿using System;
-using Tank.Data;
+using Tank;
 
 namespace Environment.Base
 {
@@ -13,16 +13,19 @@ namespace Environment.Base
 
         public override void Enter()
         {
+            _baseModel.UpgradeManager.Heal(_baseModel.OwnerController.Health);
+            _baseModel.UpgradeManager.ProvideRepairKits(_baseModel.OwnerController.Equipment);
+            _baseModel.UpgradeManager.EnqueueUpgradePair();
             OnCaptured?.Invoke();
         }
 
-        public override void OnTankEntersBase(TankBattleData tankData)
+        public override void OnTankEntersBase(TankController tankController)
         {
-            base.OnTankEntersBase(tankData);
+            base.OnTankEntersBase(tankController);
             
-            if (_baseModel.GetInsideBaseTanksCount() == 1 && tankData.Id != _baseModel.OwnerId)
+            if (_baseModel.GetInsideBaseTanksCount() == 1 && tankController != _baseModel.OwnerController)
             {
-                _baseModel.SetOwnerId(tankData.Id);
+                _baseModel.SetOwnerController(tankController);
                 _baseModel.SetState(_baseModel.RecapturingState);
             }
         }

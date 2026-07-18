@@ -1,4 +1,4 @@
-﻿using Tank.Data;
+﻿using Tank;
 
 namespace Environment.Base
 {
@@ -13,16 +13,16 @@ namespace Environment.Base
         
         public virtual void Enter() {}
         
-        public virtual void OnTankEntersBase(TankBattleData tankData)
+        public virtual void OnTankEntersBase(TankController tankController)
         {
-            _baseModel.SetIsTankInsideBase(tankData.Id, true);
+            _baseModel.SetIsTankInsideBase(tankController, true);
         }
         
         public virtual void UpdateCaptureProgress() {}
 
-        public virtual void OnTankLeavesBase(TankBattleData tankData)
+        public virtual void OnTankLeavesBase(TankController tankController)
         {
-            _baseModel.SetIsTankInsideBase(tankData.Id, false);
+            _baseModel.SetIsTankInsideBase(tankController, false);
         }
     }
 }

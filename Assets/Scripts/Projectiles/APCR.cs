@@ -1,6 +1,7 @@
 ﻿using Settings;
 using ShootingSystems;
 using UnityEngine;
+using UpgradeSystem;
 
 namespace Projectiles
 {
@@ -11,7 +12,8 @@ namespace Projectiles
         private const int EnvironmentHitsLimit = 2;
         private int _environmentHits;
         
-        public APCR(ProjectileProps props, Vector3 position, Vector3 direction) : base(props, position, direction)
+        public APCR(ProjectileProps props, UpgradeBroker upgradeBroker, object owner,
+            Vector3 position, Vector3 direction) : base(props, upgradeBroker, owner, position, direction)
         {
             _baseNormalization = GlobalSettings.Normalizations[ProjectileType.APCR];
         }
@@ -20,7 +22,7 @@ namespace Projectiles
         {
             if (hit.collider.TryGetComponent(out IDamageable damageable))
             {
-                damageable.TakeDamage(_props);
+                damageable.TakeDamage(ArmorDamage, _owner);
                 _environmentHits++;
             }
             else

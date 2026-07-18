@@ -8,7 +8,7 @@ using VContainer;
 
 namespace InputSystem
 {
-    public class NPCInput : Input
+    public class NPCInput : MonoBehaviour, IInput
     {
         [SerializeField] private Transform _center;
         [SerializeField] private Transform _gunPivot;
@@ -28,6 +28,8 @@ namespace InputSystem
         private NavGridCell _targetPathCell;
         private Coroutine _updatePathCoroutine;
         
+        public bool IsActive { get; private set; }
+        
         [Inject]
         public void Construct(Pathfinder pathfinder, IRouterTargetRegistry routerTargetRegistry)
         {
@@ -35,14 +37,13 @@ namespace InputSystem
             _routerTargetRegistry = routerTargetRegistry;
         }
         
-        public override void Initialize()
+        public void Initialize()
         {
-            if (TryGetComponent(out _tankController))
-            {
-                var targets = FilterRouterTargets();
-                _router = new Router(targets);
-                _updatePathCoroutine = StartCoroutine(UpdatePathWithInterval());
-            }
+            if (!TryGetComponent(out _tankController)) return;
+            
+            var targets = FilterRouterTargets();
+            _router = new Router(targets);
+            _updatePathCoroutine = StartCoroutine(UpdatePathWithInterval());
         }
 
         private void OnEnable()
@@ -57,15 +58,20 @@ namespace InputSystem
             CapturedState.OnCaptured -= UpdatePath;
         }
 
-        public override void Disable()
+        public void Enable()
         {
-            base.Disable();
+            IsActive = true;
+        }
+
+        public void Disable()
+        {
+            IsActive = false;
             
             StopCoroutine(_updatePathCoroutine);
             _pathfinder.ClearPath();
         }
 
-        public override Vector2 GetMoveInput()
+        public Vector2 GetMoveInput()
         {
             if (!IsActive) return Vector2.zero;
             
@@ -106,7 +112,7 @@ namespace InputSystem
             return ((TankController)_router.CurrentTarget).transform.position;
         }
 
-        public override bool GetShootInput()
+        public bool GetShootInput()
         {
             if (!IsActive) return false;
             

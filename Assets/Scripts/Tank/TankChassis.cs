@@ -1,10 +1,13 @@
 ﻿using ArmorSystem;
 using Extensions;
 using Tank.Data;
+using Tank.Modules;
 using Tank.Modules.Track;
 using UnityEngine;
+using UpgradeSystem;
 using VContainer;
 using Vehicles;
+using Screen = ArmorSystem.Screen;
 
 namespace Tank
 {
@@ -25,15 +28,48 @@ namespace Tank
         private const float MpsToKph = 3.6f;
         
         private CollidersUpdater _collidersUpdater;
+        private UpgradeBroker _upgradeBroker;
+        private object _owner;
         private Rigidbody _tankRigidbody;
         private ChassisData _data;
         private Engine _engine;
         private Transmission _transmission;
+
+        private float MaxForwardSpeed
+        {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.MaxSpeed, _data.MaxForwardSpeed);
+                _upgradeBroker.Query(_owner, query);
+                return query.Value;
+            }
+        }
+
+        private float MaxBackwardSpeed
+        {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.MaxSpeed, _data.MaxBackwardSpeed);
+                _upgradeBroker.Query(_owner, query);
+                return query.Value;
+            }
+        }
+
+        private float RotationSpeed
+        {
+            get
+            {
+                StatQuery query = new StatQuery(StatType.ChassisRotationSpeed, _data.RotationSpeed);
+                _upgradeBroker.Query(_owner, query);
+                return query.Value;
+            }
+        }
         
         [Inject]
-        public void Construct(CollidersUpdater collidersUpdater)
+        public void Construct(CollidersUpdater collidersUpdater, UpgradeBroker upgradeBroker)
         {
             _collidersUpdater = collidersUpdater;
+            _upgradeBroker = upgradeBroker;
         }
 
         public void Initialize(ChassisData chassisData, EngineData engineData, TransmissionData transmissionData,
@@ -42,8 +78,13 @@ namespace Tank
             _tankRigidbody = transform.root.GetComponent<Rigidbody>();
             _tankRigidbody.centerOfMass = _centerOfMass.localPosition;
             _data = chassisData;
+
+            if (transform.root.TryGetComponent(out TankController controller))
+            {
+                _owner = controller;
+                _engine = new Engine(engineData, _upgradeBroker, _owner);
+            }
             
-            _engine = new Engine(engineData);
             _transmission = new Transmission(transmissionData);
             _leftTrack.Initialize(trackData);
             _rightTrack.Initialize(trackData);
@@ -98,7 +139,7 @@ namespace Tank
                     return;
                 }
 
-                float speedLimit = speed >= 0 ? _data.MaxForwardSpeed : _data.MaxBackwardSpeed;
+                float speedLimit = speed >= 0 ? MaxForwardSpeed : MaxBackwardSpeed;
                 
                 if (LinearSpeed < speedLimit)
                 {
@@ -114,7 +155,7 @@ namespace Tank
             
             if (moveInputVector.x == 0) return;
             
-            if (AngularSpeed > _data.RotationSpeed) return;
+            if (AngularSpeed > RotationSpeed) return;
             
             UpdateGripFactor();
 
@@ -161,7 +202,7 @@ namespace Tank
         
         private void UpdateGripFactor()
         {
-            float maxSpeed = Mathf.Max(_data.MaxForwardSpeed, _data.MaxBackwardSpeed);
+            float maxSpeed = Mathf.Max(MaxForwardSpeed, MaxBackwardSpeed);
             if (maxSpeed <= 0) return;
             
             float speedRatio = LinearSpeed / maxSpeed;
@@ -196,8 +237,8 @@ namespace Tank
             var leftTrackArmorAreas = leftTrackCollider.GetComponentsInChildren<Armor>();
             var rightTrackArmorAreas = rightTrackCollider.GetComponentsInChildren<Armor>();
             
-            InitializeArmorAreas(leftTrackArmorAreas, health);
-            InitializeArmorAreas(rightTrackArmorAreas, health);
+            InitializeArmorAreas(leftTrackArmorAreas, health, _leftTrack);
+            InitializeArmorAreas(rightTrackArmorAreas, health, _rightTrack);
             
             leftTrackCollider.parent = _collidersUpdater.transform;
             rightTrackCollider.parent = _collidersUpdater.transform;
@@ -207,17 +248,22 @@ namespace Tank
             Transform hullCollider = Instantiate(_hullColliderPrefab, transform.position, transform.rotation);
             
             var hullArmorAreas = hullCollider.GetComponentsInChildren<Armor>();
-            InitializeArmorAreas(hullArmorAreas, health);
+            InitializeArmorAreas(hullArmorAreas, health, null);
             
             _collidersUpdater.AddCollider(hullCollider, transform);
             hullCollider.parent = _collidersUpdater.transform;
         }
 
-        private static void InitializeArmorAreas(Armor[] armorAreas, TankHealth health)
+        private void InitializeArmorAreas(Armor[] armorAreas, TankHealth health, TankModule module)
         {
             foreach (Armor armor in armorAreas)
             {
-                armor.Initialize(health);
+                armor.Initialize(health, _upgradeBroker, _owner);
+
+                if (armor is Screen screen && module)
+                {
+                    screen.SetModule(module);
+                }
             }
         }
     }
