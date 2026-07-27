@@ -1,16 +1,17 @@
-﻿using ShootingSystems;
+﻿using OutlineSystem;
+using ShootingSystems;
 using Tank;
 using UnityEngine;
 using UpgradeSystem;
 
 namespace ArmorSystem
 {
-    public class Armor : MonoBehaviour, IDamageable
+    public class Armor : MonoBehaviour, IDamageable, IOutlineTrigger
     {
         [SerializeField] private int _thickness;
 
         private UpgradeBroker _upgradeBroker;
-        private object _owner;
+        private TankController _owner;
         
         public TankHealth TankHealth { get; private set; }
         
@@ -24,7 +25,7 @@ namespace ArmorSystem
             }
         }
         
-        public void Initialize(TankHealth tankHealth, UpgradeBroker upgradeBroker, object owner)
+        public void Initialize(TankHealth tankHealth, UpgradeBroker upgradeBroker, TankController owner)
         {
             TankHealth = tankHealth;
             _upgradeBroker = upgradeBroker;
@@ -62,6 +63,11 @@ namespace ArmorSystem
 
             if (caliber > Thickness * 3) return false;
             return hitAngle >= ricochetAngle;
+        }
+        
+        public void SetOutlineEnabled(bool enabled)
+        {
+            _owner.SetOutlineEnabled(enabled);
         }
 
         private float CalculateHitAngle(Vector3 armorNormal, Vector3 hitDirection, float baseNormalization, int caliber)

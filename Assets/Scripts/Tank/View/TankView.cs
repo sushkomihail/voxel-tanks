@@ -1,29 +1,30 @@
 ﻿using System.Collections.Generic;
 using Animation;
+using JetBrains.Annotations;
+using OutlineSystem;
 using QuickOutline.Scripts;
 using UI;
 using UnityEngine;
 
 namespace Tank.View
 {
-    [RequireComponent(typeof(SwitchableOutline))]
-    public abstract class TankView : MonoBehaviour
+    [RequireComponent(typeof(Outline))]
+    public abstract class TankView : MonoBehaviour, IOutlineTrigger
     {
         [SerializeField] private HealthBar _overTankHealthBar;
         [SerializeField] private SpriteSheetAnimator _deathAnimator;
         [SerializeField] private Color _deathColor = new(0.4f, 0.4f, 0.4f);
         
+        [CanBeNull] private Outline _outline;
         private static MaterialPropertyBlock _propertyBlock;
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
         private readonly List<MeshRenderer> _meshRenderers = new();
-        private SwitchableOutline _outline;
         
         public void Initialize()
         {
-            _outline = GetComponent<SwitchableOutline>();
-            _outline.SetIsInteractive(true);
-            _outline.enabled = false;
+            _outline = GetComponent<Outline>();
+            SetOutlineEnabled(false);
             
             CollectMeshRenderers(transform);
         }
@@ -43,13 +44,21 @@ namespace Tank.View
             
             _deathAnimator.Play();
             
-            _outline.enabled = false;
-            _outline.SetIsInteractive(false);
+            SetOutlineEnabled(false);
+            _outline = null;
         }
 
         public void DisableOverTankHealthBar()
         {
             _overTankHealthBar.gameObject.SetActive(false);
+        }
+
+        public void SetOutlineEnabled(bool enabled)
+        {
+            if (_outline)
+            {
+                _outline.enabled = enabled;
+            }
         }
 
         private void CollectMeshRenderers(Transform parent)

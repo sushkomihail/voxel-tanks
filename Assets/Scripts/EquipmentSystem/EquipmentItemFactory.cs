@@ -2,6 +2,6 @@
 {
     public abstract class EquipmentItemFactory
     {
-        public abstract IEquipmentItem CreateItem();
+        public abstract EquipmentItem CreateItem();
     }
 }

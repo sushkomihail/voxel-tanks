@@ -2,6 +2,7 @@
 {
     public enum EquipmentItemType
     {
+        None,
         RepairKit
     }
 }

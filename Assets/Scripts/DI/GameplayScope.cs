@@ -1,5 +1,6 @@
 ﻿using Databases;
 using Environment.Map;
+using EquipmentSystem;
 using Navigation;
 using Scenes;
 using Spawners;
@@ -21,6 +22,7 @@ namespace DI
         [SerializeField] private Pathfinder _pathfinder;
         [SerializeField] private UpgradeManager _upgradeManager;
         [SerializeField] private HealthBar _hudHealthBar;
+        [SerializeField] private EquipmentPresenter _equipmentPresenter;
         [SerializeField] private UILoader _uiLoader;
         [SerializeField] private SceneBootstrap _sceneBootstrap;
         
@@ -39,6 +41,7 @@ namespace DI
             builder.RegisterComponent(_pathfinder);
             builder.RegisterComponent(_upgradeManager);
             builder.RegisterComponent(_hudHealthBar);
+            builder.RegisterComponent(_equipmentPresenter);
             builder.RegisterComponent(_uiLoader);
 
             builder.RegisterComponent(_sceneBootstrap);

@@ -16,6 +16,8 @@ namespace Tank.Modules
         private float _currentHealth;
         private bool _isDamaged;
         private bool _isCritical;
+        
+        public abstract TankModuleType Type { get; }
 
         public void Initialize(TankModuleData data)
         {

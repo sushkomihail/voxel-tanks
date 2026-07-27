@@ -1,10 +1,19 @@
-﻿namespace EquipmentSystem
+﻿using Tank.Modules;
+
+namespace EquipmentSystem
 {
     public class RepairKitFactory : EquipmentItemFactory
     {
-        public override IEquipmentItem CreateItem()
+        private readonly TankModule[] _tankModules;
+        
+        public RepairKitFactory(TankModule[] tankModules)
         {
-            return new RepairKit();
+            _tankModules = tankModules;
+        }
+        
+        public override EquipmentItem CreateItem()
+        {
+            return new RepairKit(_tankModules);
         }
     }
 }

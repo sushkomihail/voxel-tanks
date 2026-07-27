@@ -7,9 +7,9 @@ namespace Tank.Modules.Track
     public class Track : TankModule
     {
         [SerializeField] private CustomWheelCollider[] _wheels;
-        
+
+        public override TankModuleType Type => TankModuleType.Track;
         public int WheelsCount => _wheels.Length;
-        
         public float DamagedTorqueRate
         {
             get

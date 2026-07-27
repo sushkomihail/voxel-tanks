@@ -13,6 +13,8 @@ namespace Tank
             Input = GetComponent<NPCInput>();
             ((NPCInput)Input).Initialize();
             Input.Enable();
+            
+            Input.Disable();
         }
         
         private void Update()

@@ -1,4 +1,5 @@
-﻿using InputSystem;
+﻿using EquipmentSystem;
+using InputSystem;
 using Tank.View;
 using UnityEngine;
 using VContainer;
@@ -16,12 +17,14 @@ namespace Tank
         
         private GameInput _inputActions;
         private TankCamera _tankCamera;
+        private EquipmentPresenter _equipmentPresenter;
 
         [Inject]
-        public void Construct(GameInput inputActions, TankCamera tankCamera)
+        public void Construct(GameInput inputActions, TankCamera tankCamera, EquipmentPresenter equipmentPresenter)
         {
             _inputActions = inputActions;
             _tankCamera = tankCamera;
+            _equipmentPresenter = equipmentPresenter;
         }
 
         public override void Initialize()
@@ -33,6 +36,8 @@ namespace Tank
             
             // TODO: Disable if its local player
             _view.DisableOverTankHealthBar();
+            
+            _equipmentPresenter.Initialize(Equipment);
         }
 
         private void Update()

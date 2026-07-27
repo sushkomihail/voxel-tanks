@@ -20,21 +20,23 @@ namespace Tank
         [SerializeField] private Transform _hullColliderPrefab;
         [SerializeField] private Transform _trackColliderPrefab;
 
-        public float LinearSpeed { get; private set; }
-        public float AngularSpeed { get; private set; }
-        public int CurrentGear => _transmission.CurrentGear;
-        
         private const float StopThreshold = 0.2f;
         private const float MpsToKph = 3.6f;
         
         private CollidersUpdater _collidersUpdater;
         private UpgradeBroker _upgradeBroker;
-        private object _owner;
+        private TankController _owner;
         private Rigidbody _tankRigidbody;
         private ChassisData _data;
         private Engine _engine;
         private Transmission _transmission;
 
+        public Track LeftTrack => _leftTrack;
+        public Track RightTrack => _rightTrack;
+        public int CurrentGear => _transmission.CurrentGear;
+        public float LinearSpeed { get; private set; }
+        public float AngularSpeed { get; private set; }
+        
         private float MaxForwardSpeed
         {
             get

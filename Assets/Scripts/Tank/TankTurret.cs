@@ -15,7 +15,7 @@ namespace Tank
         private LaggedRotator _rotator;
         private CollidersUpdater _collidersUpdater;
         private UpgradeBroker _upgradeBroker;
-        private object _owner;
+        private TankController _owner;
 
         private float RotationSpeed
         {

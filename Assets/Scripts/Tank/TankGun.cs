@@ -21,7 +21,7 @@ namespace Tank
         private LaggedRotator _rotator;
         private CollidersUpdater _collidersUpdater;
         private UpgradeBroker _upgradeBroker;
-        private object _owner;
+        private TankController _owner;
 
         [Inject]
         public void Construct(CollidersUpdater collidersUpdater, UpgradeBroker upgradeBroker)
@@ -30,7 +30,7 @@ namespace Tank
             _upgradeBroker = upgradeBroker;
         }
         
-        public void Initialize(GunData data, TankHealth health, object owner)
+        public void Initialize(GunData data, TankHealth health, TankController owner)
         {
             _data = data;
             _owner = owner;
