@@ -10,20 +10,22 @@ namespace EquipmentSystem
 {
     public class Equipment : IDisposable
     {
-        public event Action<EquipmentItemType, int> OnItemCountChanged;
+        public event Action<EquipmentItemType> OnItemCountChanged;
         public event Action<EquipmentItemType> OnItemSelected;
         public event Action<EquipmentItemType> OnItemDeselected;
 
         private readonly Dictionary<EquipmentItemType, EquipmentItemFactory> _itemFactories = new();
         private readonly Dictionary<EquipmentItemType, EquipmentItem> _items = new();
+        private readonly GameInput _inputActions;
         private EquipmentItem _selectedItem;
         private List<Key> _bindings;
 
         public IReadOnlyList<EquipmentItemType> AvailableItemTypes { get; }
         public IReadOnlyList<Key> Bindings => _bindings;
 
-        public Equipment(IReadOnlyList<EquipmentItemType> availableItemTypes, TankModule[] tankModules)
+        public Equipment(GameInput inputActions, IReadOnlyList<EquipmentItemType> availableItemTypes, TankModule[] tankModules)
         {
+            _inputActions = inputActions;
             AvailableItemTypes = availableItemTypes;
             
             foreach (EquipmentItemType type in availableItemTypes)
@@ -48,6 +50,7 @@ namespace EquipmentSystem
             foreach (var (_, item) in _items)
             {
                 item.OnUsed -= ResetSelectedItem;
+                item.OnUsed -= EnableCollidingInputActions;
             }
         }
 
@@ -68,12 +71,14 @@ namespace EquipmentSystem
             {
                 EquipmentItem item = factory.CreateItem();
                 item.UpdateCount(count);
+                
                 item.OnUsed += ResetSelectedItem;
+                item.OnUsed += EnableCollidingInputActions;
                 
                 _items.Add(type, item);
             }
             
-            OnItemCountChanged?.Invoke(type, _items[type].Count);
+            OnItemCountChanged?.Invoke(type);
         }
         
         public void HandleItemSelection()
@@ -85,6 +90,7 @@ namespace EquipmentSystem
             if (keyboard[Key.Escape].wasPressedThisFrame && _selectedItem != null)
             {
                 OnItemDeselected?.Invoke(_selectedItem.Type);
+                EnableCollidingInputActions();
                 ResetSelectedItem();
             }
             
@@ -100,6 +106,14 @@ namespace EquipmentSystem
                 {
                     var pair = _items.ElementAt(i);
                     _selectedItem = pair.Value;
+
+                    if (_selectedItem.Count == 0)
+                    {
+                        ResetSelectedItem();
+                        return;
+                    }
+                    
+                    DisableCollidingInputActions();
                     OnItemSelected?.Invoke(pair.Key);
                     break;
                 }
@@ -115,6 +129,16 @@ namespace EquipmentSystem
         private void ResetSelectedItem()
         {
             _selectedItem = null;
+        }
+
+        private void EnableCollidingInputActions()
+        {
+            _inputActions.Projectile.Select.Enable();
+        }
+
+        private void DisableCollidingInputActions()
+        {
+            _inputActions.Projectile.Select.Disable();
         }
     }
 }

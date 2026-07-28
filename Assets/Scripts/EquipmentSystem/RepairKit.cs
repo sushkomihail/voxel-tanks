@@ -35,12 +35,15 @@ namespace EquipmentSystem
             {
                 if (keyboard[_bindings[i]].wasPressedThisFrame)
                 {
+                    if (_tankModules[i].IsNormal) return true;
+                    
                     _tankModules[i].EnterNormalState();
                     Count--;
+                    InvokeUsed();
                     return true;
                 }
             }
-            
+
             return true;
         }
 

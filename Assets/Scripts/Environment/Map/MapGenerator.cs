@@ -46,7 +46,7 @@ namespace Environment.Map
                             }
                             else
                             {
-                                GameObject gameObject = _resolver.Instantiate(prefab, position, Quaternion.identity, transform);
+                                GameObject gameObject = InstantiateObject(prefab, position, Quaternion.identity, transform);
 
                                 if (gameObject.TryGetComponent(out BaseModel baseModel))
                                 {
@@ -81,7 +81,7 @@ namespace Environment.Map
                 position.y -= _blockSize;
             }
                     
-            _resolver.Instantiate(_groundPrefab, position, rotation, transform);
+            InstantiateObject(_groundPrefab, position, rotation, transform);
         }
 
         private static Quaternion GetRandomBlockRotation()
@@ -93,7 +93,7 @@ namespace Environment.Map
 
         private void InstantiateWaterBlock(GameObject prefab, Vector3 worldPosition, Vector2Int mapCoords)
         {
-            GameObject obj = _resolver.Instantiate(prefab, worldPosition, Quaternion.identity, transform);
+            GameObject obj = InstantiateObject(prefab, worldPosition, Quaternion.identity, transform);
 
             if (!_mapLegend.TryGetBlockColor(BlockType.Water, out Color color)) return;
             
@@ -118,6 +118,16 @@ namespace Environment.Map
                     water.DisableWall(pair.Key);
                 }
             }
+        }
+
+        private GameObject InstantiateObject( GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            if (_resolver == null)
+            {
+                return Instantiate(prefab, position, rotation, parent);
+            }
+            
+            return _resolver.Instantiate(prefab, position, rotation, parent);
         }
     }
 }

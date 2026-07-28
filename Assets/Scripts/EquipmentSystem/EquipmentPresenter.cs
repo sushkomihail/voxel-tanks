@@ -71,11 +71,11 @@ namespace EquipmentSystem
             return prefab;
         }
 
-        private void OnItemCountChanged(EquipmentItemType type, int count)
+        private void OnItemCountChanged(EquipmentItemType type)
         {
             if (_itemViews.TryGetValue(type, out EquipmentItemView view))
             {
-                view.UpdateCountText(count);
+                view.UpdateCountText();
             }
         }
 

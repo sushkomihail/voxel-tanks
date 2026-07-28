@@ -66,14 +66,16 @@ namespace UI
                 _playerController.Gun.ShootingSystem.AddNextProjectileTypeToQueue;
         }
 
-        private static void OnCursorStarted(InputAction.CallbackContext _)
+        private void OnCursorStarted(InputAction.CallbackContext _)
         {
             CursorSwitch.EnableCursor();
+            _playerController.SetCombatActionsEnabled(false);
         }
 
-        private static void OnCursorCanceled(InputAction.CallbackContext _)
+        private void OnCursorCanceled(InputAction.CallbackContext _)
         {
             CursorSwitch.DisableCursor();
+            _playerController.SetCombatActionsEnabled(true);
         }
 
         public BaseView InstantiateBaseView(int index)

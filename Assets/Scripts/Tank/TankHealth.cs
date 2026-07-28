@@ -56,7 +56,11 @@ namespace Tank
             {
                 StatQuery query = new StatQuery(StatType.Health, _data.MaxHealth);
                 _upgradeBroker.Query(_owner, query);
+                
+                float healthPercent = (float)_currentHealth / _maxHealth;
                 _maxHealth = (int)query.Value;
+                _currentHealth = (int)(_maxHealth * healthPercent);
+                
                 OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
             }
         }

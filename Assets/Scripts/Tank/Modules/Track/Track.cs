@@ -8,8 +8,13 @@ namespace Tank.Modules.Track
     {
         [SerializeField] private CustomWheelCollider[] _wheels;
 
+        private TrackState _state;
+        private float _torqueRate; // [0, 1]
+        
         public override TankModuleType Type => TankModuleType.Track;
         public int WheelsCount => _wheels.Length;
+        public override bool IsNormal => _state is NormalTrackState;
+
         public float DamagedTorqueRate
         {
             get
@@ -22,9 +27,6 @@ namespace Tank.Modules.Track
                 return 0f;
             }
         }
-
-        private TrackState _state;
-        private float _torqueRate; // [0, 1]
 
         public void SetGripFactor(float gripFactor)
         {

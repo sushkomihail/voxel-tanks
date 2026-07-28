@@ -21,6 +21,7 @@ namespace Tank
 
         protected TankView _view;
         
+        private GameInput _inputActions;
         private UpgradeManager _upgradeManager;
         private UpgradeBroker _upgradeBroker;
         
@@ -31,8 +32,9 @@ namespace Tank
         public bool IsActive { get; private set; } = true;
         
         [Inject]
-        public void Construct(UpgradeManager upgradeManager, UpgradeBroker upgradeBroker)
+        public void Construct(GameInput inputActions, UpgradeManager upgradeManager, UpgradeBroker upgradeBroker)
         {
+            _inputActions = inputActions;
             _upgradeManager = upgradeManager;
             _upgradeBroker = upgradeBroker;
         }
@@ -54,7 +56,7 @@ namespace Tank
                 _chassis.LeftTrack,
                 _chassis.RightTrack
             };
-            Equipment = new Equipment(_data.Equipment, tankModules);
+            Equipment = new Equipment(_inputActions, _data.Equipment, tankModules);
             
             _chassis.Initialize(_data.ChassisData, _data.EngineData, _data.TransmissionData, _data.TrackData, Health);
             _turret.Initialize(_data.TurretData, Health);

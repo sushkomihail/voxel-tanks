@@ -14,7 +14,7 @@ namespace Tank
             ((NPCInput)Input).Initialize();
             Input.Enable();
             
-            Input.Disable();
+            // Input.Disable();
         }
         
         private void Update()

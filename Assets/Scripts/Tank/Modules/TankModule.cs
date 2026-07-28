@@ -18,6 +18,7 @@ namespace Tank.Modules
         private bool _isCritical;
         
         public abstract TankModuleType Type { get; }
+        public abstract bool IsNormal { get; }
 
         public void Initialize(TankModuleData data)
         {
@@ -45,6 +46,7 @@ namespace Tank.Modules
 
         public virtual void EnterNormalState()
         {
+            _currentHealth = _data.MaxHealth;
             OnNormalStateEntered?.Invoke();
         }
 

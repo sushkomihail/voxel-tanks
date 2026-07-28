@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,15 +21,24 @@ namespace EquipmentSystem
             _icon.sprite = sprite;
             _countText.text = count.ToString();
             _bindingText.text = binding;
+
+            _item.OnUsed += UpdateCountText;
+            _item.OnUsed += OnDeselected;
+        }
+
+        private void OnDestroy()
+        {
+            _item.OnUsed -= UpdateCountText;
+            _item.OnUsed -= OnDeselected;
         }
 
         public virtual void OnSelected() {}
         
         public virtual void OnDeselected() {}
 
-        public void UpdateCountText(int count)
+        public void UpdateCountText()
         {
-            _countText.text = count.ToString();
+            _countText.text = _item.Count.ToString();
         }
     }
 }

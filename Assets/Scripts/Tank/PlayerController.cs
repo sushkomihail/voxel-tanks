@@ -57,5 +57,19 @@ namespace Tank
         {
             _tankCamera.FollowTarget(_cameraTarget, _cameraFollowingOffset);
         }
+
+        public void SetCombatActionsEnabled(bool enabled)
+        {
+            if (enabled)
+            {
+                _inputActions.Tank.Look.Enable();
+                _inputActions.Tank.Shoot.Enable();
+            }
+            else
+            {
+                _inputActions.Tank.Look.Disable();
+                _inputActions.Tank.Shoot.Disable();
+            }
+        }
     }
 }

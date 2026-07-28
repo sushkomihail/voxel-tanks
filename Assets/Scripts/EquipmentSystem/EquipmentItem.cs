@@ -19,5 +19,10 @@ namespace EquipmentSystem
             if (Count == 0) return false;
             return true;
         }
+
+        protected void InvokeUsed()
+        {
+            OnUsed?.Invoke();
+        }
     }
 }
