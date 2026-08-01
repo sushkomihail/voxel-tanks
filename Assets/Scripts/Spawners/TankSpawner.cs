@@ -10,12 +10,12 @@ namespace Spawners
         protected readonly TanksDatabase _tanksDatabase;
         protected readonly IObjectResolver _resolver;
 
-        public TankSpawner(TanksDatabase tanksDatabase, IObjectResolver resolver)
+        protected TankSpawner(TanksDatabase tanksDatabase, IObjectResolver resolver)
         {
             _tanksDatabase = tanksDatabase;
             _resolver = resolver;
         }
         
-        public abstract TankController Spawn(Transform spawnPoint);
+        public abstract bool TrySpawn(Transform spawnPoint, out TankController controller);
     }
 }

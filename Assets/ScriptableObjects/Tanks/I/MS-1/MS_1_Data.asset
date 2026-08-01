@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63e8098b5fd0490f9585ef65e11127e2, type: 3}
+  m_Name: MS_1_Data
+  m_EditorClassIdentifier: Assembly-CSharp::Tank.Data.TankData
+  _chassisData:
+    _brakeTorque: 2800
+    _maxForwardSpeed: 32
+    _maxBackwardSpeed: 8
+    _rotationSpeed: 50
+  _engineData:
+    _maxHealth: 100
+    _power: 60
+    _minRpm: 1000
+    _maxRpm: 5000
+    _shiftUpRpm: 2000
+    _shiftDownRpm: 1500
+    _damagedTorqueRate: 0.5
+    _fireProbability: 0.2
+  _transmissionData:
+    _forwardGearRatios:
+    - 3.4
+    - 2.8
+    - 2.3
+    _reverseGearRatios:
+    - 2
+    - 1.4
+    _mainGearRatio: 4.9
+  _trackData:
+    _maxHealth: 100
+    _damagedTorqueRate: 0.5
+  _turretData:
+    _rotationSpeed: 35
+    _minHorizontalAngle: -180
+    _maxHorizontalAngle: 180
+    _rotationLag: 0.5
+  _gunData:
+    _minVerticalAngle: -5
+    _maxVerticalAngle: 20
+    _rotationSpeed: 35
+    _rotationLag: 0.5
+    _projectileTrajectoryPredictionIterations: 200
+    _aimMask:
+      serializedVersion: 2
+      m_Bits: 3592
+  _healthData:
+    _maxHealth: 170
+  _equipment: 01000000

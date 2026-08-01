@@ -4,7 +4,7 @@ using Tank.Modules.Track;
 using UnityEditor;
 using UnityEngine;
 
-namespace Tools
+namespace Editor
 {
     public class TankConstructor : EditorWindow
     {
@@ -38,7 +38,7 @@ namespace Tools
         private void Construct()
         {
             var root = new GameObject(_name);
-            root.AddComponent<PlayerController>();
+            root.AddComponent<TankController>();
             
             // First nesting level
             var cameraTarget = new GameObject("CameraTarget");

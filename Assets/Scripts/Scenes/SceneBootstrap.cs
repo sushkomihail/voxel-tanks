@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Environment.Base;
 using Environment.Brick;
 using Environment.Map;
+using EquipmentSystem;
 using Navigation;
 using Spawners;
 using Tank;
@@ -17,31 +18,41 @@ namespace Scenes
     {
         [SerializeField] private List<Transform> _spawnPoints;
 
+        private GameInput _inputActions;
         private MapGenerator _mapGenerator;
+        private TankCamera _tankCamera;
         private IRouterTargetRegistry _routerTargetRegistry;
-        private PlayerSpawner _playerSpawner;
-        private NPCSpawner _npcSpawner;
+        private PlayerTankSpawner _playerTankSpawner;
+        private AITankSpawner _aiTankSpawner;
         private Pathfinder _pathfinder;
+        private EquipmentPresenter _equipmentPresenter;
         private UILoader _uiLoader;
-        private PlayerController _playerController;
-        private readonly List<NPCController> _npcControllers = new();
+        
+        private TankController _playerTankController;
+        private readonly List<TankController> _npcControllers = new();
         private readonly List<TankController> _onFieldTanks = new();
         private readonly List<IDisposable> _disposables = new();
 
         [Inject]
         public void Construct(
+            GameInput inputActions,
             MapGenerator mapGenerator,
+            TankCamera tankCamera,
             IRouterTargetRegistry routerTargetRegistry,
-            PlayerSpawner playerSpawner,
-            NPCSpawner npcSpawner,
+            PlayerTankSpawner playerTankSpawner,
+            AITankSpawner aiTankSpawner,
             Pathfinder pathfinder,
+            EquipmentPresenter equipmentPresenter,
             UILoader uiLoader)
         {
+            _inputActions = inputActions;
             _mapGenerator = mapGenerator;
+            _tankCamera = tankCamera;
             _routerTargetRegistry = routerTargetRegistry;
-            _playerSpawner = playerSpawner;
-            _npcSpawner = npcSpawner;
+            _playerTankSpawner = playerTankSpawner;
+            _aiTankSpawner = aiTankSpawner;
             _pathfinder = pathfinder;
+            _equipmentPresenter = equipmentPresenter;
             _uiLoader = uiLoader;
         }
 
@@ -54,11 +65,13 @@ namespace Scenes
         {
             GenerateMap();
             
-            SpawnPlayerTank();
-            SpawnNpcTanks();
-            _uiLoader.Initialize(_playerController);
+            var spawnPointsCopy = new List<Transform>(_spawnPoints);
+            SpawnPlayerTank(spawnPointsCopy);
+            SpawnNpcTanks(spawnPointsCopy);
             
-            _onFieldTanks.Add(_playerController);
+            _uiLoader.Initialize(_playerTankController);
+            
+            _onFieldTanks.Add(_playerTankController);
             _onFieldTanks.AddRange(_npcControllers);
             
             InitializeBases();
@@ -104,49 +117,56 @@ namespace Scenes
                 BaseModel model = _mapGenerator.Bases[i];
                 BaseView view = _uiLoader.InstantiateBaseView(i);
                 
-                model.Initialize(_onFieldTanks, _playerController);
+                model.Initialize(_onFieldTanks, _playerTankController);
                 
                 _disposables.Add(new BasePresenter(model, view));
             }
         }
 
-        private void SpawnPlayerTank()
+        private void SpawnPlayerTank(List<Transform> spawnPoints)
         {
-            if (_spawnPoints.Count == 0 || _spawnPoints == null) return;
+            if (spawnPoints == null || spawnPoints.Count == 0) return;
             
-            int index = GetRandomSpawnPoint(out Transform point);
-            _spawnPoints.RemoveAt(index);
-            
-            _playerController = (PlayerController)_playerSpawner.Spawn(point);
-            _playerController.Initialize();
-            
-            _routerTargetRegistry.Register(_playerController);
-        }
+            int index = GetRandomSpawnPoint(spawnPoints, out Transform point);
+            spawnPoints.RemoveAt(index);
 
-        private void SpawnNpcTanks()
-        {
-            if (_spawnPoints.Count == 0 || _spawnPoints == null) return;
-            
-            if (!_playerController) return;
-
-            for (int i = 0; i < _spawnPoints.Count; i++)
+            if (_playerTankSpawner.TrySpawn(point, out _playerTankController))
             {
-                int index = GetRandomSpawnPoint(out Transform point);
-                _spawnPoints.RemoveAt(index);
-
-                NPCController npcController = (NPCController)_npcSpawner.Spawn(point);
-                npcController.Initialize();
+                _playerTankController.Initialize(new PlayerTankConfigurator(
+                    _playerTankController,
+                    _inputActions,
+                    _tankCamera,
+                    _equipmentPresenter));
                 
-                _routerTargetRegistry.Register(npcController);
-                
-                _npcControllers.Add(npcController);
+                _routerTargetRegistry.Register(_playerTankController);
             }
         }
 
-        private int GetRandomSpawnPoint(out Transform point)
+        private void SpawnNpcTanks(List<Transform> spawnPoints)
         {
-            int randomIndex = Random.Range(0, _spawnPoints.Count);
-            point = _spawnPoints[randomIndex];
+            if (spawnPoints == null || spawnPoints.Count == 0) return; 
+            
+            if (!_playerTankController) return;
+
+            while (spawnPoints.Count > 0) 
+            { 
+                int index = GetRandomSpawnPoint(spawnPoints, out Transform point); 
+                spawnPoints.RemoveAt(index);
+
+                if (_aiTankSpawner.TrySpawn(point, out var aiTankController))
+                {
+                    aiTankController.Initialize(new AITankConfigurator(aiTankController));
+                    
+                    _routerTargetRegistry.Register(aiTankController); 
+                    _npcControllers.Add(aiTankController); 
+                }
+            } 
+        }
+
+        private static int GetRandomSpawnPoint(List<Transform> spawnPoints, out Transform point)
+        {
+            int randomIndex = Random.Range(0, spawnPoints.Count);
+            point = spawnPoints[randomIndex];
             return randomIndex;
         }
     }

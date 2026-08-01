@@ -31,8 +31,8 @@ namespace DI
             builder.RegisterInstance(_tanksDatabase);
             builder.Register<GameInput>(Lifetime.Singleton);
             builder.Register<RouterTargetRegistry>(Lifetime.Singleton).As<IRouterTargetRegistry>();
-            builder.Register<PlayerSpawner>(Lifetime.Scoped);
-            builder.Register<NPCSpawner>(Lifetime.Scoped);
+            builder.Register<PlayerTankSpawner>(Lifetime.Scoped);
+            builder.Register<AITankSpawner>(Lifetime.Scoped);
             builder.Register<UpgradeBroker>(Lifetime.Singleton);
 
             builder.RegisterComponent(_mapGenerator);

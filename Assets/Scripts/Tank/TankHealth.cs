@@ -14,11 +14,11 @@ namespace Tank
         private HealthData _data;
         private UpgradeManager _upgradeManager;
         private UpgradeBroker _upgradeBroker;
-        private object _owner;
+        private TankController _owner;
         private int _currentHealth;
         private int _maxHealth;
 
-        public void Initialize(HealthData data, UpgradeManager upgradeManager, UpgradeBroker upgradeBroker, object owner)
+        public TankHealth(HealthData data, UpgradeManager upgradeManager, UpgradeBroker upgradeBroker, TankController owner)
         {
             _data = data;
             _upgradeManager = upgradeManager;
@@ -27,6 +27,10 @@ namespace Tank
             
             _currentHealth = _data.MaxHealth;
             _maxHealth = _data.MaxHealth;
+        }
+
+        public void InvokeHealthChanged()
+        {
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
         }
         
@@ -52,7 +56,9 @@ namespace Tank
 
         public void QueryMaxHealth(object owner, StatType statType)
         {
-            if (owner == _owner && statType == StatType.Health)
+            if (owner is not TankController controller) return;
+            
+            if (controller == _owner && statType == StatType.Health)
             {
                 StatQuery query = new StatQuery(StatType.Health, _data.MaxHealth);
                 _upgradeBroker.Query(_owner, query);

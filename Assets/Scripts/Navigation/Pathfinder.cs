@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Navigation;
 using UnityEngine;
 
 namespace Navigation
@@ -7,93 +7,95 @@ namespace Navigation
     [RequireComponent(typeof(NavGrid))]
     public class Pathfinder : MonoBehaviour
     {
-        public NavGrid NavGrid {get; private set;}
-        public static event Action OnPathRetraced;
-        
+        public NavGrid NavGrid { get; private set; }
+
         private const int NormalTurnCost = 10;
         private const int DiagonalTurnCost = 14;
-        
-        private List<NavGridCell> _path = new();
-        
+
         public void Initialize()
         {
             NavGrid = GetComponent<NavGrid>();
             NavGrid.Initialize();
         }
 
-        public void FindPath(Vector3 start, Vector3 end)
+        public List<NavGridCell> FindPath(Vector3 start, Vector3 end)
         {
             var startCell = NavGrid.GetClosestCell(start);
             var endCell = NavGrid.GetClosestCell(end);
-            
-            var openSet = new List<NavGridCell>();
+
+            if (startCell == null || endCell == null || !endCell.IsWalkable) return null;
+
+            // Списки для хранения узлов алгоритма A*
+            var openSet = new List<Node>();
             var closedSet = new HashSet<NavGridCell>();
-            openSet.Add(startCell);
+            
+            // Быстрый поиск существующего узла по клетке сетки
+            var allNodes = new Dictionary<NavGridCell, Node>();
+
+            // Создаем стартовый узел
+            var startNode = new Node(startCell);
+            openSet.Add(startNode);
+            allNodes[startCell] = startNode;
 
             while (openSet.Count > 0)
             {
-                var currentCell = openSet[0];
-
+                // Ищем узел с наименьшим FCost
+                var currentNode = openSet[0];
                 for (int i = 1; i < openSet.Count; i++)
                 {
-                    if (openSet[i].FCost < currentCell.FCost ||
-                        openSet[i].FCost == currentCell.FCost && openSet[i].HCost < currentCell.HCost)
+                    if (openSet[i].FCost < currentNode.FCost || 
+                        (openSet[i].FCost == currentNode.FCost && openSet[i].HCost < currentNode.HCost))
                     {
-                        currentCell = openSet[i];
+                        currentNode = openSet[i];
                     }
                 }
-                
-                openSet.Remove(currentCell);
-                closedSet.Add(currentCell);
 
-                if (currentCell == endCell)
+                openSet.Remove(currentNode);
+                closedSet.Add(currentNode.Cell);
+
+                // Если цель достигнута, восстанавливаем путь
+                if (currentNode.Cell == endCell)
                 {
-                    RetracePath(startCell, endCell);
-                    return;
+                    return RetracePath(startNode, currentNode);
                 }
 
-                foreach (var neighbour in NavGrid.GetNeighbours(currentCell))
+                foreach (var neighbourCell in NavGrid.GetNeighbours(currentNode.Cell))
                 {
-                    if (!neighbour.IsWalkable || closedSet.Contains(neighbour)) continue;
-                    
-                    int movementCost = currentCell.GCost + GetDistance(currentCell, neighbour);
+                    if (!neighbourCell.IsWalkable || closedSet.Contains(neighbourCell)) continue;
 
-                    if (movementCost < neighbour.GCost || !openSet.Contains(neighbour))
+                    int movementCostToNeighbour = currentNode.GCost + GetDistance(currentNode.Cell, neighbourCell);
+
+                    // Если мы еще не создавали узел для этой клетки, создаем его
+                    if (!allNodes.TryGetValue(neighbourCell, out Node neighbourNode))
                     {
-                        neighbour.SetGCost(movementCost);
-                        neighbour.SetHCost(GetDistance(neighbour, endCell));
-                        neighbour.SetParentCell(currentCell);
+                        neighbourNode = new Node(neighbourCell);
+                        allNodes[neighbourCell] = neighbourNode;
+                    }
 
-                        if (!openSet.Contains(neighbour))
+                    bool inOpenSet = openSet.Contains(neighbourNode);
+
+                    if (movementCostToNeighbour < neighbourNode.GCost || !inOpenSet)
+                    {
+                        neighbourNode.GCost = movementCostToNeighbour;
+                        neighbourNode.HCost = GetDistance(neighbourCell, endCell);
+                        neighbourNode.Parent = currentNode;
+
+                        if (!inOpenSet)
                         {
-                            openSet.Add(neighbour);
+                            openSet.Add(neighbourNode);
                         }
                     }
                 }
             }
-        }
 
-        public bool TryGetNextPathCell(out NavGridCell cell)
-        {
-            cell = null;
-            
-            if (_path.Count == 0) return false;
-            
-            cell = _path[0];
-            _path.RemoveAt(0);
-            return true;
-        }
-
-        public void ClearPath()
-        {
-            _path.Clear();
+            return null; // Путь не найден
         }
 
         private static int GetDistance(NavGridCell a, NavGridCell b)
         {
             int dx = Mathf.Abs(a.GridX - b.GridX);
             int dy = Mathf.Abs(a.GridY - b.GridY);
-
+            
             if (dx > dy)
             {
                 return DiagonalTurnCost * dy + NormalTurnCost * (dx - dy);
@@ -102,42 +104,33 @@ namespace Navigation
             return DiagonalTurnCost * dx + NormalTurnCost * (dy - dx);
         }
 
-        private void RetracePath(NavGridCell start, NavGridCell end)
+        private List<NavGridCell> RetracePath(Node startNode, Node endNode)
         {
-            bool isPathRetraced = false;
-            var newPath = new List<NavGridCell>();
-            var currentCell = end;
+            var path = new List<NavGridCell>();
+            var currentNode = endNode;
 
-            while (currentCell != start)
+            while (currentNode != startNode)
             {
-                if (!_path.Contains(currentCell))
-                {
-                    isPathRetraced = true;
-                }
-                
-                newPath.Add(currentCell);
-                currentCell = currentCell.ParentCell;
+                path.Add(currentNode.Cell);
+                currentNode = currentNode.Parent;
             }
             
-            newPath.Reverse();
-
-            if (isPathRetraced)
-            {
-                _path = newPath;
-                OnPathRetraced?.Invoke();
-            }
+            path.Reverse();
+            return path;
         }
+    }
+}
 
-        private void OnDrawGizmos()
-        {
-            if (_path.Count == 0) return;
-            
-            Gizmos.color = Color.green;
+public class Node
+{
+    public NavGridCell Cell { get; }
+    public Node Parent { get; set; }
+    public int GCost { get; set; }
+    public int HCost { get; set; }
+    public int FCost => GCost + HCost;
 
-            foreach (var cell in _path)
-            {
-                Gizmos.DrawWireCube(cell.WorldPosition, Vector3.one * 0.5f);
-            }
-        }
+    public Node(NavGridCell cell)
+    {
+        Cell = cell;
     }
 }

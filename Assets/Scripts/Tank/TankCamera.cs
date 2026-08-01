@@ -27,6 +27,11 @@ namespace Tank
             _highlighter = new ObjectHighlighter();
         }
 
+        private void Update()
+        {
+            _highlighter.TryHighlightFocusObject(_hit);
+        }
+
         public void FollowTarget(Transform target, Vector3 offset)
         {
             transform.position = target.position;
@@ -57,11 +62,6 @@ namespace Tank
             }
 
             return _camera.transform.position + _camera.transform.forward * MaxRayDistance;
-        }
-
-        public void TryHighlightFocusObject()
-        {
-            _highlighter.TryHighlightFocusObject(_hit);
         }
         
         private void HandleCollision(Vector3 offset)

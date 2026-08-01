@@ -18,7 +18,5 @@ MonoBehaviour:
     _unlockedSprite: {fileID: 21300000, guid: 405dfc8a26bf6c84795bd9352385ba31, type: 3}
     _previewPrefab: {fileID: 5722925370275054514, guid: c741e53505244c948bec449c9db0e07b,
       type: 3}
-    _playerPrefab: {fileID: 7351126229157280883, guid: 4fac3caa2144eca4187c02e644c3ed24,
-      type: 3}
-    _npcPrefab: {fileID: 8921875540956356529, guid: 94ed64fbf04e02642b79aa92f4ba2c5f,
+    _prefab: {fileID: 7267617608006793539, guid: 4fac3caa2144eca4187c02e644c3ed24,
       type: 3}

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Navigation
@@ -12,11 +11,14 @@ namespace Navigation
 
         public Router(List<IRouterTarget> targets)
         {
-            CurrentTarget = targets[0];
-            
-            foreach (IRouterTarget target in targets)
+            if (targets is { Count: > 0 })
             {
-                _sqrDistances.Add(target, 0f);
+                CurrentTarget = targets[0];
+                
+                foreach (IRouterTarget target in targets)
+                {
+                    _sqrDistances.Add(target, 0f);
+                }
             }
         }
 
@@ -25,11 +27,13 @@ namespace Navigation
             if (_sqrDistances.Count == 0) return;
             
             IRouterTarget closestTarget = null;
-            float minSqrDistance = _sqrDistances[CurrentTarget];
+            float minSqrDistance = float.MaxValue;
             
-            foreach (IRouterTarget target in _sqrDistances.Keys.ToList())
+            foreach (var pair in _sqrDistances)
             {
-                if (!target.IsActive) continue;
+                IRouterTarget target = pair.Key;
+
+                if (target is not { IsActive: true }) continue;
                 
                 float sqrDistance = (from - target.Position).sqrMagnitude;
 
@@ -38,13 +42,15 @@ namespace Navigation
                     minSqrDistance = sqrDistance;
                     closestTarget = target;
                 }
-                
-                _sqrDistances[target] = sqrDistance;
             }
 
             if (closestTarget != null)
             {
                 CurrentTarget = closestTarget;
+            }
+            else if (CurrentTarget is { IsActive: false })
+            {
+                CurrentTarget = null; 
             }
         }
     }
